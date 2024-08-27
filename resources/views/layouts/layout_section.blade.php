@@ -28,7 +28,10 @@
     </div>
    
     <div class="row">
+      <div class="col-12">
+        @include('reutilizables.spinners.spinner_1')
         @yield('section-page')
+      </div>
     </div>
    
 </div>

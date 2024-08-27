@@ -18,8 +18,10 @@ Route::middleware([
 });
 
 // Grupo de rutas con un prefijo y middleware opcional
-Route::group(['prefix' => 'herramientas', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'usuarios', 'middleware' => ['auth']], function () {
 
-    Route::get('/usuario', [UsuarioController::class, 'index'])->name('herramientas.usuario.index');
+    Route::get('/index', [UsuarioController::class, 'index'])->name('herramientas.usuario.index');
+    Route::get('/create', [UsuarioController::class, 'create'])->name('herramientas.usuario.create');
+    Route::post('/store', [UsuarioController::class, 'store'])->name('herramientas.usuario.store');
 
 });

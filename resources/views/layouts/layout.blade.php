@@ -1,21 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="assets/images/favicon.svg" type="image/x-icon" />
-    <title>PlainAdmin Demo | Bootstrap 5 Admin Template</title>
 
-    <!-- ========== All CSS files linkup ========= -->
-    <link rel="stylesheet" href="{{asset('layout/assets/css/bootstrap.min.css')}}" />
-    <link rel="stylesheet" href="{{asset('layout/assets/css/lineicons.css')}}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="{{asset('layout/assets/css/materialdesignicons.min.css')}}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="{{asset('layout/assets/css/fullcalendar.css')}}" />
-    <link rel="stylesheet" href="{{asset('layout/assets/css/fullcalendar.css')}}" />
-    <link rel="stylesheet" href="{{asset('layout/assets/css/main.css')}}" />
-  </head>
+  @include('layouts.layout_head')
+
   <body>
+
     <!-- ======== Preloader =========== -->
     <div id="preloader">
       <div class="spinner"></div>
@@ -268,6 +257,8 @@
     <script src="{{asset('layout/assets/js/world-merc.js')}}"></script>
     <script src="{{asset('layout/assets/js/polyfill.js')}}"></script>
     <script src="{{asset('layout/assets/js/main.js')}}"></script>
+
+    <script src="{{asset('datatable/datatables.min.js')}}"></script>
 
     <script>
       // ======== jvectormap activation
@@ -803,6 +794,17 @@
         },
       });
         // =========== chart four end
+
+        function mostrarAnimacion1() {
+          document.getElementById('overlay_1').style.display = 'flex';
+        }
+
+        function ocultarAnimacion1() {
+          document.getElementById('overlay').style.display = 'none';
+        }
+
+        
     </script>
+    
   </body>
 </html>
