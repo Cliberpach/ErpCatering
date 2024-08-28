@@ -24,7 +24,7 @@ class UsuarioStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nombre'            => 'required|string|max:255',
+            // 'nombre'            => 'required|string|max:255',
             'colaborador'       => 'required', 
             'correo'            => 'required|email|unique:users,email',
             'password'          => 'required|string|min:8',
@@ -35,9 +35,9 @@ class UsuarioStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'nombre.required'            => 'El campo nombre es obligatorio.',
-            'nombre.string'              => 'El campo nombre debe ser una cadena de texto.',
-            'nombre.max'                 => 'El campo nombre no puede tener más de 255 caracteres.',
+            // 'nombre.required'            => 'El campo nombre es obligatorio.',
+            // 'nombre.string'              => 'El campo nombre debe ser una cadena de texto.',
+            // 'nombre.max'                 => 'El campo nombre no puede tener más de 255 caracteres.',
             'colaborador.required'       => 'El campo colaborador es obligatorio.',
             'colaborador.integer'        => 'El campo colaborador debe ser un número entero.',
             'colaborador.exists'         => 'El colaborador seleccionado no es válido.',

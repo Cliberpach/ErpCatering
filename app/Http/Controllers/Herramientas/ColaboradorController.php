@@ -48,6 +48,7 @@ class ColaboradorController extends Controller
             DB::commit();
             return response()->json(['success'=>true,'message'=>'COLABORADOR REGISTRADO']);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
@@ -79,6 +80,7 @@ class ColaboradorController extends Controller
             return response()->json(['success'=>true,'message'=>'COLABORADOR ACTUALIZADO']);
 
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
@@ -94,6 +96,7 @@ class ColaboradorController extends Controller
             return response()->json(['success'=>true,'message'=>'COLABORADOR ELIMINADO']);
 
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }

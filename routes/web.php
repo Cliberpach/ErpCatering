@@ -24,6 +24,9 @@ Route::group(['prefix' => 'usuarios', 'middleware' => ['auth']], function () {
     Route::get('/index', [UsuarioController::class, 'index'])->name('herramientas.usuario.index');
     Route::get('/create', [UsuarioController::class, 'create'])->name('herramientas.usuario.create');
     Route::post('/store', [UsuarioController::class, 'store'])->name('herramientas.usuario.store');
+    Route::get('/getUsuarios', [UsuarioController::class, 'getUsuarios'])->name('herramientas.usuario.getUsuarios');
+    Route::get('/edit/{id}', [UsuarioController::class, 'edit'])->name('herramientas.usuario.edit');
+    Route::delete('/destroy/{id}', [UsuarioController::class, 'destroy'])->name('herramientas.usuario.destroy');
 
 });
 

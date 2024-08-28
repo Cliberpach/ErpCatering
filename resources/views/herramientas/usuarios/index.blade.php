@@ -32,7 +32,54 @@
     })
 
     function iniciarDataTableUsuarios(){
+        const urlGetUsuarios = '{{ route('herramientas.usuario.getUsuarios') }}';
+
         dtUsuarios  =   new DataTable('#table_usuarios',{
+            serverSide: true,
+            processing: true,
+            ajax: {
+                url: urlGetUsuarios,
+                type: 'GET',
+            },
+            columns: [
+                { data: 'id', name: 'id' },
+                { data: 'nombre', name: 'nanombreme' },
+                { data: 'correo', name: 'correo' },
+                { data: 'fecha_registro', name: 'fecha_registro' },
+                {
+                    data: null, 
+                    render: function(data, type, row) {
+                        const baseUrlEdit   =   `{{ route('herramientas.usuario.edit', ['id' => ':id']) }}`;
+                        urlEdit             =   baseUrlEdit.replace(':id', data.id); 
+
+                        const urlDelete = `{{ route('herramientas.usuario.destroy', ':id') }}`.replace(':id', data.id);
+
+                        return `
+                            <div class="btn-group">
+                            <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-grip"></i>
+                            </button>
+                            <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                                <li>
+                                    <a class="dropdown-item" href="${urlEdit}">
+                                        <i class="fa-solid fa-pen-to-square"></i> Editar
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarUsuario(${data.id})">
+                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                    </a>
+                                </li>
+                            </ul>
+                            </div>
+                        `;
+                    },
+                    name: 'actions', 
+                    orderable: false, 
+                    searchable: false 
+                }
+            ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
@@ -59,6 +106,10 @@
 
     function goToCrearUsuario(){
         window.location.href = @json(route('herramientas.usuario.create'));
+    }
+
+    function eliminarUsuario(){
+        
     }
 
 

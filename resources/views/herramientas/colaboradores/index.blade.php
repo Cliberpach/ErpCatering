@@ -31,10 +31,10 @@
     let dtColaboradores    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableUsuarios();
+        iniciarDataTableColaboradores();
     })
 
-    function iniciarDataTableUsuarios(){
+    function iniciarDataTableColaboradores(){
         const urlGetColaboradores = '{{ route('herramientas.colaborador.getColaboradores') }}';
 
         dtColaboradores  =   new DataTable('#table_colaboradores',{

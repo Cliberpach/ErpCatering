@@ -10,11 +10,22 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash; 
 use Illuminate\Support\Facades\Session;
 use App\Models\Herramientas\Colaborador;
+use Exception;
+use Yajra\DataTables\Facades\DataTables;
 
 class UsuarioController extends Controller
 {
     public function index(){
         return view('herramientas.usuarios.index');
+    }
+
+    public function getUsuarios(Request $request){
+        $usuarios = User::where('estado','ACTIVO')
+                    ->select('id','name as nombre','email as correo','created_at as fecha_registro')
+                    ->get();
+
+        return DataTables::of($usuarios)
+                ->make(true);
     }
 
     public function create(){
@@ -30,19 +41,38 @@ class UsuarioController extends Controller
     public function store(UsuarioStoreRequest $request){
         DB::beginTransaction();
         try {
-            $usuario    =   new User();
+
+            //===== BUSCANDO COLABORADOR ======
+            $colaborador                =   DB::select('select c.* from colaboradores as c
+                                            where c.id = ?',[$request->get('colaborador')]);
+
+            if(count($colaborador) === 0){
+                throw new Exception("COLABORADOR NO ENCONTRADO EN LA BASE DE DATOS");
+            }
+
+            $usuario                    =   new User();
             $usuario->colaborador_id    =   $request->get('colaborador');
-            $usuario->name            =   $request->get('nombre');
-            $usuario->email            =   $request->get('correo');
+            $usuario->name              =   $colaborador[0]->nombre;
+            $usuario->email             =   $request->get('correo');
             $usuario->password          =   Hash::make($request->get('password'));
             $usuario->password_visible  =   $request->get('password');
             $usuario->save();
 
-            Session::flash('message_success', 'CLIENTE REGISTRADO CON ÉXITO.');
+            Session::flash('message_success', 'USUARIO REGISTRADO CON ÉXITO.');
+            DB::commit();
             return response()->json(['success'=>true,'message'=>'CLIENTE REGISTRADO']);
 
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
+    }
+
+    public function edit(Request $request,$id){
+
+    }
+
+    public function destroy($id){
+        
     }
 }

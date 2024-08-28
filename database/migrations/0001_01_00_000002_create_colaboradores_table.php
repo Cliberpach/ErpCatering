@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('tipo_documento_id');
             $table->foreign('tipo_documento_id')->references('id')->on('tipos_documento')->onDelete('cascade');
         
-            $table->string('nro_documento',20);
+            $table->string('nro_documento',20)->unique();
 
             $table->string('nombre',260);
             $table->string('direccion',200);
