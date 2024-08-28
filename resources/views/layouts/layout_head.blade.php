@@ -27,19 +27,28 @@
 
 <!-- ======== SELECT2 ========== -->
    <!-- Styles -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
   <!-- Scripts -->
-  {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script> --}}
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 
-  <!-- ======== SWEETALERT2 ======= -->
+<!-- ======== SWEETALERT2 ======= -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-  <!-- ========= SPINNER 1 - CUADRADOS COMPRIMIENDOSE Y EXPANDIENDOSE ========= -->
-  <link rel="stylesheet" href="{{asset('css/spinner_1.css')}}">
+<!-- ========= SPINNER 1 - CUADRADOS COMPRIMIENDOSE Y EXPANDIENDOSE ========= -->
+<link rel="stylesheet" href="{{asset('css/spinner_1.css')}}">
+
+<!-- ========= CARGAR UTILIDADES CSS ========= -->
+<link rel="stylesheet" href="{{asset('css/utils.css')}}">
+
+<!-- ========= ANCHO SELECT2 100% ========= -->
+<style>
+  .select2-container--bootstrap-5 .selection {
+      width: 100% !important;
+  }
+</style>
 
 <style>
     .overlay_1 {
@@ -55,6 +64,7 @@
         display: none; /* Ocultar el overlay por defecto */
     } 
 </style>
+
   @vite(['resources/js/app.js'])
   @yield('css-page')
 

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash; 
 use Illuminate\Support\Facades\Session;
+use App\Models\Herramientas\Colaborador;
 
 class UsuarioController extends Controller
 {
@@ -17,7 +18,13 @@ class UsuarioController extends Controller
     }
 
     public function create(){
-        return view('herramientas.usuarios.create');
+
+        $colaboradores = Colaborador::where('colaboradores.estado', 'ACTIVO')
+                        ->join('tipos_documento', 'colaboradores.tipo_documento_id', '=', 'tipos_documento.id')
+                        ->select('colaboradores.*', 'tipos_documento.descripcion as tipo_documento_nombre')
+                        ->get();        
+        
+        return view('herramientas.usuarios.create',compact('colaboradores'));
     }
 
     public function store(UsuarioStoreRequest $request){

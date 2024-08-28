@@ -192,7 +192,7 @@
               <a href="{{route('herramientas.usuario.index')}}" class="active">Usuarios</a>
             </li>
             <li>
-              <a href="signup.html">Registro de Salidas</a>
+              <a href="{{route('herramientas.colaborador.index')}}">Colaboradores</a>
             </li>
           </ul>
         </li>

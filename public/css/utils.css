@@ -1,0 +1,21 @@
+/*======== CAMPOS OBLIGATORIOS =========*/
+.required_field::after {
+    content: '*';
+    color: orange;
+    font-weight: bold;
+    margin-left: 0.25rem; 
+}
+
+/*====== TRANSICION DE OPACIDAD =======*/
+/* Clase para mostrar el ícono con una transición suave de opacidad */
+.show-transition {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+.hide-transition {
+    opacity: 0;
+    transform: rotate(90deg); /* Gira el ícono 90 grados mientras se desvanece */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}

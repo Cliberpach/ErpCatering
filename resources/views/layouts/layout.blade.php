@@ -800,7 +800,7 @@
         }
 
         function ocultarAnimacion1() {
-          document.getElementById('overlay').style.display = 'none';
+          document.getElementById('overlay_1').style.display = 'none';
         }
 
         
