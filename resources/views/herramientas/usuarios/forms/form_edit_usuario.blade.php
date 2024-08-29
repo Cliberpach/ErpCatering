@@ -1,4 +1,4 @@
-<form action="" id="formRegistrarUsuario" method="post">    
+<form action="" id="formActualizarUsuario" method="post">    
     <div class="row">
             @csrf       
             {{-- <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
@@ -11,16 +11,21 @@
                 <select required name="colaborador" required class="form-select" id="colaborador" data-placeholder="Seleccionar">
                     <option></option>
                     @foreach ($colaboradores as $colaborador)
-                        <option value="{{$colaborador->id}}">
+                        <option 
+                        @if ($colaborador->id === $usuario->colaborador_id)
+                            selected
+                        @endif
+                        value="{{$colaborador->id}}">
                             {{$colaborador->nombre.' - '.$colaborador->tipo_documento_nombre.':'.$colaborador->nro_documento}}
                         </option>
                     @endforeach
+                    
                 </select>
                 <span class="colaborador_error msgError"  style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
                 <label for="correo" class="required_field" style="font-weight: bold;">Correo</label>
-                <input maxlength="255" name="correo" id="correo" required type="email" class="form-control" placeholder="Correo">
+                <input value="{{$usuario->email}}" maxlength="255" name="correo" id="correo" required type="email" class="form-control" placeholder="Correo">
                 <span class="correo_error msgError"  style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
@@ -29,7 +34,7 @@
                     <button style="width:50px;" class="btn btn-primary btn_ver_password password_oculto" type="button" id="button-addon1">
                         <i class="fa-solid fa-eye-slash"></i>
                     </button>
-                    <input maxlength="50" type="password" id="password" name="password" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                    <input value="{{$usuario->password_visible}}" maxlength="50" type="password" id="password" name="password" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
                 </div>
                 <span class="password_error msgError" style="color:red;"></span>
             </div>
@@ -39,7 +44,7 @@
                     <button style="width:50px;"  class="btn btn-primary btn_ver_repetir_password password_oculto" type="button" id="button-addon1">
                         <i class="fa-solid fa-eye-slash"></i>
                     </button>
-                    <input maxlength="50" type="password" id="repetir_password" name="repetir_password" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                    <input value="{{$usuario->password_visible}}" maxlength="50" type="password" id="repetir_password" name="repetir_password" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
                 </div>
                 <span class="repetir_password_error msgError" style="color:red;"></span>
             </div>

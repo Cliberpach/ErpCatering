@@ -54,7 +54,7 @@
           </a>
           <ul id="ddmenu_2" class="collapse dropdown-nav">
             <li>
-              <a href="settings.html"> Personal </a>
+              <a href="{{route('registros.colaborador.index')}}">Colaboradores</a>
             </li>
             <li>
               <a href="blank-page.html"> Maquinaria </a>
@@ -192,7 +192,7 @@
               <a href="{{route('herramientas.usuario.index')}}" class="active">Usuarios</a>
             </li>
             <li>
-              <a href="{{route('herramientas.colaborador.index')}}">Colaboradores</a>
+              <a href="{{route('herramientas.rol.index')}}" class="active">Roles</a>
             </li>
           </ul>
         </li>

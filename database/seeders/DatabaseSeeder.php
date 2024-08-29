@@ -6,8 +6,9 @@ use App\Models\Herramientas\TipoDocumento;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Herramientas\Colaborador;
+use App\Models\Registros\Colaborador;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 
 
 class DatabaseSeeder extends Seeder
@@ -50,6 +51,33 @@ class DatabaseSeeder extends Seeder
         $user->password                 =   Hash::make('123456789');
         $user->password_visible         =   '123456789';
         $user->save();
+
+        //======= REGISTRO DE PERMISOS =======
+        $items = [
+            'panel_control.dashboard',
+            'registros.colaborador',
+            'registros.maquinaria',
+            'registros.proyecto',
+            'registros.almacen',
+            'registros.categoria',
+            'registros.marca',
+            'registros.producto',
+            'jornal.registro_labor',
+            'jornal.consulta_labor',
+            'trabajo_equipo.registro_tarea',
+            'trabajo_equipo.consulta_tarea',
+            'logistica.registro_compra',
+            'logistica.registro_salida',
+            'herramientas.usuarios',
+            'herramientas.roles'
+        ];
+        
+        foreach ($items as $item) {
+            $permiso = new Permission();
+            $permiso->name = $item;
+            $permiso->save();
+        }
+
     
     }
 }

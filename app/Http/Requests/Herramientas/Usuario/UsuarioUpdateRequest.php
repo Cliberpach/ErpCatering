@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 
-class UsuarioStoreRequest extends FormRequest
+class UsuarioUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,8 +29,8 @@ class UsuarioStoreRequest extends FormRequest
             'colaborador'       => [
                 'required',
                 Rule::exists('colaboradores', 'id')
-            ],  
-            'correo'            => 'required|email|unique:users,email',
+            ], 
+            'correo'            => 'required|email|unique:users,email,' . $this->route('id'),
             'password'          => 'required|string|min:8',
             'repetir_password'  => 'required|string|same:password',
         ];
@@ -44,7 +44,7 @@ class UsuarioStoreRequest extends FormRequest
             // 'nombre.max'                 => 'El campo nombre no puede tener más de 255 caracteres.',
             'colaborador.required'       => 'El campo colaborador es obligatorio.',
             'colaborador.integer'        => 'El campo colaborador debe ser un número entero.',
-            'colaborador.exists'        => 'El colaborador seleccionado no existe en nuestra base de datos.',
+            'colaborador.exists'         => 'El colaborador seleccionado no existe en nuestra base de datos.',
             'correo.required'            => 'El campo correo es obligatorio.',
             'correo.email'               => 'El campo correo debe ser una dirección de correo electrónico válida.',
             'correo.unique'              => 'El correo electrónico ya está en uso.',
@@ -63,6 +63,4 @@ class UsuarioStoreRequest extends FormRequest
             'errors' => $validator->errors()
         ], 422));
     }
-
-
 }

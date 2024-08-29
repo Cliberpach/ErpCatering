@@ -1678,6 +1678,7 @@ h6,
 }
 
 /* =========== tables css =========== */
+/*
 .table {
   border-collapse: inherit;
   border-spacing: 0px;
@@ -1802,7 +1803,7 @@ h6,
 }
 .table .action .dropdown-menu li a {
   display: block;
-}
+}*/
 
 .top-selling-table tr th,
 .top-selling-table tr td {

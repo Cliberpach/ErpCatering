@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Herramientas\Colaborador;
+namespace App\Http\Requests\Registros\Colaborador;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
-class ColaboradorStoreRequest extends FormRequest
+class ColaboradorUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,7 @@ class ColaboradorStoreRequest extends FormRequest
             'nro_documento' => [
                 'required',
                 'string',
-                'unique:colaboradores,nro_documento',
+                'unique:colaboradores,nro_documento,' . $this->route('id'),
                 function($attribute, $value, $fail) {
                     if ($this->input('tipo_documento') == 1) {
                         // Si tipo_documento es 1, el nro_documento debe tener exactamente 8 caracteres

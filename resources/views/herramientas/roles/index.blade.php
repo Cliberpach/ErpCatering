@@ -1,20 +1,20 @@
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE USUARIOS
+    LISTADO DE ROLES
 @endsection
 
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Usuarios <i class="fa-solid fa-user"></i>
+      <h6>Roles <i class="fa-solid fa-user"></i>
       </h6>
-      <button class="btn btn-primary" onclick="goToCrearUsuario()">
+      <button class="btn btn-primary" onclick="goToCrearRol()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
     </div>
 
     <div class="table-responsive">
-        @include('herramientas.usuarios.tables.table_list_usuarios')
+        @include('herramientas.roles.tables.table_list_roles')
     </div>
 </div>
 <!-- end card -->
@@ -35,24 +35,23 @@
     })
 
     function iniciarDataTableUsuarios(){
-        const urlGetUsuarios = '{{ route('herramientas.usuario.getUsuarios') }}';
+        const urlGetRoles = '{{ route('herramientas.rol.getRoles') }}';
 
-        dtUsuarios  =   new DataTable('#table_usuarios',{
+        dtUsuarios  =   new DataTable('#table_roles',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: urlGetUsuarios,
+                url: urlGetRoles,
                 type: 'GET',
             },
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },
-                { data: 'correo', name: 'correo' },
                 { data: 'fecha_registro', name: 'fecha_registro' },
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('herramientas.usuario.edit', ['id' => ':id']) }}`;
+                        const baseUrlEdit   =   `{{ route('herramientas.rol.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
                         const urlDelete = `{{ route('herramientas.usuario.destroy', ':id') }}`.replace(':id', data.id);
@@ -107,8 +106,8 @@
         });
     }
 
-    function goToCrearUsuario(){
-        window.location.href = @json(route('herramientas.usuario.create'));
+    function goToCrearRol(){
+        window.location.href = @json(route('herramientas.rol.create'));
     }
 
     function eliminarUsuario(){

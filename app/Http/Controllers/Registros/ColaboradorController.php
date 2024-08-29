@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Herramientas;
+namespace App\Http\Controllers\Registros;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Utils\UtilController;
-use App\Http\Requests\Herramientas\Colaborador\ColaboradorStoreRequest;
-use App\Http\Requests\Herramientas\Colaborador\ColaboradorUpdateRequest;
-use App\Models\Herramientas\Colaborador;
+use App\Http\Requests\Registros\Colaborador\ColaboradorStoreRequest;
+use App\Http\Requests\Registros\Colaborador\ColaboradorUpdateRequest;
+use App\Models\Registros\Colaborador;
 use App\Models\Herramientas\TipoDocumento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
 
 class ColaboradorController extends Controller
 {
     public function index(){
-        return view('herramientas.colaboradores.index');
+        return view('registros.colaboradores.index');
     }
 
     public function getColaboradores(Request $request){
@@ -29,7 +30,7 @@ class ColaboradorController extends Controller
     public function create(){
         $tipos_documento    =   TipoDocumento::where('estado','ACTIVO')->get();
        
-        return view('herramientas.colaboradores.create',compact('tipos_documento'));
+        return view('registros.colaboradores.create',compact('tipos_documento'));
     }
 
     public function store(ColaboradorStoreRequest $request){
@@ -37,8 +38,8 @@ class ColaboradorController extends Controller
         try {
             $colaborador    =   new Colaborador();
             $colaborador->tipo_documento_id =   $request->get('tipo_documento');
-            $colaborador->nombre            =   $request->get('nombre');
-            $colaborador->direccion         =   $request->get('direccion');
+            $colaborador->nombre            =   Str::upper($request->get('nombre'));
+            $colaborador->direccion         =   Str::upper($request->get('direccion'));
             $colaborador->telefono          =   $request->get('telefono');
             $colaborador->horas_semana      =   $request->get('horas_semana');
             $colaborador->pago_semana       =   $request->get('pago_semana');
@@ -60,7 +61,7 @@ class ColaboradorController extends Controller
 
         
        
-        return view('herramientas.colaboradores.edit',compact('tipos_documento','colaborador'));
+        return view('registros.colaboradores.edit',compact('tipos_documento','colaborador'));
     }
 
     public function update(ColaboradorUpdateRequest $request, $id){
@@ -68,8 +69,8 @@ class ColaboradorController extends Controller
         try {
             $colaborador                    =   Colaborador::find($id);
             $colaborador->tipo_documento_id =   $request->get('tipo_documento');
-            $colaborador->nombre            =   $request->get('nombre');
-            $colaborador->direccion         =   $request->get('direccion');
+            $colaborador->nombre            =   Str::upper($request->get('nombre'));
+            $colaborador->direccion         =   Str::upper($request->get('direccion'));
             $colaborador->telefono          =   $request->get('telefono');
             $colaborador->horas_semana      =   $request->get('horas_semana');
             $colaborador->pago_semana       =   $request->get('pago_semana');

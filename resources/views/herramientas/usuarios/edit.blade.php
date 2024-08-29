@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 @section('title-page')
-    CREAR USUARIO
+    EDITAR USUARIO
 @endsection
 
 @section('section-page')
@@ -9,7 +9,7 @@
       <h6>Datos del Usuario<i class="fa-solid fa-user"></i></h6>
     </div>
     <div class="card-body">
-       @include('herramientas.usuarios.forms.form_create_usuario')
+       @include('herramientas.usuarios.forms.form_edit_usuario')
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
@@ -18,8 +18,8 @@
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
-            <button class="btn btn-primary" type="submit" form="formRegistrarUsuario">
-                <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
+            <button class="btn btn-primary" type="submit" form="formActualizarUsuario">
+                <i class="fa-solid fa-floppy-disk"></i> ACTUALIZAR
             </button>
         </div>
         
@@ -36,11 +36,13 @@
     })
 
     function events(){
-        document.querySelector('#formRegistrarUsuario').addEventListener('submit',(e)=>{
+        document.querySelector('#formActualizarUsuario').addEventListener('submit',(e)=>{
             e.preventDefault();
-            registrarUsuario();
+            
+            actualizarUsuario();
         })
 
+        //======== BTN VER CONTRASEÑA =========
         document.addEventListener('click',(e)=>{
 
             if (e.target.closest('.btnVolver')) {
@@ -48,9 +50,8 @@
                 window.location.href    =   rutaIndex;
             }
 
-            //======== BTN VER CONTRASEÑA =========
             if (e.target.closest('.btn_ver_password')) {
-                
+               
                 const btnVerPassword   =   e.target.closest('.btn_ver_password');
                 btnVerPassword.classList.toggle('password_oculto');
 
@@ -117,7 +118,10 @@
         });
     }
 
-    function registrarUsuario(){
+    function actualizarUsuario(){
+
+        const usuario   =   @json($usuario);
+
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -126,24 +130,20 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA REGISTRAR EL USUARIO?",
-        text: "Se creará un nuevo usuario!",
+        title: "DESEA ACTUALIZAR EL USUARIO?",
+        text: `USUARIO: ${usuario.name} - CORREO: ${usuario.email}`,
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "SÍ, REGISTRAR!",
+        confirmButtonText: "SÍ, ACTUALIZAR!",
         cancelButtonText: "NO, CANCELAR!",
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
             limpiarErroresValidacion();
-            const token                 =   document.querySelector('input[name="_token"]').value;
-            const formRegistrarUsuario  =   document.querySelector('#formRegistrarUsuario');
-            const formData              =   new FormData(formRegistrarUsuario);
-            const urlRegistrarUsuario   =   @json(route('herramientas.usuario.store'));
-
+            
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Registrando nuevo usuario...',
+                html: 'Actualizando usuario...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -151,13 +151,22 @@
             });
 
             try {
-                const response  =   await fetch(urlRegistrarUsuario, {
-                                    method: 'POST',
-                                    headers: {
-                                        'X-CSRF-TOKEN': token 
-                                    },
-                                    body: formData
-                                });
+
+                const formActualizarUsuario =   document.querySelector('#formActualizarUsuario');
+                const formData              =   new FormData(formActualizarUsuario);
+                const token                 =   document.querySelector('input[name="_token"]').value;
+                const id                    =   @json($usuario->id);
+                let urlUpdateUsuario        =   `{{ route('herramientas.usuario.update', ['id' => ':id']) }}`;
+                urlUpdateUsuario            =   urlUpdateUsuario.replace(':id', id);
+
+                const response  =   await fetch(urlUpdateUsuario, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': token,
+                                            'X-HTTP-Method-Override': 'PUT' 
+                                        },
+                                        body: formData
+                                    });
 
                 const   res =   await response.json();
                 

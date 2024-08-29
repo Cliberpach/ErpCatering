@@ -14,7 +14,7 @@
       </button>
     </div>
     <div class="table-responsive">
-        @include('herramientas.colaboradores.tables.table_list_colaboradores')
+        @include('registros.colaboradores.tables.table_list_colaboradores')
     </div>
 </div>
 <!-- end card -->
@@ -35,7 +35,7 @@
     })
 
     function iniciarDataTableColaboradores(){
-        const urlGetColaboradores = '{{ route('herramientas.colaborador.getColaboradores') }}';
+        const urlGetColaboradores = '{{ route('registros.colaborador.getColaboradores') }}';
 
         dtColaboradores  =   new DataTable('#table_colaboradores',{
             serverSide: true,
@@ -55,10 +55,10 @@
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('herramientas.colaborador.edit', ['id' => ':id']) }}`;
+                        const baseUrlEdit   =   `{{ route('registros.colaborador.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
-                        const urlDelete = `{{ route('herramientas.colaborador.destroy', ':id') }}`.replace(':id', data.id);
+                        const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
 
                         return `
                             <div class="btn-group">
@@ -111,7 +111,7 @@
     }
 
     function goToCrearColaborador(){
-        window.location.href = @json(route('herramientas.colaborador.create'));
+        window.location.href = @json(route('registros.colaborador.create'));
     }
 
     function getRowById(id) {
@@ -174,7 +174,7 @@
             });
 
             try {
-                let urlDeleteColaborador    =   `{{ route('herramientas.colaborador.destroy', ['id' => ':id']) }}`;
+                let urlDeleteColaborador    =   `{{ route('registros.colaborador.destroy', ['id' => ':id']) }}`;
                 urlDeleteColaborador        =   urlDeleteColaborador.replace(':id', id);
                 const token                     =   document.querySelector('input[name="_token"]').value;
 

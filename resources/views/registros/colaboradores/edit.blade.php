@@ -9,13 +9,19 @@
       <h6>Datos del Colaborador<i class="fa-solid fa-user"></i></h6>
     </div>
     <div class="card-body">
-        @include('herramientas.colaboradores.forms.form_edit_colaborador')
+        @include('registros.colaboradores.forms.form_edit_colaborador')
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
-        <button class="btn btn-primary" type="submit" form="formActualizarColaborador">
-            <i class="fa-solid fa-floppy-disk"></i> ACTUALIZAR
-        </button>
+        
+        <div style="display:flex;">
+            <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
+                <i class="fa-solid fa-door-open"></i> VOLVER
+            </button>
+            <button class="btn btn-primary" type="submit" form="formActualizarColaborador">
+                <i class="fa-solid fa-floppy-disk"></i> ACTUALIZAR
+            </button>
+        </div>
     </div>
 </div>
 <!-- end card -->
@@ -29,9 +35,17 @@
     })
 
     function events(){
+
         document.querySelector('#formActualizarColaborador').addEventListener('submit',(e)=>{
             e.preventDefault();
             actualizarColaborador();
+        })
+
+        document.addEventListener('click',(e)=>{
+            if (e.target.closest('.btnVolver')) {
+                const rutaIndex         =   '{{route('registros.colaborador.index')}}';
+                window.location.href    =   rutaIndex;
+            }
         })
 
         //======= CONSULTAR API DOCUMENTO DNI ========
@@ -170,7 +184,7 @@
 
             try {
                 const id                    =   @json($colaborador->id);
-                let urlUpdateColaborador    =   `{{ route('herramientas.colaborador.update', ['id' => ':id']) }}`;
+                let urlUpdateColaborador    =   `{{ route('registros.colaborador.update', ['id' => ':id']) }}`;
                 urlUpdateColaborador        =   urlUpdateColaborador.replace(':id', id);
 
                 const response  =   await fetch(urlUpdateColaborador, {
@@ -193,7 +207,7 @@
                 }
                 
                 if(res.success){
-                    const colaborador_index     =   @json(route('herramientas.colaborador.index'));
+                    const colaborador_index     =   @json(route('registros.colaborador.index'));
                     toastr.success(response.message,'OPERACIÓN COMPLETADA');
                     window.location.href    =   colaborador_index;
                 }else{
