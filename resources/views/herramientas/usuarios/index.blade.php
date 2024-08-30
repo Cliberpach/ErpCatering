@@ -111,8 +111,78 @@
         window.location.href = @json(route('herramientas.usuario.create'));
     }
 
-    function eliminarUsuario(){
-        
+    function eliminarUsuario(id){
+        toastr.clear();
+        let row             =   getRowById(dtUsuarios,id);
+        let message         =   '';
+
+        message =   `Desea eliminar el usuario: ${row.nombre}`;
+
+        const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+        title: message,
+        text: "Operación no reversible!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar!",
+        cancelButtonText: "No, cancelar!",
+        reverseButtons: true
+        }).then(async (result) => {
+        if (result.isConfirmed) {
+            
+            Swal.fire({
+                title: 'Cargando...',
+                html: 'Eliminando usuario...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading(); 
+                }
+            });
+
+            try {
+                let urlDeleteUsuario    =   `{{ route('herramientas.usuario.destroy', ['id' => ':id']) }}`;
+                urlDeleteUsuario        =   urlDeleteUsuario.replace(':id', id);
+                const token             =   document.querySelector('input[name="_token"]').value;
+
+                const response  =   await fetch(urlDeleteUsuario, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-CSRF-TOKEN': token 
+                                        }
+                                    });
+
+                const   res =   await response.json();
+
+                if(res.success){
+                    dtUsuarios.draw();
+                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
+                }else{
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR USUARIO');
+                }
+
+            } catch (error) {
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR USUARIO');
+            }finally{
+                Swal.close();
+            }
+
+        } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            swalWithBootstrapButtons.fire({
+            title: "Operación cancelada",
+            text: "No se realizaron acciones",
+            icon: "error"
+            });
+        }
+        });
     }
 
 
