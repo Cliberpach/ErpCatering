@@ -208,10 +208,10 @@
                 
                 if(res.success){
                     const colaborador_index     =   @json(route('registros.colaborador.index'));
-                    toastr.success(response.message,'OPERACIÓN COMPLETADA');
+                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
                     window.location.href    =   colaborador_index;
                 }else{
-                    toastr.error(response.message,'ERROR EN EL SERVIDOR');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
                 }
 

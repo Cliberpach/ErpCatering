@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\Herramientas\RolController;
+use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
 use App\Http\Controllers\Registros\CategoriaController;
 use App\Http\Controllers\Registros\ColaboradorController;
 use App\Http\Controllers\Herramientas\UsuarioController;
+use App\Http\Controllers\Registros\MaquinariaController;
 use App\Http\Controllers\Registros\MarcaController;
+use App\Http\Controllers\Registros\ProductoController;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Middleware\CheckCustomPermission;
+use App\Models\Herramientas\TablaGeneralDetalle;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -76,6 +80,7 @@ Route::group(['prefix' => 'marcas', 'middleware' => ['auth','checkCustomPermissi
     Route::put('/update/{id}', [MarcaController::class, 'update'])->name('registros.marca.update');
     Route::get('/getMarcas', [MarcaController::class, 'getMarcas'])->name('registros.marca.getMarcas');
     Route::delete('/destroy/{id}', [MarcaController::class, 'destroy'])->name('registros.marca.destroy');
+    Route::get('/getListMarcas', [MarcaController::class, 'getListMarcas'])->name('registros.marca.getListMarcas');
 
 });
 
@@ -87,11 +92,45 @@ Route::group(['prefix' => 'categorias', 'middleware' => ['auth','checkCustomPerm
     Route::put('/update/{id}', [CategoriaController::class, 'update'])->name('registros.categoria.update');
     Route::get('/getCategorias', [CategoriaController::class, 'getCategorias'])->name('registros.categoria.getCategorias');
     Route::delete('/destroy/{id}', [CategoriaController::class, 'destroy'])->name('registros.categoria.destroy');
+    Route::get('/getListCategorias', [CategoriaController::class, 'getListCategorias'])->name('registros.categoria.getListCategorias');
 
 });
 
+Route::group(['prefix' => 'productos', 'middleware' => ['auth','checkCustomPermission:registros.producto']], function () {
 
+    Route::get('/index', [ProductoController::class, 'index'])->name('registros.producto.index');
+    Route::get('/create', [ProductoController::class, 'create'])->name('registros.producto.create');
+    Route::post('/store', [ProductoController::class, 'store'])->name('registros.producto.store');
+    Route::get('/edit/{id}', [ProductoController::class, 'edit'])->name('registros.producto.edit');
+    Route::put('/update/{id}', [ProductoController::class, 'update'])->name('registros.producto.update');
+    Route::get('/getProductos', [ProductoController::class, 'getProductos'])->name('registros.producto.getProductos');
+    Route::delete('/destroy/{id}', [ProductoController::class, 'destroy'])->name('registros.producto.destroy');
 
+});
+
+Route::group(['prefix' => 'maquinarias', 'middleware' => ['auth','checkCustomPermission:registros.maquinaria']], function () {
+
+    Route::get('/index', [MaquinariaController::class, 'index'])->name('registros.maquinaria.index');
+    Route::get('/create', [MaquinariaController::class, 'create'])->name('registros.maquinaria.create');
+    Route::post('/store', [MaquinariaController::class, 'store'])->name('registros.maquinaria.store');
+    Route::get('/edit/{id}', [MaquinariaController::class, 'edit'])->name('registros.maquinaria.edit');
+    Route::put('/update/{id}', [MaquinariaController::class, 'update'])->name('registros.maquinaria.update');
+    Route::get('/getMaquinarias', [MaquinariaController::class, 'getMaquinarias'])->name('registros.maquinaria.getMaquinarias');
+    Route::delete('/destroy/{id}', [MaquinariaController::class, 'destroy'])->name('registros.maquinaria.destroy');
+
+});
+
+Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','checkCustomPermission:herramientas.tabla_general']], function () {
+
+    // Route::get('/index', [TablaGeneralDetalle::class, 'index'])->name('registros.maquinaria.index');
+    // Route::get('/create', [MaquinariaController::class, 'create'])->name('registros.maquinaria.create');
+    Route::post('/store', [TablaGeneralDetalleController::class, 'store'])->name('herramientas.tabla_general_detalle.store');
+    // Route::get('/edit/{id}', [MaquinariaController::class, 'edit'])->name('registros.maquinaria.edit');
+    // Route::put('/update/{id}', [MaquinariaController::class, 'update'])->name('registros.maquinaria.update');
+    Route::get('/getListTablaGeneralDetalles/{id}', [TablaGeneralDetalleController::class, 'getListTablaGeneralDetalles'])->name('registros.tabla_general_detalle.getListTablaGeneralDetalles');
+    // Route::delete('/destroy/{id}', [MaquinariaController::class, 'destroy'])->name('registros.maquinaria.destroy');
+
+});
 
 //============= FIN REGISTROS ==========================
 

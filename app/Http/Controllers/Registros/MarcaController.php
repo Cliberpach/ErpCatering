@@ -83,4 +83,13 @@ class MarcaController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public function getListMarcas(){
+        try {
+            $marcas =   Marca::where('estado','ACTIVO')->get();
+            return response()->json(['success'=>true,'lstMarcas'=>$marcas]);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
 }

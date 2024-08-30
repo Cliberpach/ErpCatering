@@ -55,7 +55,7 @@
             </li>
             <li>
               @can('registros.maquinaria')
-                <a href="blank-page.html"> Maquinaria </a>
+                <a href="{{route('registros.maquinaria.index')}}"> Maquinaria </a>
               @endcan
             </li>
             <li>
@@ -80,7 +80,7 @@
             </li>
             <li>
               @can('registros.producto')
-                <a href="blank-page.html">Producto</a>
+                <a href="{{route('registros.producto.index')}}">Producto</a>
               @endcan
             </li>
           </ul>

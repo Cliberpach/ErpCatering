@@ -82,4 +82,13 @@ class CategoriaController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public function getListCategorias(){
+        try {
+            $categorias =   Categoria::where('estado','ACTIVO')->get();
+            return response()->json(['success'=>true,'lstCategorias'=>$categorias]);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
 }

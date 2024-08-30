@@ -1,4 +1,42 @@
 
+document.addEventListener('DOMContentLoaded',()=>{    
+    eventsUtils();
+})
+
+function eventsUtils(){
+
+    document.addEventListener('input',(e)=>{
+        if(e.target.classList.contains('inputDecimalPositivo')){
+           
+            const input = e.target;
+
+            // Reemplaza cualquier carácter que no sea un dígito o un punto decimal
+            let value = input.value.replace(/[^0-9.]/g, '');
+
+            // Asegúrate de que el punto decimal no esté al inicio
+            if (value.startsWith('.')) {
+                value = value.slice(1);
+            }
+
+            // Permite solo un punto decimal y limita a dos decimales
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+
+            if (parts.length === 2) {
+                parts[1] = parts[1].slice(0, 2); // Limita a dos decimales
+                value = parts.join('.');
+            }
+
+            // Actualiza el valor del input
+            input.value = value;
+        }
+    })
+}
+
+
+
 //============== LIMPIAR UNA TABLA ========
 function limpiarTabla(idTabla) {
 
@@ -7,4 +45,27 @@ function limpiarTabla(idTabla) {
         tbody.removeChild(tbody.firstChild);
     }
 
+}
+
+function mostrarAnimacion1() {
+    document.getElementById('overlay_1').style.display = 'flex';
+}
+
+function ocultarAnimacion1() {
+    document.getElementById('overlay_1').style.display = 'none';
+}
+
+//=========== OBTENER FILA POR EL ID DE UN DATATABLE =========
+function getRowById(dtTabla,registro_id) {
+    let data    = dtTabla.rows().data();
+    let rowData = null;
+
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].id == registro_id) {
+            rowData = data[i];
+            break;
+        }
+    }
+
+    return rowData;
 }
