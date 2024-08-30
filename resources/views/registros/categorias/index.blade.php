@@ -1,20 +1,25 @@
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE ROLES
+    LISTADO DE CATEGORÍAS
 @endsection
 
 @section('section-page')
+
+@include('registros.categorias.modals.modal_create_categoria')
+@include('registros.categorias.modals.modal_edit_categoria')
+
+
 <div class="card-style settings-card-1 mb-30">
+    @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Roles <i class="fa-solid fa-user"></i>
+      <h6>Categorías <i class="fa-solid fa-user"></i>
       </h6>
-      <button class="btn btn-primary" onclick="goToCrearRol()">
+      <button class="btn btn-primary" onclick="openMdlNuevaCategoria()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
     </div>
-
     <div class="table-responsive">
-        @include('herramientas.roles.tables.table_list_roles')
+        @include('registros.categorias.tables.table_list_categorias')
     </div>
 </div>
 <!-- end card -->
@@ -28,34 +33,37 @@
 @endif
 
 <script>
-    let dtRoles    =   null;
+    let dtCategorias    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableUsuarios();
+        iniciarDataTableCategorias();
+        events();
     })
 
-    function iniciarDataTableUsuarios(){
-        const urlGetRoles = '{{ route('herramientas.rol.getRoles') }}';
+    function events(){
+        eventsMdlCreateCategoria();
+        eventsMdlEditCategoria();
+    }
 
-        dtRoles  =   new DataTable('#table_roles',{
+    function iniciarDataTableCategorias(){
+        const urlGetCategorias = '{{ route('registros.categoria.getCategorias') }}';
+
+        dtCategorias  =   new DataTable('#table_categorias',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: urlGetRoles,
+                url: urlGetCategorias,
                 type: 'GET',
             },
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },
                 { data: 'fecha_registro', name: 'fecha_registro' },
+                { data: 'fecha_modificacion', name: 'fecha_modificacion' },
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('herramientas.rol.edit', ['id' => ':id']) }}`;
-                        urlEdit             =   baseUrlEdit.replace(':id', data.id); 
-
-                        const urlDelete = `{{ route('herramientas.usuario.destroy', ':id') }}`.replace(':id', data.id);
-
+                      
                         return `
                             <div class="btn-group">
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
@@ -63,13 +71,13 @@
                             </button>
                             <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
                                 <li>
-                                    <a class="dropdown-item" href="${urlEdit}">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlEditCategoria(${data.id})">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarRol(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarCategoria(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -106,19 +114,12 @@
         });
     }
 
-    function goToCrearRol(){
-        window.location.href = @json(route('herramientas.rol.create'));
-    }
 
-   
-
-    function eliminarRol(id){
+    function eliminarCategoria(id){
         toastr.clear();
-        let row             =   getRowById(dtRoles,id);
+        let row             =   getRowById(dtCategorias,id);
         let message         =   '';
         let tipo_documento  =   '';
-
-        message =   `Desea eliminar el rol: ${row.nombre}`;
 
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -128,8 +129,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: message,
-        text: "Operación no reversible!",
+        title: `DESEA ELIMINAR LA CATEGORÍA?`,
+        text: `Categoría: ${row.nombre}`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar!",
@@ -140,7 +141,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando rol...',
+                html: 'Eliminando categoría...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -148,11 +149,11 @@
             });
 
             try {
-                let urlDeleteRol    =   `{{ route('herramientas.rol.destroy', ['id' => ':id']) }}`;
-                urlDeleteRol        =   urlDeleteRol.replace(':id', id);
-                const token         =   document.querySelector('input[name="_token"]').value;
+                let urlDeleteCategoria      =   `{{ route('registros.categoria.destroy', ['id' => ':id']) }}`;
+                urlDeleteCategoria          =   urlDeleteCategoria.replace(':id', id);
+                const token                 =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlDeleteRol, {
+                const response  =   await fetch(urlDeleteCategoria, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -162,14 +163,14 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtRoles.draw();
+                    dtCategorias.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR ROL');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR CATEGORÍA');
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR ROL');
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR CATEGORÍA');
             }finally{
                 Swal.close();
             }

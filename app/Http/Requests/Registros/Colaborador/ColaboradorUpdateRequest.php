@@ -42,11 +42,11 @@ class ColaboradorUpdateRequest extends FormRequest
                     }
                 },
             ],
-            'nombre' => 'required|max:260',
-            'direccion' => 'nullable|max:200',
-            'telefono' => ['required', 'max:20', 'regex:/^[0-9]+$/'],
-            'horas_semana' => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'pago_semana' => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'nombre'        => 'required|max:260|unique:colaboradores,nombre,'.$this->route('id'),
+            'direccion'     => 'nullable|max:200',
+            'telefono'      => ['required', 'max:20', 'regex:/^[0-9]+$/'],
+            'horas_semana'  => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'pago_semana'   => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
         ];
     }
 
@@ -63,6 +63,7 @@ class ColaboradorUpdateRequest extends FormRequest
 
             'nombre.required'           => 'El nombre es obligatorio.',
             'nombre.max'                => 'El nombre no debe superar los 260 caracteres.',
+            'nombre.unique'             => 'El nombre ya está en uso, por favor elige otro.',
 
             'direccion.max'             => 'La dirección no debe superar los 200 caracteres.',
 

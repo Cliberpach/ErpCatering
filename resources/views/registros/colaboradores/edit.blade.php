@@ -159,8 +159,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA REGISTRAR EL COLABORADOR?",
-        text: "Se creará un nuevo colaborador!",
+        title: "DESEA ACTUALIZAR EL COLABORADOR?",
+        text: "Se actualizaran los datos del colaborador!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "SÍ, REGISTRAR!",

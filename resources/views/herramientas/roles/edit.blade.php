@@ -53,6 +53,7 @@
 
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarSelect2();
+        setLstPermisosAsignados();
         pintarTableAsignarPermisos();
         iniciarDataTableAsignarPermisos();
         events();
@@ -61,77 +62,38 @@
     function events(){
         document.querySelector('#formActualizarRol').addEventListener('submit',(e)=>{
             e.preventDefault();
-            
             actualizarRol();
         })
 
         //======== BTN VER CONTRASEÑA =========
         document.addEventListener('click',(e)=>{
 
+            //===== BTN VOLVER ======
             if (e.target.closest('.btnVolver')) {
-                const rutaIndex         =   '{{route('herramientas.usuario.index')}}';
+                const rutaIndex         =   '{{route('herramientas.rol.index')}}';
                 window.location.href    =   rutaIndex;
             }
 
-            if (e.target.closest('.btn_ver_password')) {
-               
-                const btnVerPassword   =   e.target.closest('.btn_ver_password');
-                btnVerPassword.classList.toggle('password_oculto');
+        })
 
-                if(btnVerPassword.classList.contains('password_oculto')){
-                    //======== OCULTAR PASSWORD =======
-                    document.querySelector('#password').type    =   'password';
-                     //===== CAMBIANDO ICONO =====
-                     const icon  =   btnVerPassword.children[0];
-
-                    icon.classList.add('hide-transition');
-                    setTimeout(() => {
-                        icon.className = 'fa-solid fa-eye-slash show-transition';
-                        icon.classList.remove('hide-transition');
-                    }, 300);
-                }else{
-                    //====== MOSTRAR PASSWORD =======
-                    document.querySelector('#password').type    =   'text';
-                    //===== CAMBIANDO ICONO =====
-                    const icon  =   btnVerPassword.children[0];
-                    icon.classList.add('hide-transition');
-                    setTimeout(() => {
-                        icon.className = 'fa-solid fa-eye show-transition';
-                    }, 300); 
-                }
-            }
-
-            if (e.target.closest('.btn_ver_repetir_password')) {
+        document.addEventListener('change',(e)=>{
+            if(e.target.classList.contains('chkPermiso')){
                 
-                const btnVerRepetirPassword   =   e.target.closest('.btn_ver_repetir_password');
-                btnVerRepetirPassword.classList.toggle('password_oculto');
+                const permiso_id    =   e.target.getAttribute('data-permiso-id');
+                const marcado       =   e.target.checked;
 
-                if(btnVerRepetirPassword.classList.contains('password_oculto')){
-                    //======== OCULTAR PASSWORD =======
-                    document.querySelector('#repetir_password').type    =   'password';
-                    //===== CAMBIANDO ICONO =====
-                    const icon  =   btnVerRepetirPassword.children[0];
-
-                    icon.classList.add('hide-transition');
-                    setTimeout(() => {
-                        icon.className = 'fa-solid fa-eye-slash show-transition';
-                        icon.classList.remove('hide-transition');
-                    }, 300);
-
+                //=========== EN CASO SE MARCÓ EL CHECK =======
+                if(marcado){
+                    addPermiso(permiso_id);
                 }else{
-                    //====== MOSTRAR PASSWORD =======
-                    document.querySelector('#repetir_password').type    =   'text';
-                    //===== CAMBIANDO ICONO =====
-                    const icon  =   btnVerRepetirPassword.children[0];
-                    icon.classList.add('hide-transition');
-                    setTimeout(() => {
-                        icon.className = 'fa-solid fa-eye show-transition';
-                    }, 300); 
+                    //======== ELIMINAR PERMISO ======
+                    deletePermiso(permiso_id);
                 }
+                
             }
-
         })
     }
+
 
     function iniciarSelect2(){
         $('#colaborador').select2({
@@ -140,6 +102,45 @@
             placeholder: $( this ).data( 'placeholder' ),
         });
     }
+
+    //======== ELIMINAR PERMISO ======
+    function deletePermiso(permiso_id){
+        toastr.clear();
+        //===== AGREGAR SI NO EXISTE EN EL LISTADO =======
+        const indicePermiso =   lstPermisosAsignados.findIndex((permiso)=>{
+            return permiso == permiso_id;
+        })
+
+        if(indicePermiso === -1){
+            toastr.error('EL PERMISO NO ESTÁ AGREGADO EN LA LISTA');
+        }else{
+            lstPermisosAsignados.splice(indicePermiso,1);
+        }
+    }
+
+    //======== AGREGAR PERMISO ======
+    function addPermiso(permiso_id){
+        toastr.clear();
+        //===== AGREGAR SI NO EXISTE EN EL LISTADO =======
+        const indicePermiso =   lstPermisosAsignados.findIndex((permiso)=>{
+            return permiso == permiso_id;
+        })
+
+        if(indicePermiso === -1){
+            lstPermisosAsignados.push(permiso_id);
+        }else{
+            toastr.error('EL PERMISO ESTÁ AGREGADO EN LA LISTA');
+        }
+    }
+
+    //========= LLENAR LOS PERMISOS ASIGNADOS PREVIAMENTE ==========
+    function setLstPermisosAsignados(){
+        const permisos_asignados    =   @json($permisos_asignados);
+        permisos_asignados.forEach((permiso_asignado)=>{
+            addPermiso(permiso_asignado.permission_id);
+        })
+    }
+
 
     function iniciarDataTableAsignarPermisos(){
         dtAsignarPermisos  =   new DataTable('#table_asignar_permisos',{
@@ -223,7 +224,7 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA ACTUALIZAR EL USUARIO?",
+        title: "DESEA ACTUALIZAR EL ROL?",
         text: `ROL: ${rol.name}`,
         icon: "warning",
         showCancelButton: true,
@@ -236,7 +237,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Actualizando usuario...',
+                html: 'Actualizando rol...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -245,14 +246,16 @@
 
             try {
 
-                const formActualizarRol =   document.querySelector('#formActualizarRol');
+                const formActualizarRol     =   document.querySelector('#formActualizarRol');
                 const formData              =   new FormData(formActualizarRol);
                 const token                 =   document.querySelector('input[name="_token"]').value;
                 const id                    =   @json($rol->id);
-                let urlUpdateUsuario        =   `{{ route('herramientas.usuario.update', ['id' => ':id']) }}`;
-                urlUpdateUsuario            =   urlUpdateUsuario.replace(':id', id);
+                let urlUpdateRol            =   `{{ route('herramientas.rol.update', ['id' => ':id']) }}`;
+                urlUpdateRol                =   urlUpdateRol.replace(':id', id);
 
-                const response  =   await fetch(urlUpdateUsuario, {
+                formData.append('lstPermisosAsignados',JSON.stringify(lstPermisosAsignados));
+
+                const response  =   await fetch(urlUpdateRol, {
                                         method: 'POST',
                                         headers: {
                                             'X-CSRF-TOKEN': token,
@@ -262,8 +265,6 @@
                                     });
 
                 const   res =   await response.json();
-                
-                console.log(res);
                 
                 if(response.status === 422){
                     if('errors' in res){
@@ -275,9 +276,9 @@
                 
 
                 if(res.success){
-                    const usuario_index     =   @json(route('herramientas.usuario.index'));
+                    const rol_index         =   @json(route('herramientas.rol.index'));
                     toastr.success(response.message,'OPERACIÓN COMPLETADA');
-                    window.location.href    =   usuario_index;
+                    window.location.href    =   rol_index;
                 }else{
                     toastr.error(response.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
@@ -285,7 +286,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR USUARIO');
+                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR ROL');
                 Swal.close();
             }
           

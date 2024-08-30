@@ -6,8 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
-
-class RolStoreRequest extends FormRequest
+class RolUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +24,7 @@ class RolStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nombre' => 'required|string|max:255|unique:roles,name',
+            'nombre' => 'required|string|max:255|unique:roles,name,'.$this->route('id'),
         ];
     }
 

@@ -9,7 +9,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Registros\Colaborador;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
-
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -77,6 +77,11 @@ class DatabaseSeeder extends Seeder
             $permiso->name = $item;
             $permiso->save();
         }
+
+        $adminRole = Role::updateOrCreate(['name' => 'ADMIN']);
+        $permissions = Permission::all();
+        $adminRole->givePermissionTo($permissions);
+        $user->assignRole($adminRole);
 
     
     }

@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Herramientas\Rol;
+namespace App\Http\Requests\Registros\Marca;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
-
-class RolStoreRequest extends FormRequest
+use Illuminate\Validation\ValidationException;
+class MarcaUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,17 +24,17 @@ class RolStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nombre' => 'required|string|max:255|unique:roles,name',
+            'descripcion_edit' => 'required|string|max:150|unique:marcas,descripcion,' . $this->route('id'),
         ];
     }
 
     public function messages()
     {
         return [
-            'nombre.required'               =>  'El campo nombre es obligatorio.',
-            'nombre.string'                 =>  'El campo nombre debe ser una cadena de texto.',
-            'nombre.max'                    =>  'El campo nombre no puede tener más de 255 caracteres.',
-            'nombre.unique'                 =>  'El nombre ya está en uso, por favor elige otro.',
+            'descripcion_edit.required'               =>  'El campo nombre es obligatorio.',
+            'descripcion_edit.string'                 =>  'El campo nombre debe ser una cadena de texto.',
+            'descripcion_edit.max'                    =>  'El campo nombre no puede tener más de 150 caracteres.',
+            'descripcion_edit.unique'                 =>  'El nombre ya está en uso, por favor elige otro.',
         ];
     }
 
@@ -45,4 +44,5 @@ class RolStoreRequest extends FormRequest
             'errors' => $validator->errors()
         ], 422));
     }
+
 }

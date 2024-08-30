@@ -11,10 +11,9 @@
     <div class="card-body">
        @include('herramientas.usuarios.forms.form_create_usuario')
     </div>
-    <div class="card-footer d-flex justify-content-between align-items-center">
-        <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
-        
-        <div style="display:flex;">
+    <div class="card-footer">
+
+        <div class="col-12" style="display:flex;justify-content:flex-end;">
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
@@ -22,7 +21,10 @@
                 <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
             </button>
         </div>
-        
+        <div class="col-12">
+            <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
+        </div>
+       
     </div>
 </div>
 <!-- end card -->
@@ -110,7 +112,7 @@
     }
 
     function iniciarSelect2(){
-        $('#colaborador').select2({
+        $('.select_2_form').select2({
             theme: "bootstrap-5",
             width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
             placeholder: $( this ).data( 'placeholder' ),
@@ -174,10 +176,10 @@
 
                 if(res.success){
                     const usuario_index     =   @json(route('herramientas.usuario.index'));
-                    toastr.success(response.message,'OPERACIÓN COMPLETADA');
+                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
                     window.location.href    =   usuario_index;
                 }else{
-                    toastr.error(response.message,'ERROR EN EL SERVIDOR');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
                 }
 

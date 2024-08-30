@@ -114,24 +114,10 @@
         window.location.href = @json(route('registros.colaborador.create'));
     }
 
-    function getRowById(id) {
-        let data = dtColaboradores.rows().data();
-        let rowData = null;
-
-        for (let i = 0; i < data.length; i++) {
-            if (data[i].id === id) {
-                rowData = data[i];
-                break;
-            }
-        }
-
-        return rowData;
-    }
-
 
     function eliminarColaborador(id){
         toastr.clear();
-        let row             =   getRowById(id);
+        let row             =   getRowById(dtColaboradores,id);
         let message         =   '';
         let tipo_documento  =   '';
 

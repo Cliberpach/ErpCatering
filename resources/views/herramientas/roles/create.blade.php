@@ -75,7 +75,6 @@
         })
 
         document.addEventListener('change',(e)=>{
-          
             if(e.target.classList.contains('chkPermiso')){
                 
                 const permiso_id    =   e.target.getAttribute('data-permiso-id');
@@ -110,7 +109,7 @@
         })
 
         if(indicePermiso === -1){
-            toastr.error('EL PERMISO ESTÁ AGREGADO EN LA LISTA');
+            toastr.error('EL PERMISO NO ESTÁ AGREGADO EN LA LISTA');
         }else{
             lstPermisosAsignados.splice(indicePermiso,1);
         }
@@ -130,7 +129,8 @@
             toastr.error('EL PERMISO ESTÁ AGREGADO EN LA LISTA');
         }
     }
-    
+
+    //======= PINTAR TABLA ASIGNAR PERMISOS ======
     function pintarTableAsignarPermisos(){
         const permisos  =   @json($permisos);
         const tbody     =   document.querySelector('#table_asignar_permisos tbody');
@@ -246,10 +246,10 @@
 
                 if(res.success){
                     const rol_index         =   @json(route('herramientas.rol.index'));
-                    toastr.success(response.message,'OPERACIÓN COMPLETADA');
+                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
                     window.location.href    =   rol_index;
                 }else{
-                    toastr.error(response.message,'ERROR EN EL SERVIDOR');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
                 }
 

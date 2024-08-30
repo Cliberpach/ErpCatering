@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Herramientas;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Herramientas\Rol\RolStoreRequest;
+use App\Http\Requests\Herramientas\Rol\RolUpdateRequest;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
@@ -67,4 +68,50 @@ class RolController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public function update(RolUpdateRequest $request,$id){
+        DB::beginTransaction();
+        try {
+
+            $lstPermisosAsignados   =   json_decode($request->get('lstPermisosAsignados'));
+            
+            $rol        =   Role::find($id);
+            $rol->name  =   Str::upper($request->get('nombre'));
+            $rol->update();
+
+            //======== ELIMINANDO PERMISOS PREVIOS ====
+            DB::delete('DELETE FROM role_has_permissions 
+            WHERE role_id = ?', [$id]);
+
+            //======== INSERTANDO PERMISOS =========
+            foreach ($lstPermisosAsignados as $permiso) {
+                DB::insert('insert into role_has_permissions (permission_id, role_id) values (?, ?)',
+                [$permiso, $rol->id]);
+            }
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'ROL ACTUALIZADO CON ÉXITO']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+    public function destroy($id){
+        DB::beginTransaction();
+        try {
+            $rol                    =   Role::find($id);
+            $rol->estado            =   'ANULADO';
+            $rol->update();
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'ROL ELIMINADO']);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+
 }
