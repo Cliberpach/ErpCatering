@@ -30,7 +30,8 @@ class PermisoSeeder extends Seeder
             'logistica.registro_compra',
             'logistica.registro_salida',
             'herramientas.usuarios',
-            'herramientas.roles'
+            'herramientas.roles',
+            'herramientas.tabla_general'
         ];
         
         foreach ($items as $item) {
