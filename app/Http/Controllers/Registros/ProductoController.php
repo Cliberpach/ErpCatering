@@ -13,6 +13,7 @@ use Exception;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+
 class ProductoController extends Controller
 {
     public function index(){

@@ -1,25 +1,26 @@
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE MARCAS
+    LISTADO DE ALMACÉNES
 @endsection
 
 @section('section-page')
 
-@include('registros.marcas.modals.modal_create_marca')
-@include('registros.marcas.modals.modal_edit_marca')
+@include('registros.almacenes.modals.modal_create_almacen')
+@include('registros.almacenes.modals.modal_edit_almacen')
+@include('registros.almacenes.modals.modal_asignar_proyecto')
 
 
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Marcas <i class="fa-solid fa-user"></i>
+      <h6>Almacénes <i class="fa-solid fa-warehouse" style="color: rgb(7, 45, 168);"></i>
       </h6>
-      <button class="btn btn-primary" onclick="openMdlNuevaMarca()">
+      <button class="btn btn-primary" onclick="openMdlNuevoAlmacen()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
     </div>
     <div class="table-responsive">
-        @include('registros.marcas.tables.table_list_marcas')
+        @include('registros.almacenes.tables.table_list_almacenes')
     </div>
 </div>
 <!-- end card -->
@@ -33,31 +34,43 @@
 @endif
 
 <script>
-    let dtMarcas    =   null;
+    let dtAlmacenes    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableMarcas();
+        iniciarDataTableAlmacenes();
+        iniciarSelect2();
         events();
     })
 
     function events(){
-        eventsMdlCreateMarca();
-        eventsMdlEditMarca();
+        eventsMdlCreateAlmacen();
+        eventsMdlEditAlmacen();
+        eventsMdlAsignarProyecto();
     }
 
-    function iniciarDataTableMarcas(){
-        const urlGetMarcas = '{{ route('registros.marca.getMarcas') }}';
+    function iniciarSelect2(){
+        $( '.select2_form' ).select2( {
+            theme: "bootstrap-5",
+            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+            allowClear: true,
+        } );
+    }
 
-        dtMarcas  =   new DataTable('#table_marcas',{
+    function iniciarDataTableAlmacenes(){
+        const urlGetAlmacenes = '{{ route('registros.almacen.getAlmacenes') }}';
+
+        dtAlmacenes  =   new DataTable('#table_almacenes',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: urlGetMarcas,
+                url: urlGetAlmacenes,
                 type: 'GET',
             },
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },
+                { data: 'proyecto_nombre',name:'proyecto_nombre'},
                 { data: 'fecha_registro', name: 'fecha_registro' },
                 { data: 'fecha_modificacion', name: 'fecha_modificacion' },
                 {
@@ -69,15 +82,21 @@
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-grip"></i>
                             </button>
-                            <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                            <ul class="dropdown-menu" style="max-height: 90px; overflow-y: auto;">
+                                 <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsignarProyecto(${data.id})">
+                                        <i class="fa-solid fa-diagram-project"></i> Asignar Proyecto
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlEditMarca(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlEditAlmacen(${data.id})">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarMarca(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarAlmacen(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -115,9 +134,9 @@
     }
 
 
-    function eliminarMarca(id){
+    function eliminarAlmacen(id){
         toastr.clear();
-        let row             =   getRowById(dtMarcas,id);
+        let row             =   getRowById(dtAlmacenes,id);
         let message         =   '';
         let tipo_documento  =   '';
 
@@ -129,8 +148,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: `DESEA ELIMINAR LA MARCA?`,
-        text: `Marca: ${row.nombre}`,
+        title: `DESEA ELIMINAR EL ALMACÉN?`,
+        text: `Almacén: ${row.nombre}`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar!",
@@ -141,7 +160,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando marca...',
+                html: 'Eliminando almacén...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -149,11 +168,11 @@
             });
 
             try {
-                let urlDeleteMarca    =   `{{ route('registros.marca.destroy', ['id' => ':id']) }}`;
-                urlDeleteMarca        =   urlDeleteMarca.replace(':id', id);
-                const token           =   document.querySelector('input[name="_token"]').value;
+                let urlDeleteAlmacen    =   `{{ route('registros.almacen.destroy', ['id' => ':id']) }}`;
+                urlDeleteAlmacen        =   urlDeleteAlmacen.replace(':id', id);
+                const token             =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlDeleteMarca, {
+                const response  =   await fetch(urlDeleteAlmacen, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -163,14 +182,14 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtMarcas.draw();
+                    dtAlmacenes.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR MARCA');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR ALMACÉN');
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR MARCA');
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR ALMACÉN');
             }finally{
                 Swal.close();
             }
@@ -187,6 +206,8 @@
         }
         });
     }
+
+    
 
 
 </script>

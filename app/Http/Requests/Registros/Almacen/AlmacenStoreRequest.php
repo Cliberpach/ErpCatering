@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Registros\Marca;
+namespace App\Http\Requests\Registros\Almacen;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
-class MarcaStoreRequest extends FormRequest
+
+class AlmacenStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +25,11 @@ class MarcaStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'descripcion' => [
+           'descripcion' => [
                 'required',
                 'string',
                 'max:150',
-                Rule::unique('marcas', 'descripcion')->where(function ($query) {
+                Rule::unique('almacenes', 'descripcion')->where(function ($query) {
                     return $query->where('estado', '<>', 'ANULADO');
                 }),
             ],

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Registros\Marca;
+namespace App\Http\Requests\Registros\Almacen;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
-class MarcaStoreRequest extends FormRequest
+use Illuminate\Validation\ValidationException;
+
+class AlmacenUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +25,15 @@ class MarcaStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'descripcion' => [
+            'descripcion_edit' => [
                 'required',
                 'string',
                 'max:150',
-                Rule::unique('marcas', 'descripcion')->where(function ($query) {
-                    return $query->where('estado', '<>', 'ANULADO');
-                }),
+                Rule::unique('almacenes', 'descripcion')
+                    ->ignore($this->route('id')) 
+                    ->where(function ($query) {
+                        return $query->where('estado', '<>', 'ANULADO');
+                    }),
             ],
         ];
     }
@@ -38,10 +41,10 @@ class MarcaStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'descripcion.required'               =>  'El campo nombre es obligatorio.',
-            'descripcion.string'                 =>  'El campo nombre debe ser una cadena de texto.',
-            'descripcion.max'                    =>  'El campo nombre no puede tener más de 150 caracteres.',
-            'descripcion.unique'                 =>  'El nombre ya está en uso, por favor elige otro.',
+            'descripcion_edit.required'               =>  'El campo nombre es obligatorio.',
+            'descripcion_edit.string'                 =>  'El campo nombre debe ser una cadena de texto.',
+            'descripcion_edit.max'                    =>  'El campo nombre no puede tener más de 150 caracteres.',
+            'descripcion_edit.unique'                 =>  'El nombre ya está en uso, por favor elige otro.',
         ];
     }
 
@@ -51,4 +54,5 @@ class MarcaStoreRequest extends FormRequest
             'errors' => $validator->errors()
         ], 422));
     }
+
 }

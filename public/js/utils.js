@@ -32,6 +32,38 @@ function eventsUtils(){
             // Actualiza el valor del input
             input.value = value;
         }
+
+        if (e.target.classList.contains('inputDecimal')) {
+            const input = e.target;
+        
+            // Reemplaza cualquier carácter que no sea un dígito, un punto decimal o un signo negativo al inicio
+            let value = input.value.replace(/[^0-9.-]/g, '');
+        
+            // Asegúrate de que el signo negativo esté al inicio si existe
+            if (value.includes('-')) {
+                value = '-' + value.replace(/-/g, ''); // Mueve el signo negativo al inicio y remueve los demás
+            }
+        
+            // Asegúrate de que el punto decimal no esté al inicio, a menos que sea después del signo negativo
+            if (value.startsWith('.') || value.startsWith('-.')) {
+                value = value.slice(1);
+            }
+        
+            // Permite solo un punto decimal y limita a dos decimales
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+        
+            if (parts.length === 2) {
+                parts[1] = parts[1].slice(0, 2); // Limita a dos decimales
+                value = parts.join('.');
+            }
+        
+            // Actualiza el valor del input
+            input.value = value;
+        }
+        
     })
 }
 

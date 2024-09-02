@@ -60,12 +60,12 @@
             </li>
             <li>
               @can('registros.proyecto')
-                <a href="blank-page.html">Proyecto</a>
+                <a href="{{route('registros.proyecto.index')}}">Proyecto</a>
               @endcan
             </li>
             <li>
               @can('registros.almacen')
-                <a href="blank-page.html">Almacén</a>
+                <a href="{{route('registros.almacen.index')}}">Almacén</a>
               @endcan
             </li>
             <li>

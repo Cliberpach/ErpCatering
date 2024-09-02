@@ -1,25 +1,20 @@
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE MARCAS
+    LISTADO DE PROYECTOS
 @endsection
 
 @section('section-page')
-
-@include('registros.marcas.modals.modal_create_marca')
-@include('registros.marcas.modals.modal_edit_marca')
-
-
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Marcas <i class="fa-solid fa-user"></i>
+      <h6>Proyectos <i class="fa-solid fa-diagram-project" style="color: rgb(7, 45, 168);"></i>
       </h6>
-      <button class="btn btn-primary" onclick="openMdlNuevaMarca()">
+      <button class="btn btn-primary" onclick="goToCrearProyecto()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
     </div>
     <div class="table-responsive">
-        @include('registros.marcas.tables.table_list_marcas')
+        @include('registros.proyectos.tables.table_list_proyectos')
     </div>
 </div>
 <!-- end card -->
@@ -33,37 +28,36 @@
 @endif
 
 <script>
-    let dtMarcas    =   null;
+    let dtProyectos    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableMarcas();
-        events();
+        iniciarDataTableProyectos();
     })
 
-    function events(){
-        eventsMdlCreateMarca();
-        eventsMdlEditMarca();
-    }
+    function iniciarDataTableProyectos(){
+        const urlGetProyectos = '{{ route('registros.proyecto.getProyectos') }}';
 
-    function iniciarDataTableMarcas(){
-        const urlGetMarcas = '{{ route('registros.marca.getMarcas') }}';
-
-        dtMarcas  =   new DataTable('#table_marcas',{
+        dtProyectos  =   new DataTable('#table_proyectos',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: urlGetMarcas,
+                url: urlGetProyectos,
                 type: 'GET',
             },
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },
-                { data: 'fecha_registro', name: 'fecha_registro' },
-                { data: 'fecha_modificacion', name: 'fecha_modificacion' },
+                { data: 'costo', name: 'costo' },
+                { data: 'avance_costo', name: 'avance_costo' },
+                { data: 'diferencia', name: 'diferencia' },
                 {
                     data: null, 
                     render: function(data, type, row) {
-                      
+                        const baseUrlEdit   =   `{{ route('registros.proyecto.edit', ['id' => ':id']) }}`;
+                        urlEdit             =   baseUrlEdit.replace(':id', data.id); 
+
+                        const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
+
                         return `
                             <div class="btn-group">
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
@@ -71,13 +65,13 @@
                             </button>
                             <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlEditMarca(${data.id})">
+                                    <a class="dropdown-item" href="${urlEdit}">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarMarca(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProyecto(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -114,12 +108,18 @@
         });
     }
 
+    function goToCrearProyecto(){
+        window.location.href = @json(route('registros.proyecto.create'));
+    }
 
-    function eliminarMarca(id){
+
+    function eliminarProyecto(id){
         toastr.clear();
-        let row             =   getRowById(dtMarcas,id);
+        let row             =   getRowById(dtProyectos,id);
         let message         =   '';
         let tipo_documento  =   '';
+
+        message =   `Desea eliminar el proyecto: ${row.nombre}`;
 
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -129,8 +129,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: `DESEA ELIMINAR LA MARCA?`,
-        text: `Marca: ${row.nombre}`,
+        title: message,
+        text: "Operación no reversible!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar!",
@@ -141,7 +141,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando marca...',
+                html: 'Eliminando producto...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -149,11 +149,11 @@
             });
 
             try {
-                let urlDeleteMarca    =   `{{ route('registros.marca.destroy', ['id' => ':id']) }}`;
-                urlDeleteMarca        =   urlDeleteMarca.replace(':id', id);
-                const token           =   document.querySelector('input[name="_token"]').value;
+                let urlDeleteProyecto    =   `{{ route('registros.proyecto.destroy', ['id' => ':id']) }}`;
+                urlDeleteProyecto        =   urlDeleteProyecto.replace(':id', id);
+                const token              =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlDeleteMarca, {
+                const response  =   await fetch(urlDeleteProyecto, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -163,14 +163,14 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtMarcas.draw();
+                    dtProyectos.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR MARCA');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PROYECTO');
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR MARCA');
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR PROYECTO');
             }finally{
                 Swal.close();
             }

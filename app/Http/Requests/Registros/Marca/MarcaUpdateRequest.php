@@ -24,7 +24,16 @@ class MarcaUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'descripcion_edit' => 'required|string|max:150|unique:marcas,descripcion,' . $this->route('id'),
+            'descripcion_edit' => [
+                'required',
+                'string',
+                'max:150',
+                Rule::unique('marcas', 'descripcion')
+                    ->ignore($this->route('id')) 
+                    ->where(function ($query) {
+                        return $query->where('estado', '<>', 'ANULADO');
+                    }),
+            ],
         ];
     }
 

@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\Herramientas\RolController;
 use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
+use App\Http\Controllers\Registros\AlmacenController;
 use App\Http\Controllers\Registros\CategoriaController;
 use App\Http\Controllers\Registros\ColaboradorController;
 use App\Http\Controllers\Herramientas\UsuarioController;
 use App\Http\Controllers\Registros\MaquinariaController;
 use App\Http\Controllers\Registros\MarcaController;
 use App\Http\Controllers\Registros\ProductoController;
+use App\Http\Controllers\Registros\ProyectoController;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Middleware\CheckCustomPermission;
 use App\Models\Herramientas\TablaGeneralDetalle;
@@ -119,6 +121,33 @@ Route::group(['prefix' => 'maquinarias', 'middleware' => ['auth','checkCustomPer
     Route::delete('/destroy/{id}', [MaquinariaController::class, 'destroy'])->name('registros.maquinaria.destroy');
 
 });
+
+
+Route::group(['prefix' => 'almacenes', 'middleware' => ['auth','checkCustomPermission:registros.almacen']], function () {
+
+    Route::get('/index', [AlmacenController::class, 'index'])->name('registros.almacen.index');
+    Route::get('/create', [AlmacenController::class, 'create'])->name('registros.almacen.create');
+    Route::post('/store', [AlmacenController::class, 'store'])->name('registros.almacen.store');
+    Route::put('/update/{id}', [AlmacenController::class, 'update'])->name('registros.almacen.update');
+    Route::get('/getAlmacenes', [AlmacenController::class, 'getAlmacenes'])->name('registros.almacen.getAlmacenes');
+    Route::delete('/destroy/{id}', [AlmacenController::class, 'destroy'])->name('registros.almacen.destroy');
+    Route::get('/getListAlmacenes', [AlmacenController::class, 'getListAlmacenes'])->name('registros.almacen.getListAlmacenes');
+    Route::patch('/asignarProyecto/{id}', [AlmacenController::class, 'asignarProyecto'])->name('registros.almacen.asignarProyecto');
+
+});
+
+Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermission:registros.proyecto']], function () {
+
+    Route::get('/index', [ProyectoController::class, 'index'])->name('registros.proyecto.index');
+    Route::get('/create', [ProyectoController::class, 'create'])->name('registros.proyecto.create');
+    Route::post('/store', [ProyectoController::class, 'store'])->name('registros.proyecto.store');
+    Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('registros.proyecto.edit');
+    Route::put('/update/{id}', [ProyectoController::class, 'update'])->name('registros.proyecto.update');
+    Route::get('/getProyectos', [ProyectoController::class, 'getProyectos'])->name('registros.proyecto.getProyectos');
+    Route::delete('/destroy/{id}', [ProyectoController::class, 'destroy'])->name('registros.proyecto.destroy');
+
+});
+
 
 Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','checkCustomPermission:herramientas.tabla_general']], function () {
 
