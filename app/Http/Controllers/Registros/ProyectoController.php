@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Registros;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Registros\Proyecto\ProyectoAsignarSupervisorRequest;
 use App\Http\Requests\Registros\Proyecto\ProyectoStoreRequest;
 use App\Http\Requests\Registros\Proyecto\ProyectoUpdateRequest;
 use App\Models\Registros\Almacen;
@@ -15,7 +16,14 @@ use Illuminate\Support\Facades\DB;
 class ProyectoController extends Controller
 {
     public function index(){
-        return view('registros.proyectos.index');
+
+        $supervisores   =   DB::select('select u.* from users as u 
+                            inner join model_has_roles as mhr on mhr.model_id = u.id
+                            inner join roles as r on r.id = mhr.role_id
+                            left join proyectos as pr on pr.supervisor_id = u.id 
+                            where r.name = "SUPERVISOR" and u.estado =  "ACTIVO" and pr.supervisor_id is null');
+
+        return view('registros.proyectos.index',compact('supervisores'));
     }
 
     public function create(){
@@ -25,8 +33,11 @@ class ProyectoController extends Controller
 
     public function getProyectos(Request $request){
 
-        $proyectos = Proyecto::where('estado','ACTIVO')
+        $proyectos = Proyecto::where('proyectos.estado', 'ACTIVO')
+                    ->leftJoin('users', 'proyectos.supervisor_id', '=', 'users.id')
+                    ->select('proyectos.*', 'users.name as supervisor_nombre') 
                     ->get();
+
 
 
         return DataTables::of($proyectos)
@@ -91,6 +102,22 @@ class ProyectoController extends Controller
             DB::commit();
             return response()->json(['success'=>true,'message'=>'PROYECTO ELIMINADO']);
 
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+    public function asignarSupervisor(ProyectoAsignarSupervisorRequest $request,$id){
+        DB::beginTransaction();
+        try {
+
+            $proyecto                   =   Proyecto::find($id);
+            $proyecto->supervisor_id    =   $request->get('supervisor');
+            $proyecto->update();
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'SUPERVISOR ASIGNADO CON ÉXITO']);
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);

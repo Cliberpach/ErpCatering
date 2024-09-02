@@ -104,7 +104,7 @@
             <ul id="ddmenu_3" class="collapse dropdown-nav">
               <li>
                 @can('jornal.registro_labor')
-                  <a href="settings.html"> Registro de Labor </a>
+                  <a href="{{route('jornales.registro_labor.index')}}"> Registro de Labor </a>
                 @endcan
               </li>
               <li>

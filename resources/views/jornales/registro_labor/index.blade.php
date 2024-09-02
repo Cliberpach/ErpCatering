@@ -1,21 +1,23 @@
+
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE PROYECTOS
+    LISTADO DE ASISTENCIAS
 @endsection
 
 @section('section-page')
-@include('registros.proyectos.modals.modal_asignar_supervisor')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Proyectos <i class="fa-solid fa-diagram-project" style="color: rgb(7, 45, 168);"></i>
+      <h6>Registro de labor <i class="fa-solid fa-clipboard-user"></i>
       </h6>
-      <button class="btn btn-primary" onclick="goToCrearProyecto()">
-        <i class="fa-solid fa-plus"></i> NUEVO
-      </button>
+        @role('SUPERVISOR')
+            <button class="btn btn-primary" onclick="registrarMaestroAsistencia()">
+                <i class="fa-solid fa-plus"></i> NUEVO
+            </button>
+        @endrole
     </div>
     <div class="table-responsive">
-        @include('registros.proyectos.tables.table_list_proyectos')
+        @include('jornales.registro_labor.tables.table_maestro_asistencia')
     </div>
 </div>
 <!-- end card -->
@@ -29,31 +31,28 @@
 @endif
 
 <script>
-    let dtProyectos    =   null;
+    let dtRegistrosLabor    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableProyectos();
-        iniciarSelect2();
-        eventsMdlAsignarSupervisor();
+        iniciarDataTableRegistrosLabor();
     })
 
-    function iniciarDataTableProyectos(){
-        const urlGetProyectos = '{{ route('registros.proyecto.getProyectos') }}';
+    function iniciarDataTableRegistrosLabor(){
+        const urlGetRegistrosLabor = '{{ route('jornales.registro_labor.getRegistrosLabor') }}';
 
-        dtProyectos  =   new DataTable('#table_proyectos',{
+        dtRegistrosLabor  =   new DataTable('#table_maestro_asistencia',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: urlGetProyectos,
+                url: urlGetRegistrosLabor,
                 type: 'GET',
             },
             columns: [
                 { data: 'id', name: 'id' },
-                { data: 'nombre', name: 'nombre' },
                 { data: 'supervisor_nombre', name: 'supervisor_nombre' },
-                { data: 'costo', name: 'costo' },
-                { data: 'avance_costo', name: 'avance_costo' },
-                { data: 'diferencia', name: 'diferencia' },
+                { data: 'fecha_registro', name: 'fecha_registro' },
+                { data: 'cant_trabajadores', name: 'cant_trabajadores' },
+                { data: 'observacion', name: 'observacion' },
                 {
                     data: null, 
                     render: function(data, type, row) {
@@ -67,7 +66,7 @@
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-grip"></i>
                             </button>
-                            <ul class="dropdown-menu" style="max-height: 90px; overflow-y: auto;">
+                            <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
                                 <li>
                                     <a class="dropdown-item" href="${urlEdit}">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar
@@ -77,12 +76,6 @@
                                 <li>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProyecto(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
-                                    </a>
-                                </li>
-                                   <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsignarSupervisor(${data.id})">
-                                        <i class="fa-solid fa-book-open-reader"></i> Asignar supervisor
                                     </a>
                                 </li>
                             </ul>
@@ -118,22 +111,78 @@
         });
     }
 
-    function goToCrearProyecto(){
-        window.location.href = @json(route('registros.proyecto.create'));
+
+    function registrarMaestroAsistencia(){
+        const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+        title: "DESEA INICIAR ASISTENCIA DEL DÍA?",
+        text: "Se iniciará el control de asistencia de su proyecto en el día!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar!",
+        cancelButtonText: "No, cancelar!",
+        reverseButtons: true
+        }).then(async (result) => {
+        if (result.isConfirmed) {
+            
+            Swal.fire({
+                title: 'Cargando...',
+                html: 'Iniciando asistencia ...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading(); 
+                }
+            });
+
+            try {
+                let urlIniciarAsistencia    =   @json(route('jornales.registro_labor.store'));
+                const token                 =   document.querySelector('input[name="_token"]').value;
+
+                const response  =   await fetch(urlIniciarAsistencia, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': token 
+                                        }
+                                    });
+
+                const   res =   await response.json();
+
+                if(res.success){
+                    dtRegistrosLabor.draw();
+                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
+                }else{
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL INICIAR ASISTENCIA');
+                }
+
+            } catch (error) {
+                toastr.error(error,'ERROR EN LA PETICIÓN INICIAR ASISTENCIA');
+            }finally{
+                Swal.close();
+            }
+
+        } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            swalWithBootstrapButtons.fire({
+            title: "Operación cancelada",
+            text: "No se realizaron acciones",
+            icon: "error"
+            });
+        }
+        });
     }
 
-    function iniciarSelect2(){
-        $( '.select2_form' ).select2( {
-            theme: "bootstrap-5",
-            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-            placeholder: $( this ).data( 'placeholder' ),
-            allowClear: true,
-        } );
-    }
 
     function eliminarProyecto(id){
         toastr.clear();
-        let row             =   getRowById(dtProyectos,id);
+        let row             =   getRowById(dtRegistrosLabor,id);
         let message         =   '';
         let tipo_documento  =   '';
 
@@ -167,11 +216,11 @@
             });
 
             try {
-                let urlDeleteProyecto    =   `{{ route('registros.proyecto.destroy', ['id' => ':id']) }}`;
-                urlDeleteProyecto        =   urlDeleteProyecto.replace(':id', id);
+                let urlIniciarAsistencia    =   `{{ route('registros.proyecto.destroy', ['id' => ':id']) }}`;
+                urlIniciarAsistencia        =   urlIniciarAsistencia.replace(':id', id);
                 const token              =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlDeleteProyecto, {
+                const response  =   await fetch(urlIniciarAsistencia, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -181,7 +230,7 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtProyectos.draw();
+                    dtRegistrosLabor.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PROYECTO');

@@ -11,18 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('proyectos', function (Blueprint $table) {
+        Schema::create('registros_labor_detalle', function (Blueprint $table) {
+
             $table->id();
 
-            $table->unsignedBigInteger('supervisor_id')->nullable();
+            $table->unsignedBigInteger('supervisor_id');
             $table->foreign('supervisor_id')->references('id')->on('users');
 
-            $table->string('nombre',260);
+            $table->timestamp('hora_entrada');
+            $table->timestamp('hora_salida')->nullable();
 
-            $table->decimal('costo', 20, 2)->unsigned();
-            $table->decimal('avance_costo', 20, 2)->unsigned();
-            $table->decimal('diferencia', 20, 2);
-            $table->enum('estado', ['ACTIVO', 'ANULADO'])->default('ACTIVO');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+
             $table->timestamps();
         });
     }
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('proyectos');
+        Schema::dropIfExists('registros_labor_detalle');
     }
 };

@@ -3,6 +3,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">NOMBRE</th>
+        <th scope="col">SUPERVISOR</th>
         <th scope="col">COSTO</th>
         <th scope="col">AVANCE COSTO</th>
         <th scope="col">DIFERENCIA</th>
