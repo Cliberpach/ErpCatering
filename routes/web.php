@@ -4,6 +4,7 @@ use App\Http\Controllers\Herramientas\RolController;
 use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
 use App\Http\Controllers\Jornales\RegistroLaborController;
 use App\Http\Controllers\Registros\AlmacenController;
+use App\Http\Controllers\Registros\CargoController;
 use App\Http\Controllers\Registros\CategoriaController;
 use App\Http\Controllers\Registros\ColaboradorController;
 use App\Http\Controllers\Herramientas\UsuarioController;
@@ -72,6 +73,19 @@ Route::group(['prefix' => 'colaboradores', 'middleware' => ['auth','checkCustomP
     Route::get('/consultarDni/{dni}', [ColaboradorController::class, 'consultarDni'])->name('registros.colaborador.consultarDni');
     Route::get('/getColaboradores', [ColaboradorController::class, 'getColaboradores'])->name('registros.colaborador.getColaboradores');
     Route::delete('/destroy/{id}', [ColaboradorController::class, 'destroy'])->name('registros.colaborador.destroy');
+
+});
+
+Route::group(['prefix' => 'cargos', 'middleware' => ['auth','checkCustomPermission:registros.cargo']], function () {
+
+    Route::get('/index', [CargoController::class, 'index'])->name('registros.cargo.index');
+    // Route::get('/create', [ColaboradorController::class, 'create'])->name('registros.colaborador.create');
+    // Route::get('/edit/{id}', [ColaboradorController::class, 'edit'])->name('registros.colaborador.edit');
+    Route::post('/store', [CargoController::class, 'store'])->name('registros.cargo.store');
+    Route::put('/update/{id}', [CargoController::class, 'update'])->name('registros.cargo.update');
+    // Route::get('/consultarDni/{dni}', [ColaboradorController::class, 'consultarDni'])->name('registros.colaborador.consultarDni');
+    Route::get('/getCargos', [CargoController::class, 'getCargos'])->name('registros.cargo.getCargos');
+    Route::delete('/destroy/{id}', [CargoController::class, 'destroy'])->name('registros.cargo.destroy');
 
 });
 

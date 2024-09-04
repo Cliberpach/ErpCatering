@@ -3,6 +3,12 @@
     LISTADO DE CATEGORÍAS
 @endsection
 
+@section('registros-collapsed', '')
+@section('registros-expanded', 'true')
+@section('registros-show', 'show')
+@section('categorias-active', 'active')
+
+
 @section('section-page')
 
 @include('registros.categorias.modals.modal_create_categoria')

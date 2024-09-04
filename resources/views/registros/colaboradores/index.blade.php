@@ -3,6 +3,12 @@
     LISTADO DE COLABORADORES
 @endsection
 
+@section('registros-collapsed', '')
+@section('registros-expanded', 'true')
+@section('registros-show', 'show')
+@section('colaboradores-active', 'active')
+
+
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     @csrf
@@ -47,6 +53,7 @@
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },
+                { data: 'cargo_nombre', name: 'cargo_nombre' },
                 { data: 'direccion', name: 'direccion' },
                 { data: 'telefono', name: 'telefono' },
                 { data: 'nro_documento', name: 'nro_documento' },

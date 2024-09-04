@@ -14,6 +14,7 @@ class ColaboradorSeeder extends Seeder
     public function run(): void
     {
         $colaborador                    =   new Colaborador();
+        $colaborador->cargo_id          =   1;
         $colaborador->tipo_documento_id =   1;
         $colaborador->nro_documento     =   '99999999';
         $colaborador->nombre            =   'ADMIN';
@@ -22,5 +23,6 @@ class ColaboradorSeeder extends Seeder
         $colaborador->horas_semana      =   40;
         $colaborador->pago_semana       =   2141;
         $colaborador->save();
+
     }
 }

@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(TablaGeneralSeeder::class);
         $this->call(TipoDocumentoSeeder::class);
+        $this->call(CargoSeed::class);
         $this->call(ColaboradorSeeder::class);
         $this->call(PermisoSeeder::class);
         $this->call(UsuarioSeeder::class);

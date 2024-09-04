@@ -3,6 +3,12 @@
     LISTADO DE PROYECTOS
 @endsection
 
+@section('registros-collapsed', '')
+@section('registros-expanded', 'true')
+@section('registros-show', 'show')
+@section('proyectos-active', 'active')
+
+
 @section('section-page')
 @include('registros.proyectos.modals.modal_asignar_supervisor')
 <div class="card-style settings-card-1 mb-30">

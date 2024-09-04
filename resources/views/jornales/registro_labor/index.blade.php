@@ -4,6 +4,11 @@
     LISTADO DE ASISTENCIAS
 @endsection
 
+@section('jornales-collapsed', '')
+@section('jornales-expanded', 'true')
+@section('jornales-show', 'show')
+@section('registro_labor-active', 'active')
+
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     @csrf

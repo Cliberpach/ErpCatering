@@ -43,6 +43,7 @@ class ColaboradorUpdateRequest extends FormRequest
                 },
             ],
             'nombre'        => 'required|max:260|unique:colaboradores,nombre,'.$this->route('id'),
+            'cargo'         => 'required|exists:cargos,id',
             'direccion'     => 'nullable|max:200',
             'telefono'      => ['required', 'max:20', 'regex:/^[0-9]+$/'],
             'horas_semana'  => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
@@ -64,6 +65,9 @@ class ColaboradorUpdateRequest extends FormRequest
             'nombre.required'           => 'El nombre es obligatorio.',
             'nombre.max'                => 'El nombre no debe superar los 260 caracteres.',
             'nombre.unique'             => 'El nombre ya está en uso, por favor elige otro.',
+
+            'cargo.required'            => 'El campo cargo es obligatorio.',
+            'cargo.exists'              => 'El cargo seleccionado no es válido.',
 
             'direccion.max'             => 'La dirección no debe superar los 200 caracteres.',
 

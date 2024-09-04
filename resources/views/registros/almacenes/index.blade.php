@@ -3,6 +3,11 @@
     LISTADO DE ALMACÉNES
 @endsection
 
+@section('registros-collapsed', '')
+@section('registros-expanded', 'true')
+@section('registros-show', 'show')
+@section('almacenes-active', 'active')
+
 @section('section-page')
 
 @include('registros.almacenes.modals.modal_create_almacen')

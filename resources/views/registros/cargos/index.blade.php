@@ -1,85 +1,93 @@
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE MAQUINARIAS
+    LISTADO DE CARGOS
 @endsection
 
 @section('registros-collapsed', '')
 @section('registros-expanded', 'true')
 @section('registros-show', 'show')
-@section('maquinarias-active', 'active')
-
+@section('cargos-active', 'active')
 
 @section('section-page')
+
+@include('registros.cargos.modals.modal_create_cargo')
+@include('registros.cargos.modals.modal_edit_cargo')
+
+
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Maquinarias <i class="fa-solid fa-toolbox"></i>
+      <h6>Cargos <i class="fa-solid fa-user-tie" style="color: rgb(7, 45, 168);"></i>
       </h6>
-      <button class="btn btn-primary" onclick="goToCrearMaquinaria()">
+      <button class="btn btn-primary" onclick="openMdlNuevoCargo()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
     </div>
     <div class="table-responsive">
-        @include('registros.maquinarias.tables.table_list_maquinarias')
+        @include('registros.cargos.tables.table_list_cargos')
     </div>
 </div>
 <!-- end card -->
 @endsection
 
-@if(Session::has('message_success'))
-<script>
-    var message = "{{ Session::get('message_success') }}";
-    toastr.success(message, 'OPERACIÓN COMPLETADA');
-</script>
-@endif
 
 <script>
-    let dtMaquinarias    =   null;
+    let dtCargos    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableProductos();
+        iniciarDataTableCargos();
+        iniciarSelect2();
+        events();
     })
 
-    function iniciarDataTableProductos(){
-        const urlGetMaquinarias = '{{ route('registros.maquinaria.getMaquinarias') }}';
+    function events(){
+        eventsMdlCreateCargo();  
+        eventsMdlEditCargo()   
+    }
 
-        dtMaquinarias  =   new DataTable('#table_maquinarias',{
+    function iniciarSelect2(){
+        $( '.select2_form' ).select2( {
+            theme: "bootstrap-5",
+            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+            allowClear: true,
+        } );
+    }
+
+    function iniciarDataTableCargos(){
+        const urlGetCargos = '{{ route('registros.cargo.getCargos') }}';
+
+        dtCargos  =   new DataTable('#table_cargos',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: urlGetMaquinarias,
+                url: urlGetCargos,
                 type: 'GET',
             },
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },
-                { data: 'tipo_gasto_nombre', name: 'tipo_gasto_nombre' },
-                { data: 'costo_gasto', name: 'costo_gasto' },
-                { data: 'observacion', name: 'observacion' },
                 { data: 'fecha_registro', name: 'fecha_registro' },
                 { data: 'fecha_modificacion', name: 'fecha_modificacion' },
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('registros.maquinaria.edit', ['id' => ':id']) }}`;
-                        urlEdit             =   baseUrlEdit.replace(':id', data.id); 
-
-                        const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
-
+                      
                         return `
                             <div class="btn-group">
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-grip"></i>
                             </button>
-                            <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                            <ul class="dropdown-menu" style="max-height: 90px; overflow-y: auto;">
+            
                                 <li>
-                                    <a class="dropdown-item" href="${urlEdit}">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlEditCargo(${data.id})">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarMaquinaria(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarCargo(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -116,17 +124,12 @@
         });
     }
 
-    function goToCrearMaquinaria(){
-        window.location.href = @json(route('registros.maquinaria.create'));
-    }
 
-
-    function eliminarMaquinaria(id){
+    function eliminarCargo(id){
         toastr.clear();
-        let row             =   getRowById(dtMaquinarias,id);
+        let row             =   getRowById(dtCargos,id);
         let message         =   '';
-
-        message =   `Desea eliminar la maquinaria: ${row.nombre}`;
+        let tipo_documento  =   '';
 
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -136,8 +139,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: message,
-        text: "Operación no reversible!",
+        title: `DESEA ELIMINAR EL CARGO?`,
+        text: `Cargo: ${row.nombre}`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar!",
@@ -148,7 +151,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando maquinaria...',
+                html: 'Eliminando cargo...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -156,11 +159,11 @@
             });
 
             try {
-                let urlDeleteMaquinaria     =   `{{ route('registros.maquinaria.destroy', ['id' => ':id']) }}`;
-                urlDeleteMaquinaria         =   urlDeleteMaquinaria.replace(':id', id);
-                const token                 =   document.querySelector('input[name="_token"]').value;
+                let urlDeleteCargo    =   `{{ route('registros.cargo.destroy', ['id' => ':id']) }}`;
+                urlDeleteCargo        =   urlDeleteCargo.replace(':id', id);
+                const token           =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlDeleteMaquinaria, {
+                const response  =   await fetch(urlDeleteCargo, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -170,14 +173,14 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtMaquinarias.draw();
+                    dtCargos.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR MAQUINARIA');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR CARGO');
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR MAQUINARIA');
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR CARGO');
             }finally{
                 Swal.close();
             }
@@ -194,6 +197,8 @@
         }
         });
     }
+
+    
 
 
 </script>

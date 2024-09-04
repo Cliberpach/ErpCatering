@@ -22,10 +22,10 @@
               </span>
               <span class="text">Panel de Control</span>
             </a>
-            <ul id="ddmenu_1" class="collapse show dropdown-nav">
+            <ul id="ddmenu_1" class="collapse dropdown-nav">
               <li>
                 
-                <a href="index.html" class="active"> Dashboard </a>
+                <a href="index.html" > Dashboard </a>
                 
               </li>
             </ul>
@@ -35,11 +35,11 @@
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
-            class="collapsed"
+            class="@yield('registros-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
             data-bs-target="#ddmenu_2"
             aria-controls="ddmenu_2"
-            aria-expanded="false"
+            aria-expanded="@yield('registros-expanded')"
             aria-label="Toggle navigation"
           >
             <span class="icon">
@@ -47,40 +47,45 @@
             </span>
             <span class="text">Registros</span>
           </a>
-          <ul id="ddmenu_2" class="collapse dropdown-nav">
+          <ul id="ddmenu_2" class="collapse dropdown-nav @yield('registros-show')">
             <li>
               @can('registros.colaborador')
-                <a href="{{route('registros.colaborador.index')}}">Colaboradores</a>
+                <a class="@yield('colaboradores-active')" href="{{route('registros.colaborador.index')}}">Colaboradores</a>
+              @endcan
+            </li>
+            <li>
+              @can('registros.colaborador')
+                <a class="@yield('cargos-active')" href="{{route('registros.cargo.index')}}">Cargos</a>
               @endcan
             </li>
             <li>
               @can('registros.maquinaria')
-                <a href="{{route('registros.maquinaria.index')}}"> Maquinaria </a>
+                <a class="@yield('maquinarias-active')" href="{{route('registros.maquinaria.index')}}"> Maquinaria </a>
               @endcan
             </li>
             <li>
               @can('registros.proyecto')
-                <a href="{{route('registros.proyecto.index')}}">Proyecto</a>
+                <a class="@yield('proyectos-active')" href="{{route('registros.proyecto.index')}}">Proyecto</a>
               @endcan
             </li>
             <li>
               @can('registros.almacen')
-                <a href="{{route('registros.almacen.index')}}">Almacén</a>
+                <a class="@yield('almacenes-active')" href="{{route('registros.almacen.index')}}">Almacén</a>
               @endcan
             </li>
             <li>
               @can('registros.categoria')
-                <a href="{{route('registros.categoria.index')}}">Categoría</a>
+                <a class="@yield('categorias-active')" href="{{route('registros.categoria.index')}}">Categoría</a>
               @endcan
             </li>
             <li>
               @can('registros.marca')
-                <a href="{{route('registros.marca.index')}}">Marca</a>
+                <a class="@yield('marcas-active')" href="{{route('registros.marca.index')}}">Marca</a>
               @endcan
             </li>
             <li>
               @can('registros.producto')
-                <a href="{{route('registros.producto.index')}}">Producto</a>
+                <a class="@yield('productos-active')" href="{{route('registros.producto.index')}}">Producto</a>
               @endcan
             </li>
           </ul>
@@ -89,11 +94,11 @@
         <li class="nav-item nav-item-has-children">
             <a
               href="#0"
-              class="collapsed"
+              class="@yield('jornales-collapsed', 'collapsed')"
               data-bs-toggle="collapse"
               data-bs-target="#ddmenu_3"
               aria-controls="ddmenu_3"
-              aria-expanded="false"
+              aria-expanded="@yield('jornales-expanded')"
               aria-label="Toggle navigation"
             >
               <span class="icon">
@@ -101,15 +106,15 @@
               </span>
               <span class="text">Jornal</span>
             </a>
-            <ul id="ddmenu_3" class="collapse dropdown-nav">
+            <ul id="ddmenu_3" class="collapse dropdown-nav @yield('jornales-show')" >
               <li>
                 @can('jornal.registro_labor')
-                  <a href="{{route('jornales.registro_labor.index')}}"> Registro de Labor </a>
+                  <a class="@yield('registro_labor-active')" href="{{route('jornales.registro_labor.index')}}"> Registro de Labor </a>
                 @endcan
               </li>
               <li>
                 @can('jornal.consulta_labor')
-                  <a href="blank-page.html"> Consulta de Labor </a>
+                  <a class="@yield('consulta_labor-active')" href="blank-page.html"> Consulta de Labor </a>
                 @endcan
               </li>
             </ul>
@@ -176,11 +181,11 @@
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
-            class="collapsed"
+            class="@yield('herramientas-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
             data-bs-target="#ddmenu_6"
             aria-controls="ddmenu_6"
-            aria-expanded="true"
+            aria-expanded="@yield('herramientas-expanded')"
             aria-label="Toggle navigation"
           >
             <span class="icon">
@@ -188,15 +193,15 @@
             </span>
             <span class="text">Herramientas</span>
           </a>
-          <ul id="ddmenu_6" class="collapse show dropdown-nav">
+          <ul id="ddmenu_6" class="collapse dropdown-nav @yield('herramientas-show')">
             <li>
               @can('herramientas.usuarios')
-                <a href="{{route('herramientas.usuario.index')}}" class="active">Usuarios</a>
+                <a class="@yield('usuarios-active')" href="{{route('herramientas.usuario.index')}}">Usuarios</a>
               @endcan
             </li>
             <li>
               @can('herramientas.roles')
-                <a href="{{route('herramientas.rol.index')}}" class="active">Roles</a>
+                <a class="@yield('roles-active')" href="{{route('herramientas.rol.index')}}">Roles</a>
               @endcan
             </li>
           </ul>

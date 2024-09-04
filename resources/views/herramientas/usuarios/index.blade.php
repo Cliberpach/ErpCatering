@@ -3,6 +3,11 @@
     LISTADO DE USUARIOS
 @endsection
 
+@section('herramientas-collapsed', '')
+@section('herramientas-expanded', 'true')
+@section('herramientas-show', 'show')
+@section('usuarios-active', 'active')
+
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">

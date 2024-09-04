@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Requests\Registros\Colaborador\ColaboradorStoreRequest;
 use App\Http\Requests\Registros\Colaborador\ColaboradorUpdateRequest;
+use App\Models\Registros\Cargo;
 use App\Models\Registros\Colaborador;
 use App\Models\Herramientas\TipoDocumento;
 use Illuminate\Http\Request;
@@ -21,7 +22,21 @@ class ColaboradorController extends Controller
     }
 
     public function getColaboradores(Request $request){
-        $colaboradores = Colaborador::where('estado','ACTIVO')->get();
+        $colaboradores = DB::table('colaboradores as co')
+                    ->join('cargos as ca', 'ca.id', '=', 'co.cargo_id')
+                    ->select(
+                        'co.id', 
+                        'co.nombre',
+                        'co.direccion',
+                        'co.telefono',
+                        'co.nro_documento',
+                        'co.horas_semana',
+                        'co.pago_semana',
+                        'ca.descripcion as cargo_nombre',
+                        'co.estado'
+                    )
+                    ->where('co.estado','ACTIVO')
+                    ->get();
 
         return DataTables::of($colaboradores)
                 ->make(true);
@@ -29,8 +44,9 @@ class ColaboradorController extends Controller
 
     public function create(){
         $tipos_documento    =   TipoDocumento::where('estado','ACTIVO')->get();
+        $cargos             =   Cargo::where('estado','ACTIVO')->get();
        
-        return view('registros.colaboradores.create',compact('tipos_documento'));
+        return view('registros.colaboradores.create',compact('tipos_documento','cargos'));
     }
 
     public function store(ColaboradorStoreRequest $request){
@@ -39,6 +55,7 @@ class ColaboradorController extends Controller
             $colaborador    =   new Colaborador();
             $colaborador->tipo_documento_id =   $request->get('tipo_documento');
             $colaborador->nombre            =   Str::upper($request->get('nombre'));
+            $colaborador->cargo_id          =   $request->get('cargo');
             $colaborador->direccion         =   Str::upper($request->get('direccion'));
             $colaborador->telefono          =   $request->get('telefono');
             $colaborador->horas_semana      =   $request->get('horas_semana');
@@ -59,9 +76,10 @@ class ColaboradorController extends Controller
         $colaborador        =   DB::select('select * from colaboradores as c
                                 where c.id = ?',[$id])[0];
 
-        
+        $cargos             =   Cargo::where('estado','ACTIVO')->get();
+
        
-        return view('registros.colaboradores.edit',compact('tipos_documento','colaborador'));
+        return view('registros.colaboradores.edit',compact('tipos_documento','colaborador','cargos'));
     }
 
     public function update(ColaboradorUpdateRequest $request, $id){
@@ -70,6 +88,7 @@ class ColaboradorController extends Controller
             $colaborador                    =   Colaborador::find($id);
             $colaborador->tipo_documento_id =   $request->get('tipo_documento');
             $colaborador->nombre            =   Str::upper($request->get('nombre'));
+            $colaborador->cargo_id          =   $request->get('cargo');
             $colaborador->direccion         =   Str::upper($request->get('direccion'));
             $colaborador->telefono          =   $request->get('telefono');
             $colaborador->horas_semana      =   $request->get('horas_semana');

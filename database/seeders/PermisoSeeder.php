@@ -17,6 +17,7 @@ class PermisoSeeder extends Seeder
            $items = [
             'panel_control.dashboard',
             'registros.colaborador',
+            'registros.cargo',
             'registros.maquinaria',
             'registros.proyecto',
             'registros.almacen',

@@ -3,6 +3,12 @@
     LISTADO DE PRODUCTOS
 @endsection
 
+@section('registros-collapsed', '')
+@section('registros-expanded', 'true')
+@section('registros-show', 'show')
+@section('productos-active', 'active')
+
+
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     @csrf

@@ -3,6 +3,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">NOMBRE</th>
+        <th scope="col">CARGO</th>
         <th scope="col">DIRECCION</th>
         <th scope="col">TELEFONO</th>
         <th scope="col">DOC</th>

@@ -142,12 +142,11 @@
     }
 
     function iniciarSelect2(){
-        $( '#tipo_documento' ).select2( {
+        $( '.select2_form' ).select2( {
             theme: "bootstrap-5",
             width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
             placeholder: $( this ).data( 'placeholder' ),
-        } );
-        
+        } ); 
     }
 
     function registrarColaborador(){

@@ -3,7 +3,7 @@
             @csrf   
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
                 <label class="required_field" for="tipo_documento" style="font-weight: bold;">TIPO DOCUMENTO</label>
-                <select required name="tipo_documento" required class="form-select" id="tipo_documento" data-placeholder="Seleccionar" onchange="changeTipoDoc()">
+                <select required name="tipo_documento" required class="form-select select2_form" id="tipo_documento" data-placeholder="Seleccionar" onchange="changeTipoDoc()">
                     <option></option>
                     @foreach ($tipos_documento as $tipo_documento)
                         <option value="{{$tipo_documento->id}}">{{$tipo_documento->descripcion}}</option>
@@ -30,6 +30,16 @@
                     <input required id="nombre" maxlength="260"  name="nombre" type="text" class="form-control" placeholder="Nombre" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="nombre_error msgError"  style="color:red;"></span>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
+                <label class="required_field" for="cargo" style="font-weight: bold;">CARGO</label>
+                <select required name="cargo" required class="form-select select2_form" id="cargo" data-placeholder="Seleccionar">
+                    <option></option>
+                    @foreach ($cargos as $cargo)
+                        <option value="{{$cargo->id}}">{{$cargo->descripcion}}</option>
+                    @endforeach
+                </select>
+                <span class="cargo_error msgError"  style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
                 <label  for="direccion" style="font-weight: bold;">Dirección</label>

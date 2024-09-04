@@ -3,6 +3,12 @@
     LISTADO DE MARCAS
 @endsection
 
+@section('registros-collapsed', '')
+@section('registros-expanded', 'true')
+@section('registros-show', 'show')
+@section('marcas-active', 'active')
+
+
 @section('section-page')
 
 @include('registros.marcas.modals.modal_create_marca')
