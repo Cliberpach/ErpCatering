@@ -43,6 +43,7 @@ Route::group(['prefix' => 'usuarios', 'middleware' => ['auth']], function () {
     Route::get('/getUsuarios', [UsuarioController::class, 'getUsuarios'])->name('herramientas.usuario.getUsuarios');
     Route::get('/edit/{id}', [UsuarioController::class, 'edit'])->name('herramientas.usuario.edit');
     Route::delete('/destroy/{id}', [UsuarioController::class, 'destroy'])->name('herramientas.usuario.destroy');
+    Route::get('/getSupervisores', [UsuarioController::class, 'getSupervisores'])->name('herramientas.usuario.getSupervisores');
 
 });
 
@@ -147,6 +148,10 @@ Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermi
     Route::get('/getProyectos', [ProyectoController::class, 'getProyectos'])->name('registros.proyecto.getProyectos');
     Route::delete('/destroy/{id}', [ProyectoController::class, 'destroy'])->name('registros.proyecto.destroy');
     Route::patch('/asignarSupervisor/{id}', [ProyectoController::class, 'asignarSupervisor'])->name('registros.proyecto.asignarSupervisor');
+    Route::patch('/finalizarProyecto/{id}', [ProyectoController::class, 'finalizarProyecto'])->name('registros.proyecto.finalizarProyecto');
+    
+    Route::get('/asignarPersonal/{id}', [ProyectoController::class, 'asignarPersonalCreate'])->name('registros.proyecto.asignarPersonalCreate');
+    Route::post('/asignarPersonal', [ProyectoController::class, 'asignarPersonalStore'])->name('registros.proyecto.asignarPersonalStore');
 
 });
 
@@ -170,12 +175,14 @@ Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','
 Route::group(['prefix' => 'jornales', 'middleware' => ['auth','checkCustomPermission:jornal.registro_labor']], function () {
 
     Route::get('/index', [RegistroLaborController::class, 'index'])->name('jornales.registro_labor.index');
-    // Route::get('/create', [ProyectoController::class, 'create'])->name('registros.proyecto.create');
     Route::post('/store', [RegistroLaborController::class, 'store'])->name('jornales.registro_labor.store');
     // Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('registros.proyecto.edit');
     // Route::put('/update/{id}', [ProyectoController::class, 'update'])->name('registros.proyecto.update');
     Route::get('/getRegistrosLabor', [RegistroLaborController::class, 'getRegistrosLabor'])->name('jornales.registro_labor.getRegistrosLabor');
     // Route::delete('/destroy/{id}', [ProyectoController::class, 'destroy'])->name('registros.proyecto.destroy');
+    Route::get('/asistencias/{id}', [RegistroLaborController::class, 'asistenciasCreate'])->name('jornales.registro_labor.asistenciasCreate');
+    Route::post('/marcarEntrada', [RegistroLaborController::class, 'marcarEntrada'])->name('jornales.registro_labor.marcarEntrada');
+    Route::post('/marcarSalida', [RegistroLaborController::class, 'marcarSalida'])->name('jornales.registro_labor.marcarSalida');
 
 });
 

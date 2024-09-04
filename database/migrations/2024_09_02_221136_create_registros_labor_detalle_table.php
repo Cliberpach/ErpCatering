@@ -15,14 +15,21 @@ return new class extends Migration
 
             $table->id();
 
-            $table->unsignedBigInteger('supervisor_id');
-            $table->foreign('supervisor_id')->references('id')->on('users');
-
-            $table->timestamp('hora_entrada');
-            $table->timestamp('hora_salida')->nullable();
+            $table->unsignedBigInteger('registro_labor_id');
+            $table->foreign('registro_labor_id')->references('id')->on('registros_labor');
 
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
+
+            $table->unsignedBigInteger('proyecto_id')->nullable();
+            $table->foreign('proyecto_id')->references('id')->on('proyectos');
+
+            $table->unsignedBigInteger('supervisor_id');
+            $table->foreign('supervisor_id')->references('id')->on('users');
+
+
+            $table->timestamp('hora_entrada');
+            $table->timestamp('hora_salida')->nullable();
 
             $table->timestamps();
         });

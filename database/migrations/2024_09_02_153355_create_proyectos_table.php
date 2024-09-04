@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('costo', 20, 2)->unsigned();
             $table->decimal('avance_costo', 20, 2)->unsigned();
             $table->decimal('diferencia', 20, 2);
-            $table->enum('estado', ['ACTIVO', 'ANULADO'])->default('ACTIVO');
+            $table->enum('estado', ['ACTIVO', 'ANULADO','FINALIZADO'])->default('ACTIVO');
             $table->timestamps();
         });
     }

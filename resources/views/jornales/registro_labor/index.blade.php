@@ -53,10 +53,11 @@
                 { data: 'fecha_registro', name: 'fecha_registro' },
                 { data: 'cant_trabajadores', name: 'cant_trabajadores' },
                 { data: 'observacion', name: 'observacion' },
+                { data: 'estado', name: 'estado' },
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('registros.proyecto.edit', ['id' => ':id']) }}`;
+                        const baseUrlEdit   =   `{{ route('jornales.registro_labor.asistenciasCreate', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
                         const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
@@ -69,7 +70,7 @@
                             <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
                                 <li>
                                     <a class="dropdown-item" href="${urlEdit}">
-                                        <i class="fa-solid fa-pen-to-square"></i> Editar
+                                        <i class="fa-solid fa-file-pen"></i> Asistencias
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
@@ -125,7 +126,7 @@
         text: "Se iniciará el control de asistencia de su proyecto en el día!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Sí, eliminar!",
+        confirmButtonText: "Sí, iniciar!",
         cancelButtonText: "No, cancelar!",
         reverseButtons: true
         }).then(async (result) => {

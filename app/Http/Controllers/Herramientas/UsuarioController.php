@@ -151,4 +151,18 @@ class UsuarioController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public function getSupervisores(){
+        try {
+            $supervisores   =   DB::select('select u.* from users as u 
+                                inner join model_has_roles as mhr on mhr.model_id = u.id
+                                inner join roles as r on r.id = mhr.role_id
+                                left join proyectos as pr on pr.supervisor_id = u.id 
+                                where r.name = "SUPERVISOR" and u.estado =  "ACTIVO" and pr.supervisor_id is null');
+
+            return response()->json(['success'=>true,'supervisores'=>$supervisores]);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
 }

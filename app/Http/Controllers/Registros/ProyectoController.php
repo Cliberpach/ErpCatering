@@ -8,6 +8,7 @@ use App\Http\Requests\Registros\Proyecto\ProyectoStoreRequest;
 use App\Http\Requests\Registros\Proyecto\ProyectoUpdateRequest;
 use App\Models\Registros\Almacen;
 use App\Models\Registros\Proyecto;
+use App\Models\Registros\ProyectoPersonal;
 use Illuminate\Http\Request;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;
@@ -17,13 +18,9 @@ class ProyectoController extends Controller
 {
     public function index(){
 
-        $supervisores   =   DB::select('select u.* from users as u 
-                            inner join model_has_roles as mhr on mhr.model_id = u.id
-                            inner join roles as r on r.id = mhr.role_id
-                            left join proyectos as pr on pr.supervisor_id = u.id 
-                            where r.name = "SUPERVISOR" and u.estado =  "ACTIVO" and pr.supervisor_id is null');
+        
 
-        return view('registros.proyectos.index',compact('supervisores'));
+        return view('registros.proyectos.index');
     }
 
     public function create(){
@@ -108,6 +105,22 @@ class ProyectoController extends Controller
         }
     }
 
+    public function finalizarProyecto(Request $request,$id){
+        DB::beginTransaction();
+        try {
+            $proyecto                    =   Proyecto::find($id);
+            $proyecto->estado            =   'FINALIZADO';
+            $proyecto->update();
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'PROYECTO FINALIZADO']);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
     public function asignarSupervisor(ProyectoAsignarSupervisorRequest $request,$id){
         DB::beginTransaction();
         try {
@@ -120,6 +133,61 @@ class ProyectoController extends Controller
             return response()->json(['success'=>true,'message'=>'SUPERVISOR ASIGNADO CON ÉXITO']);
         } catch (\Throwable $th) {
             DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+    public function asignarPersonalCreate($id){
+        
+        //=========== OBTENER TODOS LOS USUARIOS LIBRES QUE NO ESTÉN ASIGNADOS A PROYECTOS DIFERENTES A ESTE ACTUALMENTE =======
+        //========== ADEMÁS QUE NO SEAN SUPERVISORES ======
+        $usuarios_libres    = DB::select('SELECT u.id as usuario_id,
+                                        u.name as usuario_nombre,
+                                        r.name as rol_nombre
+                                        FROM users AS u
+                                        inner join model_has_roles as mhr on mhr.model_id = u.id 
+                                        inner join roles as r on r.id = mhr.role_id
+                                        WHERE u.id NOT IN (
+                                            SELECT pp.usuario_id
+                                            FROM proyecto_personal AS pp
+                                            WHERE pp.estado = "ACTIVO" AND pp.proyecto_id != ?
+                                        ) AND r.name != "ADMIN" && r.name != "SUPERVISOR"
+                                    ',[$id]);
+
+        $usuarios_asignados  =   DB::select('select pp.usuario_id 
+                                from proyecto_personal as pp
+                                where pp.proyecto_id = ?',[$id]);  
+
+        $idsAsignados = array_column($usuarios_asignados, 'usuario_id');
+
+                    
+        $proyecto_id    =   $id;
+
+       
+        return view('registros.proyectos.asignar_personal',compact('usuarios_libres','proyecto_id','idsAsignados'));
+
+    }
+
+    public function asignarPersonalStore(Request $request){
+        DB::beginTransaction();
+        try {
+            $lstUsuariosAsignados   =   json_decode($request->get('lstUsuariosAsignados'));
+            $proyecto_id            =   $request->get('proyecto_id');
+
+            DB::table('proyecto_personal')
+            ->where('proyecto_id', $proyecto_id)
+            ->delete();
+
+            foreach ($lstUsuariosAsignados as  $usuario_asignado) {
+                $proyecto_personal              =   new ProyectoPersonal();
+                $proyecto_personal->proyecto_id =   $proyecto_id;
+                $proyecto_personal->usuario_id  =   $usuario_asignado;
+                $proyecto_personal->save();
+            }
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'PERSONAL ASIGNADO CON ÉXITO']);
+        } catch (\Throwable $th) {
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }

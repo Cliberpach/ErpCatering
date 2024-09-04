@@ -6,6 +6,7 @@
         <th scope="col">Fecha</th>
         <th scope="col">Cant Trabajadores</th>
         <th scope="col">Observación</th>
+        <th scope="col">Estado</th>
         <th scope="col">ACCIONES</th>
       </tr>
     </thead>

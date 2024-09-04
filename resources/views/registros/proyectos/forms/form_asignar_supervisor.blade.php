@@ -7,10 +7,10 @@
             </label>
             <select name="supervisor" class="form-select select2_form" id="supervisor" data-placeholder="Seleccionar" >
                 <option></option>
-                @foreach ($supervisores as $supervisor)
+                {{-- @foreach ($supervisores as $supervisor)
                     <option
                      value="{{$supervisor->id}}">{{$supervisor->name}}</option>
-                @endforeach
+                @endforeach --}}
             </select>
             <span class="supervisor_error msgError"  style="color:red;"></span>
         </div>     

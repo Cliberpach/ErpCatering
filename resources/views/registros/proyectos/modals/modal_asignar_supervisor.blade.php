@@ -29,7 +29,8 @@
         })
     }
 
-    function openMdlAsignarSupervisor(proyecto_id){
+    async function openMdlAsignarSupervisor(proyecto_id){
+        mostrarAnimacion1();
         proyecto_asignar_supervisor    =   proyecto_id;
 
         if(!proyecto_asignar_supervisor){
@@ -37,7 +38,59 @@
             return;
         }
 
-        $('#mdlAsignarSupervisor').modal('show');
+        const lstSupervisores   =   await getSupervisores();
+
+        if(lstSupervisores){
+            pintarSupervisores(lstSupervisores);
+            $('#mdlAsignarSupervisor').modal('show');
+        }
+        ocultarAnimacion1();
+
+    }
+
+    function pintarSupervisores(lstSupervisores){
+        // Limpiar el select antes de añadir nuevos supervisores
+        $('#supervisor').empty();
+
+
+        lstSupervisores.forEach((supervisor) =>{
+            $('#supervisor').append(new Option(supervisor.name, supervisor.id));
+        });
+
+        // Refrescar el select2 para que tome los cambios
+        $('#supervisor').trigger('change');
+    }
+
+    async function getSupervisores(){
+        try {
+            const urlGetSupervisores      =   `{{ route('herramientas.usuario.getSupervisores') }}`;
+            const token                     =   document.querySelector('input[name="_token"]').value;
+
+            const response  =   await fetch(urlGetSupervisores, {
+                                        method: 'GET',
+                                        headers: {
+                                            'X-CSRF-TOKEN': token,
+                                        }
+                                    });
+
+            const   res =   await response.json();
+                                
+        
+            if(res.success){
+                    
+                toastr.success(res.message,'OPERACIÓN COMPLETADA');
+                return res.supervisores;
+
+            }else{
+                toastr.error(res.message,'ERROR EN EL SERVIDOR');
+                return null;
+            }
+
+              
+            } catch (error) {
+                toastr.error(error,'ERROR EN LA PETICIÓN OBTENER SUPERVISORES');
+                return null;
+            }
     }
 
     function asignarSupervisor(){

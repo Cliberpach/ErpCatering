@@ -54,11 +54,15 @@
                 { data: 'costo', name: 'costo' },
                 { data: 'avance_costo', name: 'avance_costo' },
                 { data: 'diferencia', name: 'diferencia' },
+                { data: 'estado', name: 'estado' },
                 {
                     data: null, 
                     render: function(data, type, row) {
                         const baseUrlEdit   =   `{{ route('registros.proyecto.edit', ['id' => ':id']) }}`;
-                        urlEdit             =   baseUrlEdit.replace(':id', data.id); 
+                        const urlEdit             =   baseUrlEdit.replace(':id', data.id); 
+
+                        const baseUrlAsignarPersonal    =   `{{ route('registros.proyecto.asignarPersonalCreate', ['id' => ':id']) }}`;   
+                        const urlAsignarPersonal        =   baseUrlAsignarPersonal.replace(':id',data.id);
 
                         const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
 
@@ -79,10 +83,22 @@
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
-                                   <li><hr class="dropdown-divider"></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="finalizarProyecto(${data.id})">
+                                        <i class="fa-solid fa-flag-checkered"></i> Finalizar
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsignarSupervisor(${data.id})">
                                         <i class="fa-solid fa-book-open-reader"></i> Asignar supervisor
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="${urlAsignarPersonal}" >
+                                        <i class="fa-solid fa-people-group"></i> Asignar personal
                                     </a>
                                 </li>
                             </ul>
@@ -135,7 +151,6 @@
         toastr.clear();
         let row             =   getRowById(dtProyectos,id);
         let message         =   '';
-        let tipo_documento  =   '';
 
         message =   `Desea eliminar el proyecto: ${row.nombre}`;
 
@@ -159,7 +174,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando producto...',
+                html: 'Eliminando proyecto...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -189,6 +204,82 @@
 
             } catch (error) {
                 toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR PROYECTO');
+            }finally{
+                Swal.close();
+            }
+
+        } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            swalWithBootstrapButtons.fire({
+            title: "Operación cancelada",
+            text: "No se realizaron acciones",
+            icon: "error"
+            });
+        }
+        });
+    }
+
+    function finalizarProyecto(id){
+        toastr.clear();
+        let row             =   getRowById(dtProyectos,id);
+        let message         =   '';
+      
+
+        message =   `Desea finalizar el proyecto: ${row.nombre}`;
+
+        const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+        title: message,
+        text: "Operación no reversible!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, finalizar!",
+        cancelButtonText: "No, cancelar!",
+        reverseButtons: true
+        }).then(async (result) => {
+        if (result.isConfirmed) {
+            
+            Swal.fire({
+                title: 'Cargando...',
+                html: 'Finalizando proyecto...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading(); 
+                }
+            });
+
+            try {
+                let urlFinalizarProyecto    =   `{{ route('registros.proyecto.finalizarProyecto', ['id' => ':id']) }}`;
+                urlFinalizarProyecto        =   urlFinalizarProyecto.replace(':id', id);
+                const token                 =   document.querySelector('input[name="_token"]').value;
+
+                const response  =   await fetch(urlFinalizarProyecto, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': token,
+                                            'X-HTTP-Method-Override': 'PATCH' 
+                                        }
+                                    });
+
+                const   res =   await response.json();
+
+                if(res.success){
+                    dtProyectos.draw();
+                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
+                }else{
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL FINALIZAR PROYECTO');
+                }
+
+            } catch (error) {
+                toastr.error(error,'ERROR EN LA PETICIÓN FINALIZAR PROYECTO');
             }finally{
                 Swal.close();
             }

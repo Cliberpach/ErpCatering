@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\Jornales;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Jornales\RegistroLabor\RegistroLaborStoreRequest;
 use App\Models\Jornales\RegistroLabor;
+use App\Models\Jornales\RegistroLaborDetalle;
+use App\Models\Registros\Proyecto;
+use App\Models\Registros\ProyectoPersonal;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;
@@ -28,6 +33,7 @@ class RegistroLaborController extends Controller
                                 'rl.observacion',
                                 'rl.created_at as fecha_registro',
                                 'rl.created_at as observacion',
+                                'rl.estado'
                             )
                             ->get();
 
@@ -35,27 +41,167 @@ class RegistroLaborController extends Controller
                 ->make(true);
     }
 
-    public function store(Request $request){
+    public function store(RegistroLaborStoreRequest $request){
         DB::beginTransaction();
         try {
-            
-            //======== VALIDANDO ROL DE USUARIO =====
-            $rol    =   DB::select('select u.* from model_has_roles as mhr 
-                        inner join users as u on u.id =  mhr.model_id
-                        inner join roles as r on r.id =  mhr.role_id
-                        where r.name = "SUPERVISOR" and u.id = ?',[Auth::user()->id]);
-            
-            if(count($rol) === 0){
-                throw new Exception("Usted no cuenta con el rol de SUPERVISOR!!");
-            }
 
+            //========== BUSCANDO EL PROYECTO QUE SUPERVISA EL USUARIO AUTENTICADO ========
+            $proyecto                       =   DB::select('select pr.id from proyectos as pr
+             where pr.supervisor_id = ?',[Auth::user()->id]);
+
+            if(count($proyecto) === 0){
+                throw new Exception("Error, Necesitas supervisar algún proyecto para poder iniciar la asistencia");
+            }
+            
             //========== REGISTRAR MAESTRO ASISTENCIA =======
-            $registro_labor     =   new RegistroLabor();
+            $registro_labor                 =   new RegistroLabor();
             $registro_labor->supervisor_id  =   Auth::user()->id;
+            $registro_labor->proyecto_id    =   $proyecto[0]->id;
             $registro_labor->save();
 
+            //===== OBTENER TODOS LOS USUARIOS ASOCIADOS A ESE PROYECTO ======
+            $proyecto_usuarios              =   ProyectoPersonal::where('proyecto_id',$proyecto[0]->id)->get();
+        
+            //======= REGISTRAR DETALLE ========
+            foreach ($proyecto_usuarios as $proyecto_usuario) {
+                $registro_labor_detalle                 =   new RegistroLaborDetalle();
+                $registro_labor_detalle->proyecto_id    =   $proyecto[0]->id;
+                $registro_labor_detalle->supervisor_id  =   Auth::user()->id;
+                $registro_labor_detalle->user_id        =   $proyecto_usuario->usuario_id;
+                $registro_labor_detalle->registro_labor_id        =   $registro_labor->id;
+                $registro_labor_detalle->save();
+            }
+          
             DB::commit();
             return response()->json(['success'=>true,'message'=>'SE HA INICIADO LA ASISTENCIA!!']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+    public function asistenciasCreate($id){
+
+        //======= OBTENIENDO EL REGISTRO LABOR ======
+        $registro_labor_maestro =   RegistroLabor::find($id);
+        
+        //======== OBTENER EL ID DEL PROYECTO DEL SUPERVISOR =====
+        $proyecto   =   DB::select('select pr.id from proyectos as pr
+                        where pr.supervisor_id = ? and pr.estado = "ACTIVO"',
+                        [$registro_labor_maestro->supervisor_id]);
+                
+        //======== OBTENIENDO LOS COLABORADORES ENLAZADOS A ESE PROYECTO =====
+        $colaboradores  =   DB::select('select 
+                                rld.user_id as usuario_id,
+                                u.name as usuario_nombre,
+                                r.name as rol_nombre,
+                                r.name as rol_nombre,
+                                c.nro_documento as usuario_nro_documento,
+                                td.descripcion as usuario_tipo_documento,
+                                rld.hora_entrada,
+                                rld.hora_salida
+                            from registros_labor_detalle as rld
+                            inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.usuario_id =  rld.user_id)
+                            inner join users as u on u.id = rld.user_id
+                            inner join model_has_roles as mhr on mhr.model_id = u.id
+                            inner join roles as r on r.id =  mhr.role_id
+                            inner join colaboradores as c on c.id = u.colaborador_id
+                            inner join tipos_documento as td on td.id = c.tipo_documento_id
+                            where pp.proyecto_id = ? and pp.estado = "ACTIVO" 
+                            and rld.registro_labor_id = ? or rld.registro_labor_id is null',
+                            [$proyecto[0]->id,$id]);
+
+
+        return view('jornales.registro_labor.asistencias',compact('colaboradores','registro_labor_maestro'));
+    }
+
+    public function marcarEntrada(Request $request){
+        DB::beginTransaction();
+        try {
+           
+
+            $registro_labor                             =   RegistroLabor::find($request->get('registro_labor_id'));
+            if(!$registro_labor){
+                throw new Exception("No se encontró el registro de asistencia");
+            }
+
+            //========= MARCAR ASISTENCIA HORA ENTRADA =======
+            DB::update('
+                update registros_labor_detalle
+                set hora_entrada = ?
+                where proyecto_id = ? and user_id = ? and registro_labor_id = ?',
+                [Carbon::now(), $registro_labor->proyecto_id, $request->get('usuario_id'), $registro_labor->id]
+            );
+
+            //====== INCREMENTANDO CANT_TRABAJADORES EN EL MAESTRO =======
+            DB::update('
+                update registros_labor
+                set cant_trabajadores = cant_trabajadores + 1
+                where  id = ?',
+                [$registro_labor->id]
+            );
+
+           
+            $colaboradores    =   $this->getColaboradoresAsistencia($registro_labor->proyecto_id,$registro_labor->id);
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'ASISTENCIA REGISTRADA','colaboradores'=>$colaboradores]);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+    public function getColaboradoresAsistencia($proyecto_id,$registro_labor_id){
+
+        $colaboradores  =   DB::select('select 
+                                rld.user_id as usuario_id,
+                                u.name as usuario_nombre,
+                                r.name as rol_nombre,
+                                r.name as rol_nombre,
+                                c.nro_documento as usuario_nro_documento,
+                                td.descripcion as usuario_tipo_documento,
+                                rld.hora_entrada,
+                                rld.hora_salida
+                            from registros_labor_detalle as rld
+                            inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.usuario_id =  rld.user_id)
+                            inner join users as u on u.id = rld.user_id
+                            inner join model_has_roles as mhr on mhr.model_id = u.id
+                            inner join roles as r on r.id =  mhr.role_id
+                            inner join colaboradores as c on c.id = u.colaborador_id
+                            inner join tipos_documento as td on td.id = c.tipo_documento_id
+                            where pp.proyecto_id = ? and pp.estado = "ACTIVO" 
+                            and rld.registro_labor_id = ? or rld.registro_labor_id is null',
+                            [$proyecto_id,$registro_labor_id]);
+
+        return $colaboradores;
+    }
+
+    public function marcarSalida(Request $request){
+        DB::beginTransaction();
+        try {
+           
+
+            $registro_labor                             =   RegistroLabor::find($request->get('registro_labor_id'));
+            if(!$registro_labor){
+                throw new Exception("No se encontró el registro de asistencia");
+            }
+
+            DB::update('
+                update registros_labor_detalle
+                set hora_salida = ?
+                where proyecto_id = ? and user_id = ? and registro_labor_id = ?',
+                [Carbon::now(), $registro_labor->proyecto_id, $request->get('usuario_id'), $registro_labor->id]
+            );
+
+           
+            $colaboradores    =   $this->getColaboradoresAsistencia($registro_labor->proyecto_id,$registro_labor->id);
+
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'SALIDA REGISTRADA','colaboradores'=>$colaboradores]);
+
         } catch (\Throwable $th) {
             DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
