@@ -33,7 +33,7 @@
            const formRegistrarCategoria    =   document.querySelector('#formRegistrarCategoria');
            formRegistrarCategoria.reset();
 
-           limpiarErroresValidacionCategoria();
+           limpiarErroresValidacion('msgErrorCategoria');
 
        });
     }
@@ -60,7 +60,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacionCategoria();
+            limpiarErroresValidacion('msgErrorCategoria');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formRegistrarCategoria        =   document.querySelector('#formRegistrarCategoria');
             const formData                  =   new FormData(formRegistrarCategoria);
@@ -157,13 +157,6 @@
             const pError        =   document.querySelector(`.${clave}_error_categoria`);
             pError.textContent  =   objErroresValidacion[clave][0];
         }
-    }
-
-    function limpiarErroresValidacionCategoria(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgErrorCategoria');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
     }
 
     async function getCategoriasActualizadas(){

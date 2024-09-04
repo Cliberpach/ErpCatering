@@ -26,6 +26,12 @@
             e.preventDefault();
             registrarMarca();
         })
+
+        $('#mdlCreateMarca').on('hidden.bs.modal', function (e) {
+            const   formRegistrarMarca    =   document.querySelector('#formRegistrarMarca');
+            formRegistrarMarca.reset();
+            limpiarErroresValidacion('msgError');
+        });
     }
 
     function openMdlNuevaMarca(){
@@ -50,7 +56,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacion();
+            limpiarErroresValidacion('msgError');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formRegistrarMarca        =   document.querySelector('#formRegistrarMarca');
             const formData                  =   new FormData(formRegistrarMarca);
@@ -121,12 +127,5 @@
         }
     }
 
-    function limpiarErroresValidacion(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
-    }
-
-
+  
 </script>

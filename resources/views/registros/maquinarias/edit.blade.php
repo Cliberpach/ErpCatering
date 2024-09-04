@@ -85,7 +85,7 @@
         }).then(async (result) => {
         if (result.isConfirmed) {
 
-            limpiarErroresValidacion();
+            limpiarErroresValidacion('msgError');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formActualizarMaquinaria  =   document.querySelector('#formActualizarMaquinaria');
             const formData                  =   new FormData(formActualizarMaquinaria);
@@ -155,15 +155,6 @@
             pError.textContent  =   objErroresValidacion[clave][0];
         }
     }
-
-    function limpiarErroresValidacion(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
-    }
-
-   
 
 </script>
 

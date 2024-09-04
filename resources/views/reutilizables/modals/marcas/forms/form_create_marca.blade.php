@@ -9,7 +9,7 @@
                 </span>
                 <input required id="descripcion" name="descripcion" type="text" class="form-control" placeholder="Marca" aria-label="Example text with button addon" aria-describedby="button-addon1">
             </div>              
-            <span class="descripcion_error_marca msgError_marca"  style="color:red;"></span>
+            <span class="descripcion_error_marca msgErrorMarca"  style="color:red;"></span>
         </div>      
     </div>
 </form> 

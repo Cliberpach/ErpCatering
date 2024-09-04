@@ -9,7 +9,7 @@
                 </span>
                 <input required id="descripcion" name="descripcion" type="text" class="form-control" placeholder="Categoría" aria-label="Example text with button addon" aria-describedby="button-addon1">
             </div>              
-            <span class="descripcion_error_categoria msgError_categoria"  style="color:red;"></span>
+            <span class="descripcion_error_categoria msgErrorCategoria"  style="color:red;"></span>
         </div>      
     </div>
 </form> 

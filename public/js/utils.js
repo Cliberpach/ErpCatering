@@ -101,3 +101,11 @@ function getRowById(dtTabla,registro_id) {
 
     return rowData;
 }
+
+//======= LIMPIAR ERRORES DE VALIDACIÓN ========
+function limpiarErroresValidacion(error_clase){
+    const lstEtiquetasErrors    =   document.querySelectorAll(`.${error_clase}`);
+    lstEtiquetasErrors.forEach((etiqueta)=>{
+        etiqueta.textContent    =   '';
+    })
+}

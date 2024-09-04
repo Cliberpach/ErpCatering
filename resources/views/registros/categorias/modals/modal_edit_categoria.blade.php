@@ -27,6 +27,12 @@
             e.preventDefault();
             actualizarCategoria();
         })
+
+        $('#mdlEditCategoria').on('hidden.bs.modal', function (e) {
+            const   formActualizarCategoria    =   document.querySelector('#formActualizarCategoria');
+            formActualizarCategoria.reset();
+            limpiarErroresValidacion('msgError_edit');
+        });
     }
 
     function openMdlEditCategoria(id){
@@ -40,7 +46,7 @@
         //======== SETTEANDO DATA ========
         document.querySelector('#descripcion_edit').value   =   rowEditar.nombre;
 
-        $('#mdlEditMarca').modal('show');
+        $('#mdlEditCategoria').modal('show');
     }
 
     function actualizarCategoria(){
@@ -62,7 +68,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacionEdit();
+            limpiarErroresValidacion('msgError_edit');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formActualizarCategoria   =   document.querySelector('#formActualizarCategoria');
             const formData                  =   new FormData(formActualizarCategoria);
@@ -133,13 +139,5 @@
             pError.textContent  =   objErroresValidacion[clave][0];
         }
     }
-
-    function limpiarErroresValidacionEdit(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError_edit');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
-    }
-
 
 </script>

@@ -26,6 +26,12 @@
             e.preventDefault();
             registrarCategoria();
         })
+
+        $('#mdlCreateCategoria').on('hidden.bs.modal', function (e) {
+            const   formRegistrarCategoria    =   document.querySelector('#formRegistrarCategoria');
+            formRegistrarCategoria.reset();
+            limpiarErroresValidacion('msgError');
+        });
     }
 
     function openMdlNuevaCategoria(){
@@ -51,7 +57,7 @@
         }).then(async (result) => {
         if (result.isConfirmed) {
 
-            limpiarErroresValidacion();
+            limpiarErroresValidacion('msgError');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formRegistrarCategoria    =   document.querySelector('#formRegistrarCategoria');
             const formData                  =   new FormData(formRegistrarCategoria);
@@ -121,13 +127,5 @@
             pError.textContent  =   objErroresValidacion[clave][0];
         }
     }
-
-    function limpiarErroresValidacion(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
-    }
-
 
 </script>

@@ -81,7 +81,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacion();
+            limpiarErroresValidacion('msgError');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formRegistrarProducto     =   document.querySelector('#formRegistrarProducto');
             const formData                  =   new FormData(formRegistrarProducto);
@@ -148,13 +148,6 @@
             const pError        =   document.querySelector(`.${clave}_error`);
             pError.textContent  =   objErroresValidacion[clave][0];
         }
-    }
-
-    function limpiarErroresValidacion(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
     }
 
 </script>

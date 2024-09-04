@@ -26,6 +26,13 @@
             e.preventDefault();
             registrarAlmacen();
         })
+
+        $('#mdlCreateAlmacen').on('hidden.bs.modal', function (e) {
+            const   formRegistrarAlmacen    =   document.querySelector('#formRegistrarAlmacen');
+            formRegistrarAlmacen.reset();
+            limpiarErroresValidacion('msgError');
+        });
+
     }
 
     function openMdlNuevoAlmacen(){
@@ -42,7 +49,7 @@
         });
         swalWithBootstrapButtons.fire({
         title: "DESEA REGISTRAR EL ALMACÉN?",
-        text: "Se creará una nueva marca!",
+        text: "Se creará un nuevo almacén!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "SÍ, REGISTRAR!",
@@ -50,11 +57,11 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacion();
+            limpiarErroresValidacion('msgError');
             const token                     =   document.querySelector('input[name="_token"]').value;
-            const formRegistrarAlmacen        =   document.querySelector('#formRegistrarAlmacen');
+            const formRegistrarAlmacen      =   document.querySelector('#formRegistrarAlmacen');
             const formData                  =   new FormData(formRegistrarAlmacen);
-            const urlRegistrarAlmacen         =   @json(route('registros.almacen.store'));
+            const urlRegistrarAlmacen       =   @json(route('registros.almacen.store'));
 
             Swal.fire({
                 title: 'Cargando...',
@@ -119,12 +126,7 @@
         }
     }
 
-    function limpiarErroresValidacion(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
-    }
+ 
 
 
 </script>

@@ -33,7 +33,7 @@
             const formRegistrarTablaGeneralDetalle    =   document.querySelector('#formRegistrarTablaGeneralDetalle');
             formRegistrarTablaGeneralDetalle.reset();
 
-            limpiarErroresValidacionMarca();
+            limpiarErroresValidacion('msgError_tabla_general_detalle');
 
         });
     }
@@ -60,7 +60,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacionMarca();
+            limpiarErroresValidacion('msgError_tabla_general_detalle');
             const token                             =   document.querySelector('input[name="_token"]').value;
             const formRegistrarTablaGeneralDetalle  =   document.querySelector('#formRegistrarTablaGeneralDetalle');
             const formData                          =   new FormData(formRegistrarTablaGeneralDetalle);
@@ -165,13 +165,6 @@
             const pError        =   document.querySelector(`.${clave}_error_tabla_general_detalle`);
             pError.textContent  =   objErroresValidacion[clave][0];
         }
-    }
-
-    function limpiarErroresValidacionMarca(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError_tabla_general_detalle');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
     }
 
     async function getTablaGeneralDetalle(tabla_general_id){

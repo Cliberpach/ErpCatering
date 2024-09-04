@@ -233,7 +233,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacion();
+            limpiarErroresValidacion('msgError');
             
             Swal.fire({
                 title: 'Cargando...',
@@ -306,13 +306,6 @@
             const pError    =   document.querySelector(`.${clave}_error`);
             pError.textContent  =   objErroresValidacion[clave][0];
         }
-    }
-
-    function limpiarErroresValidacion(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
     }
 
 </script>

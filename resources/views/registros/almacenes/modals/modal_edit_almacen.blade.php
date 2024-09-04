@@ -27,6 +27,12 @@
             e.preventDefault();
             actualizarAlmacen();
         })
+
+        $('#mdlEditAlmacen').on('hidden.bs.modal', function (e) {
+            const   formActualizarAlmacen    =   document.querySelector('#formActualizarAlmacen');
+            formActualizarAlmacen.reset();
+            limpiarErroresValidacion('msgError_edit');
+        });
     }
 
     function openMdlEditAlmacen(id){
@@ -62,7 +68,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacionEdit();
+            limpiarErroresValidacion('msgError_edit');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formActualizarAlmacen     =   document.querySelector('#formActualizarAlmacen');
             const formData                  =   new FormData(formActualizarAlmacen);
@@ -133,13 +139,5 @@
             pError.textContent  =   objErroresValidacion[clave][0];
         }
     }
-
-    function limpiarErroresValidacionEdit(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError_edit');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
-    }
-
 
 </script>

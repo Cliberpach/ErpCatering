@@ -24,5 +24,9 @@ class RolSeeder extends Seeder
         $user   =   User::find(1);
         $user->assignRole($adminRole);
 
+        //========= ROL SUPERVISOR ======
+        $supervisorRole =   Role::create(['name' => 'SUPERVISOR']);
+        $supervisorRole->givePermissionTo($permissions);
+
     }
 }

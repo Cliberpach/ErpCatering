@@ -33,7 +33,7 @@
             const formRegistrarMarca    =   document.querySelector('#formRegistrarMarca');
             formRegistrarMarca.reset();
 
-            limpiarErroresValidacionMarca();
+            limpiarErroresValidacion('msgErrorMarca');
 
         });
     }
@@ -60,7 +60,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacionMarca();
+            limpiarErroresValidacion('msgErrorMarca');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formRegistrarMarca        =   document.querySelector('#formRegistrarMarca');
             const formData                  =   new FormData(formRegistrarMarca);
@@ -160,13 +160,6 @@
             const pError        =   document.querySelector(`.${clave}_error_marca`);
             pError.textContent  =   objErroresValidacion[clave][0];
         }
-    }
-
-    function limpiarErroresValidacionMarca(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError_marca');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
     }
 
     async function getMarcasActualizadas(){

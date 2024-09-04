@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreign('usuario_id')->references('id')->on('users');
 
             $table->primary(['proyecto_id', 'usuario_id']);
+            $table->enum('estado', ['ACTIVO', 'ANULADO','FINALIZADO'])->default('ACTIVO');
             $table->timestamps();
         });
     }

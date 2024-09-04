@@ -28,7 +28,7 @@ return new class extends Migration
             $table->foreign('supervisor_id')->references('id')->on('users');
 
 
-            $table->timestamp('hora_entrada');
+            $table->timestamp('hora_entrada')->nullable();
             $table->timestamp('hora_salida')->nullable();
 
             $table->timestamps();

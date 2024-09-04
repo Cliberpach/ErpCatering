@@ -168,7 +168,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacion();
+            limpiarErroresValidacion('msgError');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formRegistrarColaborador  =   document.querySelector('#formRegistrarColaborador');
             const formData                  =   new FormData(formRegistrarColaborador);
@@ -235,13 +235,6 @@
             const pError        =   document.querySelector(`.${clave}_error`);
             pError.textContent  =   objErroresValidacion[clave][0];
         }
-    }
-
-    function limpiarErroresValidacion(){
-        const lstEtiquetasErrors    =   document.querySelectorAll('.msgError');
-        lstEtiquetasErrors.forEach((etiqueta)=>{
-            etiqueta.textContent    =   '';
-        })
     }
 
     //======== CHANGE TIPO DOCUMENTO ======
