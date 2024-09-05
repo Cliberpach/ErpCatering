@@ -16,10 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('proyecto_id');
             $table->foreign('proyecto_id')->references('id')->on('proyectos');
 
-            $table->unsignedBigInteger('usuario_id');
-            $table->foreign('usuario_id')->references('id')->on('users');
+            $table->unsignedBigInteger('colaborador_id');
+            $table->foreign('colaborador_id')->references('id')->on('colaboradores');
 
-            $table->primary(['proyecto_id', 'usuario_id']);
+            $table->primary(['proyecto_id', 'colaborador_id']);
             $table->enum('estado', ['ACTIVO', 'ANULADO','FINALIZADO'])->default('ACTIVO');
             $table->timestamps();
         });

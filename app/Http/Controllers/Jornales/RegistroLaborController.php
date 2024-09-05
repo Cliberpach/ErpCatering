@@ -25,10 +25,10 @@ class RegistroLaborController extends Controller
     public function getRegistrosLabor(Request $request){
 
         $registros_labor = DB::table('registros_labor as rl')
-                            ->join('users as u', 'u.id', '=', 'rl.supervisor_id')
+                            ->join('colaboradores as c', 'c.id', '=', 'rl.supervisor_id')
                             ->select(
                                 'rl.id', 
-                                'u.name as supervisor_nombre',
+                                'c.nombre as supervisor_nombre',
                                 'rl.cant_trabajadores',
                                 'rl.observacion',
                                 'rl.created_at as fecha_registro',
@@ -45,9 +45,17 @@ class RegistroLaborController extends Controller
         DB::beginTransaction();
         try {
 
+            //========= OBTENIENDO COLABORADOR DEL USUARIO =======
+            $colaborador   =   DB::select('select c.id from colaboradores as c
+                                where c.id = ?',[Auth::user()->colaborador_id]);
+             
+            if(count($colaborador) === 0){
+                throw new Exception("Error, No se encontró el colaborador asociado al usuario!!");
+            }                   
+       
             //========== BUSCANDO EL PROYECTO QUE SUPERVISA EL USUARIO AUTENTICADO ========
-            $proyecto                       =   DB::select('select pr.id from proyectos as pr
-             where pr.supervisor_id = ?',[Auth::user()->id]);
+            $proyecto   =   DB::select('select pr.id from proyectos as pr
+                            where pr.supervisor_id = ?',[Auth::user()->id]);
 
             if(count($proyecto) === 0){
                 throw new Exception("Error, Necesitas supervisar algún proyecto para poder iniciar la asistencia");
@@ -55,20 +63,20 @@ class RegistroLaborController extends Controller
             
             //========== REGISTRAR MAESTRO ASISTENCIA =======
             $registro_labor                 =   new RegistroLabor();
-            $registro_labor->supervisor_id  =   Auth::user()->id;
+            $registro_labor->supervisor_id  =   $colaborador[0]->id;
             $registro_labor->proyecto_id    =   $proyecto[0]->id;
             $registro_labor->save();
 
             //===== OBTENER TODOS LOS USUARIOS ASOCIADOS A ESE PROYECTO ======
-            $proyecto_usuarios              =   ProyectoPersonal::where('proyecto_id',$proyecto[0]->id)->get();
+            $proyecto_colaboradores              =   ProyectoPersonal::where('proyecto_id',$proyecto[0]->id)->get();
         
             //======= REGISTRAR DETALLE ========
-            foreach ($proyecto_usuarios as $proyecto_usuario) {
-                $registro_labor_detalle                 =   new RegistroLaborDetalle();
-                $registro_labor_detalle->proyecto_id    =   $proyecto[0]->id;
-                $registro_labor_detalle->supervisor_id  =   Auth::user()->id;
-                $registro_labor_detalle->user_id        =   $proyecto_usuario->usuario_id;
-                $registro_labor_detalle->registro_labor_id        =   $registro_labor->id;
+            foreach ($proyecto_colaboradores as $proyecto_colaborador) {
+                $registro_labor_detalle                     =   new RegistroLaborDetalle();
+                $registro_labor_detalle->proyecto_id        =   $proyecto[0]->id;
+                $registro_labor_detalle->supervisor_id      =   $colaborador[0]->id;
+                $registro_labor_detalle->colaborador_id     =   $proyecto_colaborador->colaborador_id;
+                $registro_labor_detalle->registro_labor_id  =   $registro_labor->id;
                 $registro_labor_detalle->save();
             }
           
@@ -86,33 +94,38 @@ class RegistroLaborController extends Controller
         $registro_labor_maestro =   RegistroLabor::find($id);
         
         //======== OBTENER EL ID DEL PROYECTO DEL SUPERVISOR =====
-        $proyecto   =   DB::select('select pr.id from proyectos as pr
+        $proyecto   =   DB::select('select pr.id 
+                        from proyectos as pr
                         where pr.supervisor_id = ? and pr.estado = "ACTIVO"',
                         [$registro_labor_maestro->supervisor_id]);
+
                 
         //======== OBTENIENDO LOS COLABORADORES ENLAZADOS A ESE PROYECTO =====
         $colaboradores  =   DB::select('select 
-                                rld.user_id as usuario_id,
-                                u.name as usuario_nombre,
-                                r.name as rol_nombre,
-                                r.name as rol_nombre,
-                                c.nro_documento as usuario_nro_documento,
-                                td.descripcion as usuario_tipo_documento,
+                                rld.colaborador_id as colaborador_id,
+                                co.nombre as colaborador_nombre,
+                                ca.descripcion as cargo_nombre,
+                                co.nro_documento as colaborador_nro_documento,
+                                td.descripcion as colaborador_tipo_documento,
                                 rld.hora_entrada,
                                 rld.hora_salida
                             from registros_labor_detalle as rld
-                            inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.usuario_id =  rld.user_id)
-                            inner join users as u on u.id = rld.user_id
-                            inner join model_has_roles as mhr on mhr.model_id = u.id
-                            inner join roles as r on r.id =  mhr.role_id
-                            inner join colaboradores as c on c.id = u.colaborador_id
-                            inner join tipos_documento as td on td.id = c.tipo_documento_id
+                            inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.colaborador_id =  rld.colaborador_id)
+                            inner join colaboradores as co on co.id = rld.colaborador_id
+                            inner join cargos as ca on ca.id = co.cargo_id
+                            inner join tipos_documento as td on td.id = co.tipo_documento_id
                             where pp.proyecto_id = ? and pp.estado = "ACTIVO" 
                             and rld.registro_labor_id = ? or rld.registro_labor_id is null',
                             [$proyecto[0]->id,$id]);
 
+        //======== OBTENIENDO COLABORADOR ACTUAL =======
+        $colaborador_actual_id  =   DB::select('select co.id
+                                    from users as u
+                                    inner join colaboradores as co on co.id = u.colaborador_id
+                                    where u.id = ?',[Auth::user()->id])[0]->id;
 
-        return view('jornales.registro_labor.asistencias',compact('colaboradores','registro_labor_maestro'));
+        return view('jornales.registro_labor.asistencias',
+        compact('colaboradores','registro_labor_maestro','colaborador_actual_id'));
     }
 
     public function marcarEntrada(Request $request){
@@ -129,8 +142,11 @@ class RegistroLaborController extends Controller
             DB::update('
                 update registros_labor_detalle
                 set hora_entrada = ?
-                where proyecto_id = ? and user_id = ? and registro_labor_id = ?',
-                [Carbon::now(), $registro_labor->proyecto_id, $request->get('usuario_id'), $registro_labor->id]
+                where proyecto_id = ? and colaborador_id = ? and registro_labor_id = ?',
+                [Carbon::now(), 
+                $registro_labor->proyecto_id,
+                $request->get('colaborador_id'), 
+                $registro_labor->id]
             );
 
             //====== INCREMENTANDO CANT_TRABAJADORES EN EL MAESTRO =======
@@ -156,23 +172,22 @@ class RegistroLaborController extends Controller
     public function getColaboradoresAsistencia($proyecto_id,$registro_labor_id){
 
         $colaboradores  =   DB::select('select 
-                                rld.user_id as usuario_id,
-                                u.name as usuario_nombre,
-                                r.name as rol_nombre,
-                                r.name as rol_nombre,
-                                c.nro_documento as usuario_nro_documento,
-                                td.descripcion as usuario_tipo_documento,
+                                rld.colaborador_id as colaborador_id,
+                                co.nombre as colaborador_nombre,
+                                ca.descripcion as cargo_nombre,
+                                co.nro_documento as colaborador_nro_documento,
+                                td.descripcion as colaborador_tipo_documento,
                                 rld.hora_entrada,
                                 rld.hora_salida
                             from registros_labor_detalle as rld
-                            inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.usuario_id =  rld.user_id)
-                            inner join users as u on u.id = rld.user_id
-                            inner join model_has_roles as mhr on mhr.model_id = u.id
-                            inner join roles as r on r.id =  mhr.role_id
-                            inner join colaboradores as c on c.id = u.colaborador_id
-                            inner join tipos_documento as td on td.id = c.tipo_documento_id
-                            where pp.proyecto_id = ? and pp.estado = "ACTIVO" 
-                            and rld.registro_labor_id = ? or rld.registro_labor_id is null',
+                            inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.colaborador_id =  rld.colaborador_id)
+                            inner join colaboradores as co on co.id = rld.colaborador_id
+                            inner join cargos as ca on ca.id = co.cargo_id
+                            inner join tipos_documento as td on td.id = co.tipo_documento_id
+                            where 
+                            pp.proyecto_id = ? 
+                            and pp.estado = "ACTIVO" 
+                            and (rld.registro_labor_id = ? or rld.registro_labor_id is null)',
                             [$proyecto_id,$registro_labor_id]);
 
         return $colaboradores;
@@ -191,8 +206,13 @@ class RegistroLaborController extends Controller
             DB::update('
                 update registros_labor_detalle
                 set hora_salida = ?
-                where proyecto_id = ? and user_id = ? and registro_labor_id = ?',
-                [Carbon::now(), $registro_labor->proyecto_id, $request->get('usuario_id'), $registro_labor->id]
+                where proyecto_id = ?
+                and colaborador_id = ? 
+                and registro_labor_id = ?',
+                [Carbon::now(), 
+                $registro_labor->proyecto_id, 
+                $request->get('colaborador_id'), 
+                $registro_labor->id]
             );
 
            

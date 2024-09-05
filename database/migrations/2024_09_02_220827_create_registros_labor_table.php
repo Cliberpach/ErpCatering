@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('proyecto_id')->references('id')->on('proyectos');
 
             $table->unsignedBigInteger('supervisor_id');
-            $table->foreign('supervisor_id')->references('id')->on('users');
+            $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
             $table->unsignedInteger('cant_trabajadores')->default(0);
             $table->string('observacion',300)->nullable();

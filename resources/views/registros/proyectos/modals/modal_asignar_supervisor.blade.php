@@ -54,7 +54,7 @@
 
 
         lstSupervisores.forEach((supervisor) =>{
-            $('#supervisor').append(new Option(supervisor.name, supervisor.id));
+            $('#supervisor').append(new Option(supervisor.nombre, supervisor.id));
         });
 
         // Refrescar el select2 para que tome los cambios
@@ -63,7 +63,7 @@
 
     async function getSupervisores(){
         try {
-            const urlGetSupervisores      =   `{{ route('herramientas.usuario.getSupervisores') }}`;
+            const urlGetSupervisores      =   `{{ route('registros.colaborador.getSupervisores') }}`;
             const token                     =   document.querySelector('input[name="_token"]').value;
 
             const response  =   await fetch(urlGetSupervisores, {

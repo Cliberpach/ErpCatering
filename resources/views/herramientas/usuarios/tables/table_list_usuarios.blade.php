@@ -3,6 +3,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">NOMBRE</th>
+        <th scope="col">ROL</th>
         <th scope="col">CORREO</th>
         <th scope="col">FECHA</th>
         <th scope="col">ACCIONES</th>

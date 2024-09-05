@@ -23,9 +23,20 @@ class UsuarioController extends Controller
     }
 
     public function getUsuarios(Request $request){
-        $usuarios = User::where('estado','ACTIVO')
-                    ->select('id','name as nombre','email as correo','created_at as fecha_registro')
-                    ->get();
+
+        $usuarios = DB::table('users as u')
+                    ->leftJoin('model_has_roles as mhr', 'mhr.model_id', '=', 'u.id')
+                    ->leftJoin('roles as r', 'r.id', '=', 'mhr.role_id')
+                    ->select(
+                        'u.id', 
+                        'u.name as nombre',
+                        'u.email as correo',
+                        'u.created_at as fecha_registro',
+                        'r.name as rol_nombre',
+                        'u.estado',
+                    )
+        ->where('u.estado','ACTIVO')
+        ->get();
 
         return DataTables::of($usuarios)
                 ->make(true);

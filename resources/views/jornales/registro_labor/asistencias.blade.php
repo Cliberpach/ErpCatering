@@ -59,48 +59,57 @@
     }
 
     function pintarTablaDetalleAsistencia(lstColaboradores){
-        let filas   =   ``;
-        const tbody             =   document.querySelector('#table_detalle_asistencia tbody');
-        let acciones            =   ``;
+        let filas                   =   ``;
+        const tbody                 =   document.querySelector('#table_detalle_asistencia tbody');
+        let acciones                =   ``;
+        const supervisor_id         =   @json($registro_labor_maestro->supervisor_id);
+        const colaborador_actual_id =   @json($colaborador_actual_id);
 
-
+      
         lstColaboradores.forEach((c, index) => {
 
-            
-            acciones    =   `<div class="dropdown">
+            if((c.hora_entrada && c.hora_salida) || (supervisor_id != colaborador_actual_id)){
+                acciones    =   ``;
+            }else{
+
+                acciones    =   `<div class="dropdown">
                                     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="fa-solid fa-sliders"></i>
                                     </button>
                                     <ul class="dropdown-menu">
                                         ${!c.hora_entrada ? `
                                             <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" onclick="marcarEntrada(${index}, ${c.usuario_id})">
+                                                <a class="dropdown-item" href="javascript:void(0);" onclick="marcarEntrada(${index}, ${c.colaborador_id})">
                                                     <i class="fa-solid fa-ticket"></i> Marcar entrada
                                                 </a>
                                             </li>
                                         ` : ''}
                                         ${c.hora_entrada && !c.hora_salida ? `
                                             <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" onclick="marcarSalida(${index}, ${c.usuario_id})">
+                                                <a class="dropdown-item" href="javascript:void(0);" onclick="marcarSalida(${index}, ${c.colaborador_id})">
                                                     <i class="fa-solid fa-person-walking-dashed-line-arrow-right"></i> Marcar salida
                                                 </a>
                                             </li>
                                         ` : ''}
                                     </ul>
                                 </div>`;
-
-            if(c.hora_entrada && c.hora_salida){
-                acciones    =   ``;
             }
-            
-
+        
             filas += `
                 <tr>
-                    <th>${index + 1}</th>
-                    <td>${c.usuario_nombre}</td>
-                    <td>${c.usuario_tipo_documento}</td>
-                    <td>${c.usuario_nro_documento}</td>
-                    <td>${c.rol_nombre}</td>
+                    <th>
+                    </th>
+                    <td>
+                       ${acciones}  
+                    </td>
+                    <td>${c.colaborador_nombre}</td>
+                    <td>
+                        <div style="display:flex;justify-content:center;"> 
+                            <p style="margin:0;">${c.colaborador_nro_documento}</p>
+                        </div>
+                    </td>
+                    <td>${c.colaborador_tipo_documento}</td>
+                    <td>${c.cargo_nombre}</td>
                     <td>
                         <div style="width:120px;">
                             ${c.hora_entrada || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
@@ -110,9 +119,6 @@
                         <div style="width:120px;">
                             ${c.hora_salida || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
                         </div>
-                    </td>
-                    <td>
-                       ${acciones}  
                     </td>
                 </tr>
             `;
@@ -124,6 +130,8 @@
 
     function iniciarDataTableDetalleAsistencia(){
         dtDetalleAsistencia  =   new DataTable('#table_detalle_asistencia',{
+            responsive: true,
+            autoWidth: false,
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
@@ -148,7 +156,7 @@
         });
     }
 
-    function marcarEntrada(rowId,usuario_id){
+    function marcarEntrada(rowId,colaborador_id){
         const fila  =   dtDetalleAsistencia.row(rowId).data();
         if(fila.length === 0){
             toastr.error('NO SE ENCONTRÓ LA FILA EN EL DATATABLE');
@@ -164,7 +172,7 @@
         });
         swalWithBootstrapButtons.fire({
         title: "DESEA MARCAR LA ASISTENCIA DE INGRESO?",
-        text: `Usuario: ${fila[1]}`,
+        text: `Usuario: ${fila[2]}`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "SÍ, REGISTRAR!",
@@ -179,7 +187,7 @@
             const urlMarcarEntrada          =   @json(route('jornales.registro_labor.marcarEntrada'));
 
             formData.append('registro_labor_id',@json($registro_labor_maestro->id));
-            formData.append('usuario_id',usuario_id);
+            formData.append('colaborador_id',colaborador_id);
 
             Swal.fire({
                 title: 'Cargando...',
@@ -205,6 +213,7 @@
                 
                 if(res.success){
                     destruirDataTableDetalleAsistencia();
+                    limpiarTabla('table_detalle_asistencia');
                     pintarTablaDetalleAsistencia(res.colaboradores);
                     iniciarDataTableDetalleAsistencia();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
@@ -232,7 +241,7 @@
         });
     }
 
-    function marcarSalida(rowId,usuario_id){
+    function marcarSalida(rowId,colaborador_id){
         const fila  =   dtDetalleAsistencia.row(rowId).data();
         if(fila.length === 0){
             toastr.error('NO SE ENCONTRÓ LA FILA EN EL DATATABLE');
@@ -248,7 +257,7 @@
         });
         swalWithBootstrapButtons.fire({
         title: "DESEA MARCAR LA SALIDA?",
-        text: `Usuario: ${fila[1]}`,
+        text: `Usuario: ${fila[2]}`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "SÍ, REGISTRAR!",
@@ -263,7 +272,7 @@
             const urlMarcarSalida           =   @json(route('jornales.registro_labor.marcarSalida'));
 
             formData.append('registro_labor_id',@json($registro_labor_maestro->id));
-            formData.append('usuario_id',usuario_id);
+            formData.append('colaborador_id',colaborador_id);
 
             Swal.fire({
                 title: 'Cargando...',
@@ -289,6 +298,7 @@
                 
                 if(res.success){
                     destruirDataTableDetalleAsistencia();
+                    limpiarTabla('table_detalle_asistencia');
                     pintarTablaDetalleAsistencia(res.colaboradores);
                     iniciarDataTableDetalleAsistencia();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
@@ -319,6 +329,7 @@
     function destruirDataTableDetalleAsistencia(){
         if(dtDetalleAsistencia){
             dtDetalleAsistencia.destroy();
+            dtDetalleAsistencia =   null;
         }
     }
 

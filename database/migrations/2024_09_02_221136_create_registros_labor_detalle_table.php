@@ -18,14 +18,14 @@ return new class extends Migration
             $table->unsignedBigInteger('registro_labor_id');
             $table->foreign('registro_labor_id')->references('id')->on('registros_labor');
 
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('colaborador_id');
+            $table->foreign('colaborador_id')->references('id')->on('colaboradores');
 
             $table->unsignedBigInteger('proyecto_id')->nullable();
             $table->foreign('proyecto_id')->references('id')->on('proyectos');
 
             $table->unsignedBigInteger('supervisor_id');
-            $table->foreign('supervisor_id')->references('id')->on('users');
+            $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
 
             $table->timestamp('hora_entrada')->nullable();

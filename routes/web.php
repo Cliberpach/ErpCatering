@@ -73,6 +73,7 @@ Route::group(['prefix' => 'colaboradores', 'middleware' => ['auth','checkCustomP
     Route::get('/consultarDni/{dni}', [ColaboradorController::class, 'consultarDni'])->name('registros.colaborador.consultarDni');
     Route::get('/getColaboradores', [ColaboradorController::class, 'getColaboradores'])->name('registros.colaborador.getColaboradores');
     Route::delete('/destroy/{id}', [ColaboradorController::class, 'destroy'])->name('registros.colaborador.destroy');
+    Route::get('/getSupervisores', [ColaboradorController::class, 'getSupervisores'])->name('registros.colaborador.getSupervisores');
 
 });
 

@@ -27,15 +27,15 @@ class ProyectoAsignarSupervisorRequest extends FormRequest
         return [
             'supervisor' => [
                 'nullable', // Permite que el campo sea opcional
-                'exists:users,id', // Verifica que el usuario exista en la tabla users
+                'exists:colaboradores,id', // Verifica que el usuario exista en la tabla colaboradores
                 function ($attribute, $value, $fail) {
                     if ($value) { // Solo realiza la verificación si el valor está presente
-                        $usuario = DB::table('users')
+                        $colaborador = DB::table('colaboradores')
                             ->where('id', $value)
                             ->where('estado', 'ANULADO')
                             ->first();
 
-                        if ($usuario) {
+                        if ($colaborador) {
                             $fail('El supervisor está anulado y no puede ser seleccionado.');
                         }
                     }

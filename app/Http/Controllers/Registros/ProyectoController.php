@@ -141,30 +141,34 @@ class ProyectoController extends Controller
         
         //=========== OBTENER TODOS LOS USUARIOS LIBRES QUE NO ESTÉN ASIGNADOS A PROYECTOS DIFERENTES A ESTE ACTUALMENTE =======
         //========== ADEMÁS QUE NO SEAN SUPERVISORES ======
-        $usuarios_libres    = DB::select('SELECT u.id as usuario_id,
-                                        u.name as usuario_nombre,
-                                        r.name as rol_nombre
-                                        FROM users AS u
-                                        inner join model_has_roles as mhr on mhr.model_id = u.id 
-                                        inner join roles as r on r.id = mhr.role_id
-                                        WHERE u.id NOT IN (
-                                            SELECT pp.usuario_id
+        $colaboradores_libres   =   DB::select('SELECT 
+                                            co.id as colaborador_id,
+                                            co.nombre as colaborador_nombre,
+                                            co.nro_documento as colaborador_nro_documento,
+                                            ca.descripcion as cargo_nombre
+                                        FROM colaboradores AS co
+                                        inner join cargos as ca on ca.id = co.cargo_id 
+                                        WHERE co.id NOT IN (
+                                            SELECT pp.colaborador_id
                                             FROM proyecto_personal AS pp
                                             WHERE pp.estado = "ACTIVO" AND pp.proyecto_id != ?
-                                        ) AND r.name != "ADMIN" && r.name != "SUPERVISOR"
+                                        ) AND ca.descripcion != "ADMIN" && ca.descripcion != "SUPERVISOR"
                                     ',[$id]);
 
-        $usuarios_asignados  =   DB::select('select pp.usuario_id 
-                                from proyecto_personal as pp
-                                where pp.proyecto_id = ?',[$id]);  
+        $colaboradores_asignados    =   DB::select('select 
+                                        pp.colaborador_id 
+                                        from proyecto_personal as pp
+                                        where pp.proyecto_id = ?',[$id]);  
 
-        $idsAsignados = array_column($usuarios_asignados, 'usuario_id');
+        $idsAsignados = array_column($colaboradores_asignados, 'colaborador_id');
 
                     
         $proyecto_id    =   $id;
+        $proyecto       =   Proyecto::find($id);
 
        
-        return view('registros.proyectos.asignar_personal',compact('usuarios_libres','proyecto_id','idsAsignados'));
+        return view('registros.proyectos.asignar_personal',
+        compact('colaboradores_libres','proyecto_id','idsAsignados','proyecto'));
 
     }
 
@@ -179,9 +183,9 @@ class ProyectoController extends Controller
             ->delete();
 
             foreach ($lstUsuariosAsignados as  $usuario_asignado) {
-                $proyecto_personal              =   new ProyectoPersonal();
-                $proyecto_personal->proyecto_id =   $proyecto_id;
-                $proyecto_personal->usuario_id  =   $usuario_asignado;
+                $proyecto_personal                  =   new ProyectoPersonal();
+                $proyecto_personal->proyecto_id     =   $proyecto_id;
+                $proyecto_personal->colaborador_id  =   $usuario_asignado;
                 $proyecto_personal->save();
             }
 

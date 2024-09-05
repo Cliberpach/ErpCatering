@@ -48,17 +48,19 @@
         dtRegistrosLabor  =   new DataTable('#table_maestro_asistencia',{
             serverSide: true,
             processing: true,
+            responsive:true,
             ajax: {
                 url: urlGetRegistrosLabor,
                 type: 'GET',
             },
+            columnDefs: [
+                {
+                    targets: 0,           
+                    visible: false,       
+                }
+            ],
             columns: [
                 { data: 'id', name: 'id' },
-                { data: 'supervisor_nombre', name: 'supervisor_nombre' },
-                { data: 'fecha_registro', name: 'fecha_registro' },
-                { data: 'cant_trabajadores', name: 'cant_trabajadores' },
-                { data: 'observacion', name: 'observacion' },
-                { data: 'estado', name: 'estado' },
                 {
                     data: null, 
                     render: function(data, type, row) {
@@ -91,7 +93,12 @@
                     name: 'actions', 
                     orderable: false, 
                     searchable: false 
-                }
+                },
+                { data: 'supervisor_nombre', name: 'supervisor_nombre' },
+                { data: 'fecha_registro', name: 'fecha_registro' },
+                { data: 'cant_trabajadores', name: 'cant_trabajadores' },
+                { data: 'observacion', name: 'observacion' },
+                { data: 'estado', name: 'estado' }
             ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",

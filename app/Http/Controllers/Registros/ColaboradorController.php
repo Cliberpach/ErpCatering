@@ -155,4 +155,20 @@ class ColaboradorController extends Controller
         }
       
     }
+
+    public function getSupervisores(){
+        try {
+            $supervisores   =   DB::select('select co.id,co.nombre 
+                                from colaboradores as co
+                                inner join cargos as ca on ca.id = co.cargo_id
+                                left join proyectos as pr on pr.supervisor_id = co.id 
+                                where ca.descripcion = "SUPERVISOR" 
+                                and co.estado =  "ACTIVO" 
+                                and pr.supervisor_id is null');
+
+            return response()->json(['success'=>true,'supervisores'=>$supervisores]);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->unsignedBigInteger('supervisor_id')->nullable();
-            $table->foreign('supervisor_id')->references('id')->on('users');
+            $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
             $table->string('nombre',260);
 

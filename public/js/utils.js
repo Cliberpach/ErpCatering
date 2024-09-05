@@ -71,12 +71,10 @@ function eventsUtils(){
 
 //============== LIMPIAR UNA TABLA ========
 function limpiarTabla(idTabla) {
-
-    const tbody =   document.querySelector(`#${idTabla}`);
+    const tbody =   document.querySelector(`#${idTabla} tbody`);
     while (tbody.firstChild) {
         tbody.removeChild(tbody.firstChild);
     }
-
 }
 
 function mostrarAnimacion1() {

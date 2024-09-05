@@ -1,13 +1,16 @@
 @extends('layouts.layout')
 @section('title-page')
-    ASIGNAR PERSONAL
+    <i class="fa-solid fa-people-group" style="color:rgb(0, 68, 255);"></i> ASIGNAR PERSONAL 
 @endsection
 
 @section('section-page')
 
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Asignar Personal<i class="fa-solid fa-toolbox"></i></h6>
+        <h6 style="font-weigth:bold;">
+            <i class="fa-solid fa-diagram-project" style="color:rgb(0, 68, 255);"></i> PROYECTO:
+            <span>{{$proyecto->nombre}}</span>
+        </h6>
     </div>
     <div class="card-body">
         @include('registros.proyectos.forms.form_asignar_personal')
@@ -54,7 +57,7 @@
         })
 
         document.addEventListener('change',(e)=>{
-            if(e.target.classList.contains('chkUsuarioLibre')){
+            if(e.target.classList.contains('chkColaboradorLibre')){
                 const usuario_id    =   e.target.getAttribute('data-usuario-id');
                 const marcado       =   e.target.checked;
                 console.log('usuario marcado o desmarcado',usuario_id);

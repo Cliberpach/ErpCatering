@@ -131,7 +131,7 @@
               aria-label="Toggle navigation"
             >
               <span class="icon">
-                <i class="fa-solid fa-people-group"></i>
+                <i class="fa-solid fa-truck-moving"></i>
               </span>
               <span class="text">Trabajo Equipos</span>
             </a>
@@ -160,7 +160,7 @@
             aria-label="Toggle navigation"
           >
             <span class="icon">
-              <i class="fa-solid fa-truck-fast"></i>
+              <i class="fa-solid fa-cart-shopping"></i>
             </span>
             <span class="text">Logística</span>
           </a>

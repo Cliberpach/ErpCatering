@@ -52,6 +52,7 @@
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },
+                { data: 'rol_nombre', name: 'rol_nombre' },
                 { data: 'correo', name: 'correo' },
                 { data: 'fecha_registro', name: 'fecha_registro' },
                 {
