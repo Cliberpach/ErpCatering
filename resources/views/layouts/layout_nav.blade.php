@@ -123,7 +123,7 @@
         <li class="nav-item nav-item-has-children">
             <a
               href="#0"
-              class="collapsed"
+              class="@yield('trabajo_equipos-collapsed', 'collapsed')"
               data-bs-toggle="collapse"
               data-bs-target="#ddmenu_4"
               aria-controls="ddmenu_4"
@@ -135,10 +135,10 @@
               </span>
               <span class="text">Trabajo Equipos</span>
             </a>
-            <ul id="ddmenu_4" class="collapse dropdown-nav">
+            <ul id="ddmenu_4" class="collapse dropdown-nav @yield('trabajo_equipos-show')">
               <li>
                 @can('trabajo_equipo.registro_tarea')
-                  <a href="settings.html">Registro de Tarea</a>
+                  <a class="@yield('registro_tarea-active')" href="{{route('trabajo_equipos.registro_tarea.index')}}">Registro de Tarea</a>
                 @endcan
               </li>
               <li>

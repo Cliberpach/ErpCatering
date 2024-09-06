@@ -176,8 +176,6 @@
         });
     }
 
-    
-
     function marcarSalida(rowId,colaborador_id){
         const fila  =   dtDetalleAsistencia.row(rowId).data();
         if(fila.length === 0){

@@ -12,6 +12,7 @@ use App\Http\Controllers\Registros\MaquinariaController;
 use App\Http\Controllers\Registros\MarcaController;
 use App\Http\Controllers\Registros\ProductoController;
 use App\Http\Controllers\Registros\ProyectoController;
+use App\Http\Controllers\TrabajoEquipo\RegistroTareaController;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Middleware\CheckCustomPermission;
 use App\Models\Herramientas\TablaGeneralDetalle;
@@ -197,18 +198,33 @@ Route::group(['prefix' => 'jornales', 'middleware' => ['auth','checkCustomPermis
     // Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('registros.proyecto.edit');
     // Route::put('/update/{id}', [ProyectoController::class, 'update'])->name('registros.proyecto.update');
     Route::get('/getRegistrosLabor', [RegistroLaborController::class, 'getRegistrosLabor'])->name('jornales.registro_labor.getRegistrosLabor');
-    // Route::delete('/destroy/{id}', [ProyectoController::class, 'destroy'])->name('registros.proyecto.destroy');
+    Route::delete('/destroy/{id}', [RegistroLaborController::class, 'destroy'])->name('jornales.registro_labor.destroy');
     Route::get('/asistencias/{id}', [RegistroLaborController::class, 'asistenciasCreate'])->name('jornales.registro_labor.asistenciasCreate');
     Route::post('/marcarEntrada', [RegistroLaborController::class, 'marcarEntrada'])->name('jornales.registro_labor.marcarEntrada');
     Route::post('/marcarSalida', [RegistroLaborController::class, 'marcarSalida'])->name('jornales.registro_labor.marcarSalida');
 
 });
 
-
-
-
-
 //=========== FIN JORNALES ==========
+
+
+//============ INICIO TRABAJO EQUIPOS =======
+Route::group(['prefix' => 'trabajo_equipos', 'middleware' => ['auth','checkCustomPermission:trabajo_equipo.registro_tarea']], function () {
+
+    Route::get('/index', [RegistroTareaController::class, 'index'])->name('trabajo_equipos.registro_tarea.index');
+    Route::post('/store', [RegistroTareaController::class, 'store'])->name('trabajo_equipos.registro_tarea.store');
+    Route::get('/edit/{id}', [RegistroTareaController::class, 'edit'])->name('trabajo_equipos.registro_tarea.edit');
+    Route::put('/update/{id}', [RegistroTareaController::class, 'update'])->name('trabajo_equipos.registro_tarea.update');
+    Route::get('/create', [RegistroTareaController::class, 'create'])->name('trabajo_equipos.registro_tarea.create');
+    Route::get('/getRegistrosTarea', [RegistroTareaController::class, 'getRegistrosTarea'])->name('trabajo_equipos.registro_tarea.getRegistrosTarea');
+    Route::delete('/destroy/{id}', [RegistroTareaController::class, 'destroy'])->name('trabajo_equipos.registro_tarea.destroy');
+    //Route::get('/asistencias/{id}', [RegistroLaborController::class, 'asistenciasCreate'])->name('jornales.registro_labor.asistenciasCreate');
+    //Route::post('/marcarEntrada', [RegistroLaborController::class, 'marcarEntrada'])->name('jornales.registro_labor.marcarEntrada');
+    //Route::post('/marcarSalida', [RegistroLaborController::class, 'marcarSalida'])->name('jornales.registro_labor.marcarSalida');
+
+});
+
+//============= FIN TRABAJO EQUIPOS ===========
 
 Route::group(['prefix' => 'utils', 'middleware' => ['auth']], function () {
 

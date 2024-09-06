@@ -82,7 +82,7 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProyecto(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarRegistroLabor(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -193,13 +193,13 @@
     }
 
 
-    function eliminarProyecto(id){
+    function eliminarRegistroLabor(id){
         toastr.clear();
         let row             =   getRowById(dtRegistrosLabor,id);
         let message         =   '';
         let tipo_documento  =   '';
 
-        message =   `Desea eliminar el proyecto: ${row.nombre}`;
+        message =   `Desea eliminar la asistencia: ${row.fecha_registro}`;
 
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -221,7 +221,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando producto...',
+                html: 'Eliminando asistencia...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -229,11 +229,11 @@
             });
 
             try {
-                let urlIniciarAsistencia    =   `{{ route('registros.proyecto.destroy', ['id' => ':id']) }}`;
-                urlIniciarAsistencia        =   urlIniciarAsistencia.replace(':id', id);
-                const token              =   document.querySelector('input[name="_token"]').value;
+                let urlEliminarAsistencia       =   `{{ route('jornales.registro_labor.destroy', ['id' => ':id']) }}`;
+                urlEliminarAsistencia           =   urlEliminarAsistencia.replace(':id', id);
+                const token                     =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlIniciarAsistencia, {
+                const response  =   await fetch(urlEliminarAsistencia, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -246,11 +246,11 @@
                     dtRegistrosLabor.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PROYECTO');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR ASISTENCIA');
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR PROYECTO');
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR ASISTENCIA');
             }finally{
                 Swal.close();
             }

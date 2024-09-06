@@ -35,7 +35,7 @@ class RegistroLaborController extends Controller
                                 'rl.created_at as fecha_registro',
                                 'rl.created_at as observacion',
                                 'rl.estado'
-                            )
+                            )->where('rl.estado','!=','ANULADO')
                             ->get();
 
         return DataTables::of($registros_labor)
@@ -262,4 +262,21 @@ class RegistroLaborController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public function destroy($id){
+        DB::beginTransaction();
+        try {
+            $registro_labor                    =   RegistroLabor::find($id);
+            $registro_labor->estado            =   'ANULADO';
+            $registro_labor->update();
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'ASISTENCIA ELIMINADA']);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
 }

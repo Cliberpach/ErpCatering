@@ -63,6 +63,26 @@ function eventsUtils(){
             // Actualiza el valor del input
             input.value = value;
         }
+
+        if (e.target.classList.contains('inputEnteroPositivo')) {
+            const input = e.target;
+    
+            // Reemplaza cualquier carácter que no sea un dígito
+            let value = input.value.replace(/[^0-9]/g, '');
+    
+            // Asegúrate de que no empiece con ceros
+            if (value.startsWith('0')) {
+                value = value.replace(/^0+/, ''); // Elimina los ceros iniciales
+            }
+    
+            // Si el campo se vacía por completo, mantenerlo vacío
+            if (value === '') {
+                value = '0';
+            }
+    
+            // Actualiza el valor del input
+            input.value = value;
+        }
         
     })
 
