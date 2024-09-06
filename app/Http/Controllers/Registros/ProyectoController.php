@@ -8,6 +8,7 @@ use App\Http\Requests\Registros\Proyecto\ProyectoStoreRequest;
 use App\Http\Requests\Registros\Proyecto\ProyectoUpdateRequest;
 use App\Models\Registros\Almacen;
 use App\Models\Registros\Proyecto;
+use App\Models\Registros\ProyectoMaquinaria;
 use App\Models\Registros\ProyectoPersonal;
 use Illuminate\Http\Request;
 use Exception;
@@ -191,6 +192,62 @@ class ProyectoController extends Controller
 
             DB::commit();
             return response()->json(['success'=>true,'message'=>'PERSONAL ASIGNADO CON ÉXITO']);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+    public function asignarMaquinariaCreate($id){
+        
+        //=========== OBTENER TODAS LAS MAQUINARIAS LIBRES QUE NO ESTÉN ASIGNADOS A PROYECTOS DIFERENTES A ESTE ACTUALMENTE =======
+        //========== ADEMÁS QUE NO SEAN SUPERVISORES ======
+        $maquinarias_libres   =   DB::select('SELECT 
+                                            m.id as maquinaria_id,
+                                            m.nombre as maquinaria_nombre
+                                        FROM maquinarias AS m
+                                        WHERE m.id NOT IN (
+                                            SELECT pm.maquinaria_id
+                                            FROM proyecto_maquinaria AS pm
+                                            WHERE pm.estado = "ACTIVO" AND pm.proyecto_id != ?
+                                        )
+                                    ',[$id]);
+
+        $maquinarias_asignadas    =   DB::select('select 
+                                        pm.maquinaria_id 
+                                        from proyecto_maquinaria as pm
+                                        where pm.proyecto_id = ?',[$id]);  
+
+        $idsAsignados = array_column($maquinarias_asignadas, 'maquinaria_id');
+
+                    
+        $proyecto_id    =   $id;
+        $proyecto       =   Proyecto::find($id);
+
+       
+        return view('registros.proyectos.asignar_maquinaria',
+        compact('maquinarias_libres','proyecto_id','idsAsignados','proyecto'));
+
+    }
+
+    public function asignarMaquinariaStore(Request $request){
+        DB::beginTransaction();
+        try {
+            $lstMaquinariasAsignadas    =   json_decode($request->get('lstMaquinariasAsignadas'));
+            $proyecto_id                =   $request->get('proyecto_id');
+
+            DB::table('proyecto_maquinaria')
+            ->where('proyecto_id', $proyecto_id)
+            ->delete();
+
+            foreach ($lstMaquinariasAsignadas as  $maquinaria_asignada) {
+                $proyecto_maquinaria                    =   new ProyectoMaquinaria();
+                $proyecto_maquinaria->proyecto_id       =   $proyecto_id;
+                $proyecto_maquinaria->maquinaria_id     =   $maquinaria_asignada;
+                $proyecto_maquinaria->save();
+            }
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'MAQUINARIA ASIGNADA CON ÉXITO']);
         } catch (\Throwable $th) {
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }

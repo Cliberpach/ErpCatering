@@ -65,6 +65,7 @@ function eventsUtils(){
         }
         
     })
+
 }
 
 
@@ -107,3 +108,6 @@ function limpiarErroresValidacion(error_clase){
         etiqueta.textContent    =   '';
     })
 }
+
+
+

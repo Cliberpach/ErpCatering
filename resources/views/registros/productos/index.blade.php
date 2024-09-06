@@ -68,11 +68,11 @@
                         const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
 
                         return `
-                            <div class="btn-group">
+                            <div class="btn-group dropstart">
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-grip"></i>
                             </button>
-                            <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                            <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
                                 <li>
                                     <a class="dropdown-item" href="${urlEdit}">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar

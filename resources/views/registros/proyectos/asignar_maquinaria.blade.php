@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 @section('title-page')
-    <i class="fa-solid fa-people-group" style="color:rgb(0, 68, 255);"></i> ASIGNAR PERSONAL 
+    <i class="fa-solid fa-tractor" style="color:rgb(0, 68, 255);"></i> ASIGNAR MAQUINARIA 
 @endsection
 
 @section('section-page')
@@ -13,7 +13,7 @@
         </h6>
     </div>
     <div class="card-body">
-        @include('registros.proyectos.forms.form_asignar_personal')
+        @include('registros.proyectos.forms.form_asignar_maquinaria')
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
@@ -22,7 +22,7 @@
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
-            <button class="btn btn-primary" type="submit" form="formAsignarPersonal">
+            <button class="btn btn-primary" type="submit" form="formAsignarMaquinaria">
                 <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
             </button>
         </div>
@@ -33,20 +33,20 @@
 
 
 <script>
-    let     dtUsuariosLibres        =   null;
-    const   lstUsuariosAsignados    =   [];
+    let     dtMaquinariasLibres        =   null;
+    const   lstMaquinariasAsignadas    =   [];
 
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarSelect2();
-        iniciarDataTableUsuariosLibres();
-        setLstUsuariosAsignados();
+        iniciarDataTableMaquinariasLibres();
+        setLstMaquinariasAsignadas();
         events();
     })
 
     function events(){
-        document.querySelector('#formAsignarPersonal').addEventListener('submit',(e)=>{
+        document.querySelector('#formAsignarMaquinaria').addEventListener('submit',(e)=>{
             e.preventDefault();
-            asignarPersonal();
+            asignarMaquinaria();
         })
 
         document.addEventListener('click',(e)=>{
@@ -57,23 +57,22 @@
         })
 
         document.addEventListener('change',(e)=>{
-            if(e.target.classList.contains('chkColaboradorLibre')){
-                const usuario_id    =   e.target.getAttribute('data-usuario-id');
+            if(e.target.classList.contains('chkMaquinariaLibre')){
+                const maquinaria_id    =   e.target.getAttribute('data-maquinaria-id');
                 const marcado       =   e.target.checked;
-                console.log('usuario marcado o desmarcado',usuario_id);
 
-                const indiceUsuario =   lstUsuariosAsignados.findIndex((u)=>{
-                    return u == usuario_id;
+                const indiceMaquinaria =   lstMaquinariasAsignadas.findIndex((u)=>{
+                    return u == maquinaria_id;
                 })
 
                 if(marcado){
-                  if (indiceUsuario === -1) {
-                    lstUsuariosAsignados.push(usuario_id);
+                  if (indiceMaquinaria === -1) {
+                    lstMaquinariasAsignadas.push(maquinaria_id);
                   }
                 }else{
-                    console.log('quitando',indiceUsuario);
-                    if(indiceUsuario !== -1){
-                        lstUsuariosAsignados.splice(indiceUsuario,1);
+                    console.log('quitando',indiceMaquinaria);
+                    if(indiceMaquinaria !== -1){
+                        lstMaquinariasAsignadas.splice(indiceMaquinaria,1);
                     }
                 }
             }
@@ -91,15 +90,15 @@
         
     }
 
-    function setLstUsuariosAsignados(){
-        const usuariosAsignados =   @json($idsAsignados);
-        usuariosAsignados.forEach((id)=>{
-            lstUsuariosAsignados.push(id);
+    function setLstMaquinariasAsignadas(){
+        const maquinariasAsignadas =   @json($idsAsignados);
+        maquinariasAsignadas.forEach((id)=>{
+            lstMaquinariasAsignadas.push(id);
         })
     }
 
-    function iniciarDataTableUsuariosLibres(){
-        dtUsuariosLibres  =   new DataTable('#table_usuarios_libres',{
+    function iniciarDataTableMaquinariasLibres(){
+        dtMaquinariasLibres  =   new DataTable('#table_maquinarias_libres',{
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
@@ -127,7 +126,7 @@
 
     
 
-    function asignarPersonal(){
+    function asignarMaquinaria(){
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -136,7 +135,7 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA ASIGNAR PERSONAL AL PROYECTO?",
+        title: "DESEA ASIGNAR LA MAQUINARIA AL PROYECTO?",
         text: "Confirmar!",
         icon: "warning",
         showCancelButton: true,
@@ -148,15 +147,15 @@
           
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formData                  =   new FormData();
-            const urlAsignarPersonal        =   @json(route('registros.proyecto.asignarPersonalStore'));
+            const urlAsignarMaquinaria      =   @json(route('registros.proyecto.asignarMaquinariaStore'));
             const proyecto_id               =   @json($proyecto_id);
 
             formData.append('proyecto_id',proyecto_id);
-            formData.append('lstUsuariosAsignados',JSON.stringify(lstUsuariosAsignados));
+            formData.append('lstMaquinariasAsignadas',JSON.stringify(lstMaquinariasAsignadas));
 
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Asignando Personal al proyecto...',
+                html: 'Asignando Maquinaria al proyecto...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -164,7 +163,7 @@
             });
 
             try {
-                const response  =   await fetch(urlAsignarPersonal, {
+                const response  =   await fetch(urlAsignarMaquinaria, {
                                         method: 'POST',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -188,7 +187,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ASIGNAR PERSONAL AL PROYECTO');
+                toastr.error(error,'ERROR EN LA PETICIÓN ASIGNAR MAQUINARIA AL PROYECTO');
                 Swal.close();
             }
           

@@ -9,6 +9,7 @@
         <th scope="col">CARGO</th>
         <th scope="col">ENTRADA</th>
         <th scope="col">SALIDA</th>
+        <th scope="col">IMG</th>
       </tr>
     </thead>
     <tbody>

@@ -168,6 +168,9 @@ Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermi
     Route::get('/asignarPersonal/{id}', [ProyectoController::class, 'asignarPersonalCreate'])->name('registros.proyecto.asignarPersonalCreate');
     Route::post('/asignarPersonal', [ProyectoController::class, 'asignarPersonalStore'])->name('registros.proyecto.asignarPersonalStore');
 
+    Route::get('/asignarMaquinaria/{id}', [ProyectoController::class, 'asignarMaquinariaCreate'])->name('registros.proyecto.asignarMaquinariaCreate');
+    Route::post('/asignarMaquinaria', [ProyectoController::class, 'asignarMaquinariaStore'])->name('registros.proyecto.asignarMaquinariaStore');
+
 });
 
 

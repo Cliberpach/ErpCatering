@@ -70,26 +70,28 @@
                         const baseUrlAsignarPersonal    =   `{{ route('registros.proyecto.asignarPersonalCreate', ['id' => ':id']) }}`;   
                         const urlAsignarPersonal        =   baseUrlAsignarPersonal.replace(':id',data.id);
 
+                        const baseUrlAsignarMaquinaria    =   `{{ route('registros.proyecto.asignarMaquinariaCreate', ['id' => ':id']) }}`;   
+                        const urlAsignarMaquinaria        =   baseUrlAsignarMaquinaria.replace(':id',data.id);
+
+
                         const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
 
                         return `
-                            <div class="btn-group">
+                            <div class="btn-group dropstart">
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-grip"></i>
                             </button>
-                            <ul class="dropdown-menu" style="max-height: 90px; overflow-y: auto;">
+                            <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
                                 <li>
                                     <a class="dropdown-item" href="${urlEdit}">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar
                                     </a>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProyecto(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="finalizarProyecto(${data.id})">
                                         <i class="fa-solid fa-flag-checkered"></i> Finalizar
@@ -101,10 +103,14 @@
                                         <i class="fa-solid fa-book-open-reader"></i> Asignar supervisor
                                     </a>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="${urlAsignarPersonal}" >
                                         <i class="fa-solid fa-people-group"></i> Asignar personal
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="${urlAsignarMaquinaria}" >
+                                        <i class="fa-solid fa-tractor"></i> Asignar maquinaria
                                     </a>
                                 </li>
                             </ul>

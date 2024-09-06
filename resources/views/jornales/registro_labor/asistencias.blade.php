@@ -5,6 +5,9 @@
 
 @section('section-page')
 
+@include('reutilizables.lightbox.lightbox')
+@include('jornales.registro_labor.modals.modal_asistencia_entrada')
+
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
       <h6>Asistencia <i class="fa-solid fa-toolbox"></i></h6>
@@ -36,16 +39,23 @@
     })
 
     function events(){
-     
+        eventsMdlAsistenciaEntrada();
 
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
                 const rutaIndex         =   '{{route('jornales.registro_labor.index')}}';
                 window.location.href    =   rutaIndex;
             }
-        })
 
-       
+            //======== LIMPIAR IMAGEN =======
+            if(e.target.classList.contains('btnSetImageDefault')){
+                const inputImgPreview   =   document.querySelector('#img_vista_previa');
+                inputImgPreview.src     =   @json(asset('img/img_default.png'));
+
+                const inputCargarImg    =   document.querySelector('#img_asistencia_entrada');
+                inputCargarImg.value    =   '';
+            }
+        })
 
     }
 
@@ -79,7 +89,7 @@
                                     <ul class="dropdown-menu">
                                         ${!c.hora_entrada ? `
                                             <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" onclick="marcarEntrada(${index}, ${c.colaborador_id})">
+                                                <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsistenciaEntrada(${index}, ${c.colaborador_id})">
                                                     <i class="fa-solid fa-ticket"></i> Marcar entrada
                                                 </a>
                                             </li>
@@ -93,6 +103,13 @@
                                         ` : ''}
                                     </ul>
                                 </div>`;
+            }
+
+            //======= MANEJANDO IMAGEN =====
+            let elementImg  =   ``;
+            if(c.img_ruta){
+                const ruta  =   @json(asset('')) + c.img_ruta;
+                elementImg  =   `<img class="imgShowLightBox" style="height:50px;object-fit:contain;cursor:pointer;" src="${ruta}">`;
             }
         
             filas += `
@@ -115,10 +132,13 @@
                             ${c.hora_entrada || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
                         </div>
                     </td>
-                      <td>
+                    <td>
                         <div style="width:120px;">
                             ${c.hora_salida || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
                         </div>
+                    </td>
+                    <td>
+                        ${elementImg}    
                     </td>
                 </tr>
             `;
@@ -156,90 +176,7 @@
         });
     }
 
-    function marcarEntrada(rowId,colaborador_id){
-        const fila  =   dtDetalleAsistencia.row(rowId).data();
-        if(fila.length === 0){
-            toastr.error('NO SE ENCONTRÓ LA FILA EN EL DATATABLE');
-            return;
-        }
-       
-        const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-            confirmButton: "btn btn-success",
-            cancelButton: "btn btn-danger"
-        },
-        buttonsStyling: false
-        });
-        swalWithBootstrapButtons.fire({
-        title: "DESEA MARCAR LA ASISTENCIA DE INGRESO?",
-        text: `Usuario: ${fila[2]}`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "SÍ, REGISTRAR!",
-        cancelButtonText: "NO, CANCELAR!",
-        reverseButtons: true
-        }).then(async (result) => {
-        if (result.isConfirmed) {
-            
-            const token                     =   document.querySelector('input[name="_token"]').value;
-            const formMarcarAsistencia      =   document.querySelector('#formMarcarAsistencia');
-            const formData                  =   new FormData();
-            const urlMarcarEntrada          =   @json(route('jornales.registro_labor.marcarEntrada'));
-
-            formData.append('registro_labor_id',@json($registro_labor_maestro->id));
-            formData.append('colaborador_id',colaborador_id);
-
-            Swal.fire({
-                title: 'Cargando...',
-                html: 'Marcando Ingreso...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading(); 
-                }
-            });
-
-            try {
-                const response  =   await fetch(urlMarcarEntrada, {
-                                        method: 'POST',
-                                        headers: {
-                                            'X-CSRF-TOKEN': token 
-                                        },
-                                        body: formData
-                                    });
-
-                const   res =   await response.json();
-                
-                console.log(res);
-                
-                if(res.success){
-                    destruirDataTableDetalleAsistencia();
-                    limpiarTabla('table_detalle_asistencia');
-                    pintarTablaDetalleAsistencia(res.colaboradores);
-                    iniciarDataTableDetalleAsistencia();
-                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                    Swal.close();
-                    
-                }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR');
-                    Swal.close();
-                }
-
-              
-            } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN MARCAR INGRESO');
-                Swal.close();
-            }
-          
-
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            swalWithBootstrapButtons.fire({
-            title: "OPERACIÓN CANCELADA",
-            text: "NO SE REALIZARON ACCIONES",
-            icon: "error"
-            });
-        }
-        });
-    }
+    
 
     function marcarSalida(rowId,colaborador_id){
         const fila  =   dtDetalleAsistencia.row(rowId).data();

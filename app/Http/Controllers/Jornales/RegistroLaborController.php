@@ -15,6 +15,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class RegistroLaborController extends Controller
 {
@@ -108,7 +109,9 @@ class RegistroLaborController extends Controller
                                 co.nro_documento as colaborador_nro_documento,
                                 td.descripcion as colaborador_tipo_documento,
                                 rld.hora_entrada,
-                                rld.hora_salida
+                                rld.hora_salida,
+                                rld.img_ruta,
+                                rld.img_nombre
                             from registros_labor_detalle as rld
                             inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.colaborador_id =  rld.colaborador_id)
                             inner join colaboradores as co on co.id = rld.colaborador_id
@@ -157,6 +160,36 @@ class RegistroLaborController extends Controller
                 [$registro_labor->id]
             );
 
+            //======== GUARDANDO IMAGEN DE ASISTENCIA ENTRADA ======
+            if ($request->hasFile('img_asistencia_entrada')) {
+
+                $destinationPath = public_path('img/asistencia_entrada');
+            
+                if (!File::exists($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true);
+                }
+            
+                $file = $request->file('img_asistencia_entrada');
+
+                $extension      =   $file->getClientOriginalExtension();
+            
+                $fileName =  $registro_labor->id.'_'.$registro_labor->proyecto_id.'_'.$request->get('colaborador_id'). '.' . $extension;
+            
+                $file->move($destinationPath, $fileName);
+
+                //========= GUARDANDO LA RUTA DE LA IMAGEN Y EL NOMBRE ======
+                DB::update('
+                    update registros_labor_detalle
+                    set img_ruta = ? , img_nombre = ?
+                    where proyecto_id = ? and colaborador_id = ? and registro_labor_id = ?',
+                    ['img/asistencia_entrada/'.$fileName, 
+                    $fileName,
+                    $registro_labor->proyecto_id,
+                    $request->get('colaborador_id'), 
+                    $registro_labor->id]
+                );
+            
+            }
            
             $colaboradores    =   $this->getColaboradoresAsistencia($registro_labor->proyecto_id,$registro_labor->id);
 
@@ -178,7 +211,9 @@ class RegistroLaborController extends Controller
                                 co.nro_documento as colaborador_nro_documento,
                                 td.descripcion as colaborador_tipo_documento,
                                 rld.hora_entrada,
-                                rld.hora_salida
+                                rld.hora_salida,
+                                rld.img_ruta,
+                                rld.img_nombre
                             from registros_labor_detalle as rld
                             inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.colaborador_id =  rld.colaborador_id)
                             inner join colaboradores as co on co.id = rld.colaborador_id

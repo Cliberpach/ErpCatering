@@ -13,3 +13,4 @@
 
 <script src="{{asset('js/utils.js')}}"></script>
 
+@yield('scripts-page')

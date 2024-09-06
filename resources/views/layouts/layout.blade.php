@@ -164,7 +164,6 @@
       <!-- ========== section start ========== -->
       <section class="section">
         @include('layouts.layout_section')
-        
       </section>
       <!-- ========== section end ========== -->
 
