@@ -31,6 +31,9 @@ return new class extends Migration
             $table->timestamp('hora_entrada')->nullable();
             $table->timestamp('hora_salida')->nullable();
 
+            $table->longText('img_ruta')->nullable();
+            $table->string('img_nombre',260)->nullable();
+
             $table->timestamps();
         });
     }
