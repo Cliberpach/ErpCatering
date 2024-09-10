@@ -24,8 +24,7 @@ return new class extends Migration
             $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
             $table->string('observacion',300);
-            $table->integer('cantidad_horas_viajes',20)->unsigned();
-
+            $table->unsignedInteger('cantidad_horas_viajes');
             $table->enum('estado', ['ACTIVO', 'ANULADO','FINALIZADO'])->default('ACTIVO');
             $table->timestamps();
         });
