@@ -3,6 +3,7 @@
 use App\Http\Controllers\Herramientas\RolController;
 use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
 use App\Http\Controllers\Jornales\RegistroLaborController;
+use App\Http\Controllers\Logistica\RegistroCompraController;
 use App\Http\Controllers\Registros\AlmacenController;
 use App\Http\Controllers\Registros\CargoController;
 use App\Http\Controllers\Registros\CategoriaController;
@@ -225,6 +226,25 @@ Route::group(['prefix' => 'trabajo_equipos', 'middleware' => ['auth','checkCusto
 });
 
 //============= FIN TRABAJO EQUIPOS ===========
+
+
+//============ INICIO LOGÍSTICA =======
+Route::group(['prefix' => 'logistica', 'middleware' => ['auth','checkCustomPermission:logistica.registro_compra']], function () {
+
+    Route::get('/index', [RegistroCompraController::class, 'index'])->name('logistica.registro_compra.index');
+    // Route::post('/store', [RegistroTareaController::class, 'store'])->name('trabajo_equipos.registro_tarea.store');
+    // Route::get('/edit/{id}', [RegistroTareaController::class, 'edit'])->name('trabajo_equipos.registro_tarea.edit');
+    // Route::put('/update/{id}', [RegistroTareaController::class, 'update'])->name('trabajo_equipos.registro_tarea.update');
+    Route::get('/create', [RegistroCompraController::class, 'create'])->name('logistica.registro_compra.create');
+    Route::get('/getProductosByCategoria/{categoria_id}', [ProductoController::class, 'getProductosByCategoria'])->name('logistica.registro_compra.getProductosByCategoria');
+    // Route::delete('/destroy/{id}', [RegistroTareaController::class, 'destroy'])->name('trabajo_equipos.registro_tarea.destroy');
+    // Route::get('/asistencias/{id}', [RegistroLaborController::class, 'asistenciasCreate'])->name('jornales.registro_labor.asistenciasCreate');
+    //Route::post('/marcarEntrada', [RegistroLaborController::class, 'marcarEntrada'])->name('jornales.registro_labor.marcarEntrada');
+    //Route::post('/marcarSalida', [RegistroLaborController::class, 'marcarSalida'])->name('jornales.registro_labor.marcarSalida');
+
+});
+
+//============= FIN LOGÍSTICA ===========
 
 Route::group(['prefix' => 'utils', 'middleware' => ['auth']], function () {
 

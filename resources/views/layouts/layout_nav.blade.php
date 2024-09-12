@@ -152,7 +152,7 @@
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
-            class="collapsed"
+            class="@yield('logistica-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
             data-bs-target="#ddmenu_5"
             aria-controls="ddmenu_5"
@@ -164,10 +164,10 @@
             </span>
             <span class="text">Logística</span>
           </a>
-          <ul id="ddmenu_5" class="collapse dropdown-nav">
+          <ul id="ddmenu_5" class="collapse dropdown-nav @yield('logistica-show')">
             <li>
               @can('logistica.registro_compra')
-                <a href="signin.html">Registro de Compras</a>
+                <a class="@yield('registro_compra-active')" href="{{route('logistica.registro_compra.index')}}">Registro de Compras</a>
               @endcan
             </li>
             <li>

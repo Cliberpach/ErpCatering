@@ -133,4 +133,28 @@ class ProductoController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public function getProductosByCategoria($categoria_id){
+        try {
+            $productos  =   DB::select('select 
+                            p.id as producto_id,
+                            p.marca_id,
+                            p.categoria_id,
+                            p.nombre as producto_nombre,
+                            m.descripcion as marca_nombre,
+                            c.descripcion as categoria_nombre,
+                            p.stock as producto_stock,
+                            tgd.descripcion as producto_unidad_medida
+                            from productos as p
+                            inner join marcas as m on m.id = p.marca_id
+                            inner join categorias as c on c.id = p.categoria_id 
+                            inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
+                            where p.estado = "ACTIVO" and p.categoria_id = ?',
+                            [$categoria_id]);
+
+            return response()->json(['success'=>true,'productos'=>$productos]);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
 }

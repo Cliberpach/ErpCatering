@@ -77,7 +77,7 @@ function eventsUtils(){
     
             // Si el campo se vacía por completo, mantenerlo vacío
             if (value === '') {
-                value = '0';
+                value = '';
             }
     
             // Actualiza el valor del input
