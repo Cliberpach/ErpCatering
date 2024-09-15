@@ -1,18 +1,20 @@
 @extends('layouts.layout')
 @section('title-page')
-    REGISTRAR COMPRA
+    EDITAR COTIZACIÓN DE COMPRA
 @endsection
 
 @section('section-page')
 
-@include('logistica.registro_compra.modals.modal_productos')
+@include('logistica.cotizacion_compra.modals.modal_productos')
+@include('logistica.cotizacion_compra.modals.modal_edit_item')
+
 
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Datos de la Compra <i class="fa-solid fa-toolbox"></i></h6>
+      <h6>Datos de la Cotización de Compra <i class="fa-solid fa-toolbox"></i></h6>
     </div>
     <div class="card-body">
-        @include('logistica.registro_compra.forms.form_create_compra')
+        @include('logistica.cotizacion_compra.forms.form_edit_cotizacion_compra')
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
@@ -21,7 +23,7 @@
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
-            <button class="btn btn-primary" type="submit" form="formRegistrarCompra">
+            <button class="btn btn-primary" type="submit" form="formActualizarCotizacionCompra">
                 <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
             </button>
         </div>
@@ -32,11 +34,13 @@
 
 
 <script>
-    let dtProductos         =   null;
-    let dtCompraDetalle     =   null;
-    const lstCompraDetalle  =   [];
+    let dtProductos             =   null;
+    let dtCompraDetalle         =   null;
+    const lstCotizacionCompra   =   [];
 
     document.addEventListener('DOMContentLoaded',()=>{
+        cargarDetallePrevio();
+        pintarTableCompraDetalle(lstCotizacionCompra);
         iniciarSelect2();
         iniciarDataTableProductos();
         iniciarDataTableCompraDetalle();
@@ -44,15 +48,19 @@
     })
 
     function events(){
-    
-        document.querySelector('#formRegistrarCompra').addEventListener('submit',(e)=>{
+        eventsMdlEditItem();
+
+        document.querySelector('#formActualizarCotizacionCompra').addEventListener('submit',(e)=>{
             e.preventDefault();
-            registrarProducto();
+            const validacion    =   validacionactualizarCotizacionCompra();
+            if(validacion){
+                actualizarCotizacionCompra();
+            }
         })
 
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
-                const rutaIndex         =   '{{route('registros.producto.index')}}';
+                const rutaIndex         =   '{{route('logistica.cotizacion_compra.index')}}';
                 window.location.href    =   rutaIndex;
             }
 
@@ -73,7 +81,7 @@
                 }
 
                 mostrarAnimacion1();
-                agregarProducto(producto_elegido,inputCantidad.value);
+                agregarProducto({...producto_elegido},inputCantidad.value);
                 ocultarAnimacion1();
 
             }
@@ -142,10 +150,26 @@
         });
     }
 
+    function cargarDetallePrevio() {
+        const cotizacion_compra_detalle =   @json($cotizacion_compra_detalle);
+        console.log(cotizacion_compra_detalle);
+        cotizacion_compra_detalle.forEach((ccd)=>{
+            lstCotizacionCompra.push(ccd);
+        })
+    }
+
+    function validacionactualizarCotizacionCompra(){
+        if(lstCotizacionCompra.length === 0){
+            toastr.error('EL DETALLE DE LA COMPRA ESTÁ VACÍO!!!');
+            return false;
+        }
+        return true;
+    }
+
     function agregarProducto(producto,cantidad){
         producto.cantidad   =   cantidad;
 
-        const indiceProducto    =   lstCompraDetalle.findIndex((p)=>{
+        const indiceProducto    =   lstCotizacionCompra.findIndex((p)=>{
             return p.producto_id == producto.producto_id;
         })
 
@@ -154,10 +178,10 @@
             return;
         }
 
-        lstCompraDetalle.push(producto);
+        lstCotizacionCompra.push(producto);
         limpiarTabla('table_compra_detalle');
         destruirDataTableCompraDetalle();
-        pintarTableCompraDetalle(lstCompraDetalle);
+        pintarTableCompraDetalle(lstCotizacionCompra);
         iniciarDataTableCompraDetalle();
         toastr.info('PRODUCTO AGREGADO AL DETALLE');
     }
@@ -166,7 +190,12 @@
         let filas   =   ``;
         lstItems.forEach((producto)=>{
             filas   +=  `<tr>
-                            <th></th>
+                            <th>
+                                <div style="display:flex;justify-content:center;gap:5px;">
+                                    <i class="fas fa-edit btn btn-warning btnEditItem" data-producto-id="${producto.producto_id}"></i>
+                                    <i class="fas fa-trash-alt btn btn-danger btnDeleteItem" data-producto-id="${producto.producto_id}"></i>
+                                </div>
+                            </th>
                             <td>${producto.producto_nombre}</td>
                             <td>${producto.categoria_nombre}</td>
                             <td>${producto.marca_nombre}</td>
@@ -184,7 +213,7 @@
             mostrarAnimacion1();
 
             const token                         =   document.querySelector('input[name="_token"]').value;
-            const urlGetProductosByCategoria    =   @json(route('logistica.registro_compra.getProductosByCategoria', ['categoria_id' => 'CATEGORIA_ID']));
+            const urlGetProductosByCategoria    =   @json(route('logistica.cotizacion_compra.getProductosByCategoria', ['categoria_id' => 'CATEGORIA_ID']));
             const url                           =   urlGetProductosByCategoria.replace('CATEGORIA_ID', categoria_id);
 
             const response  =   await fetch(url, {
@@ -249,7 +278,7 @@
     }
 
 
-    function registrarProducto(){
+    function actualizarCotizacionCompra(){
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -258,24 +287,28 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA REGISTRAR EL PRODUCTO?",
-        text: "Se creará un nuevo producto!",
+        title: "DESEA ACTUALIZAR LA COTIZACIÓN?",
+        text: "Cotización de compra!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "SÍ, REGISTRAR!",
+        confirmButtonText: "SÍ, ACTUALIZAR!",
         cancelButtonText: "NO, CANCELAR!",
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
             limpiarErroresValidacion('msgError');
-            const token                     =   document.querySelector('input[name="_token"]').value;
-            const formRegistrarCompra       =   document.querySelector('#formRegistrarCompra');
-            const formData                  =   new FormData(formRegistrarCompra);
-            const urlRegistrarProducto      =   @json(route('registros.producto.store'));
+            const token                             =   document.querySelector('input[name="_token"]').value;
+            const formActualizarCotizacionCompra    =   document.querySelector('#formActualizarCotizacionCompra');
+            const formData                          =   new FormData();
+            const id                                =   @json($id);
+            let urlActualizarCotizacionCompra       =   `{{ route('logistica.cotizacion_compra.update', ['id' => ':id']) }}`;
+            urlActualizarCotizacionCompra           =   urlActualizarCotizacionCompra.replace(':id', id);
+
+            formData.append('lstCotizacionCompra',JSON.stringify(lstCotizacionCompra))
 
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Registrando nuevo producto...',
+                html: 'Actualizando cotización de compra...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -283,10 +316,11 @@
             });
 
             try {
-                const response  =   await fetch(urlRegistrarProducto, {
+                const response  =   await fetch(urlActualizarCotizacionCompra, {
                                         method: 'POST',
                                         headers: {
-                                            'X-CSRF-TOKEN': token 
+                                            'X-CSRF-TOKEN': token,
+                                            'X-HTTP-Method-Override': 'PUT' 
                                         },
                                         body: formData
                                     });
@@ -304,9 +338,9 @@
                 }
                 
                 if(res.success){
-                    const producto_index     =   @json(route('registros.producto.index'));
+                    const cotizacion_compra_index     =   @json(route('logistica.cotizacion_compra.index'));
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                    window.location.href    =   producto_index;
+                    window.location.href    =   cotizacion_compra_index;
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
@@ -314,7 +348,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR PRODUCTO');
+                toastr.error(error,'ERROR EN LA PETICIÓN ACTUALIZAR COTIZACIÓN DE COMPRA');
                 Swal.close();
             }
           

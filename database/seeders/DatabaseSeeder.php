@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         //     'colaborador_id'=>1
         // ]);
 
+        $this->call(EmpresaSeeder::class);
         $this->call(TablaGeneralSeeder::class);
         $this->call(TipoDocumentoSeeder::class);
         $this->call(CargoSeed::class);

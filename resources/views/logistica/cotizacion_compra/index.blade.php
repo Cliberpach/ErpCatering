@@ -1,27 +1,27 @@
 
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE COMPRAS
+    COTIZACIONES DE COMPRA
 @endsection
 
 @section('logistica-collapsed', '')
 @section('logistica-expanded', 'true')
 @section('logistica-show', 'show')
-@section('registro_compra-active', 'active')
+@section('cotizacion_compra-active', 'active')
 
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Registro de Compra <i class="fa-solid fa-cart-shopping"></i>
+      <h6>Registro de Cotizaciones Compra <i class="fa-solid fa-cart-shopping"></i>
       </h6>
         
-            <button class="btn btn-primary" onclick="goToRegistrarCompra()">
+            <button class="btn btn-primary" onclick="goToRegistrarCotizacionCompra()">
                 <i class="fa-solid fa-plus"></i> NUEVO
             </button>
     </div>
     <div class="table-responsive">
-        @include('jornales.registro_labor.tables.table_maestro_asistencia')
+        @include('logistica.cotizacion_compra.tables.table_cotizacion_compra')
     </div>
 </div>
 <!-- end card -->
@@ -35,53 +35,63 @@
 @endif
 
 <script>
-    let dtRegistrosLabor    =   null;
+    let dtCotizacionesCompra    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableRegistrosLabor();
+        iniciarDataTableCotizacionCompra();
     })
 
-    function iniciarDataTableRegistrosLabor(){
-        const urlGetRegistrosLabor = '{{ route('jornales.registro_labor.getRegistrosLabor') }}';
+    function iniciarDataTableCotizacionCompra(){
+        const urlGetCotizacionesCompra = '{{ route('logistica.cotizacion_compra.getCotizacionesCompra') }}';
 
-        dtRegistrosLabor  =   new DataTable('#table_maestro_asistencia',{
+        dtCotizacionesCompra  =   new DataTable('#table_cotizacion_compra',{
             serverSide: true,
             processing: true,
             responsive:true,
             ajax: {
-                url: urlGetRegistrosLabor,
+                url: urlGetCotizacionesCompra,
                 type: 'GET',
             },
-            columnDefs: [
-                {
-                    targets: 0,           
-                    visible: false,       
-                }
-            ],
             columns: [
-                { data: 'id', name: 'id' },
+                {
+                    data: 'simbolo',
+                    name: 'simbolo',
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).css('font-weight', 'bold');
+                    }
+                },
+                { data: 'colaborador_nombre', name: 'colaborador_nombre' },
+                { data: 'fecha_registro', name: 'fecha_registro' },
+                { data: 'estado', name: 'estado' },
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('jornales.registro_labor.asistenciasCreate', ['id' => ':id']) }}`;
+                        const baseUrlEdit   =   `{{ route('logistica.cotizacion_compra.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
-                        const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
+                        const urlDelete = `{{ route('logistica.cotizacion_compra.destroy', ':id') }}`.replace(':id', data.id);
+                        const urlPdf    = `{{ route('logistica.cotizacion_compra.pdf', ':id') }}`.replace(':id', data.id);
+
 
                         return `
-                            <div class="btn-group">
+                            <div class="btn-group dropstart">
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-grip"></i>
                             </button>
                             <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                                 <li>
+                                    <a class="dropdown-item" href="${urlPdf}" target="_blank">
+                                        <i class="fa-solid fa-file-pdf"></i> PDF
+                                    </a>
+                                </li>
                                 <li>
                                     <a class="dropdown-item" href="${urlEdit}">
-                                        <i class="fa-solid fa-file-pen"></i> Asistencias
+                                        <i class="fa-solid fa-file-pen"></i> Editar
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarRegistroLabor(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarCotizacionCompra(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -92,12 +102,7 @@
                     name: 'actions', 
                     orderable: false, 
                     searchable: false 
-                },
-                { data: 'supervisor_nombre', name: 'supervisor_nombre' },
-                { data: 'fecha_registro', name: 'fecha_registro' },
-                { data: 'cant_trabajadores', name: 'cant_trabajadores' },
-                { data: 'observacion', name: 'observacion' },
-                { data: 'estado', name: 'estado' }
+                }
             ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
@@ -124,18 +129,17 @@
     }
 
 
-    function goToRegistrarCompra(){
-        window.location.href = @json(route('logistica.registro_compra.create'));
+    function goToRegistrarCotizacionCompra(){
+        window.location.href = @json(route('logistica.cotizacion_compra.create'));
     }
 
 
-    function eliminarRegistroLabor(id){
+    function eliminarCotizacionCompra(id){
         toastr.clear();
-        let row             =   getRowById(dtRegistrosLabor,id);
+        let row             =   getRowById(dtCotizacionesCompra,id);
         let message         =   '';
-        let tipo_documento  =   '';
 
-        message =   `Desea eliminar la asistencia: ${row.fecha_registro}`;
+        message =   `Desea eliminar la cotización de compra N°${id}`;
 
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -157,7 +161,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando asistencia...',
+                html: 'Eliminando cotización de compra...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -165,11 +169,11 @@
             });
 
             try {
-                let urlEliminarAsistencia       =   `{{ route('jornales.registro_labor.destroy', ['id' => ':id']) }}`;
-                urlEliminarAsistencia           =   urlEliminarAsistencia.replace(':id', id);
-                const token                     =   document.querySelector('input[name="_token"]').value;
+                let urlEliminarCotizacionCompra         =   `{{ route('logistica.cotizacion_compra.destroy', ['id' => ':id']) }}`;
+                urlEliminarCotizacionCompra             =   urlEliminarCotizacionCompra.replace(':id', id);
+                const token                             =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlEliminarAsistencia, {
+                const response  =   await fetch(urlEliminarCotizacionCompra, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -179,14 +183,14 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtRegistrosLabor.draw();
+                    dtCotizacionesCompra.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR ASISTENCIA');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR COTIZACIÓN DE COMPRA');
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR ASISTENCIA');
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR COTIZACIÓN DE COMPRA');
             }finally{
                 Swal.close();
             }

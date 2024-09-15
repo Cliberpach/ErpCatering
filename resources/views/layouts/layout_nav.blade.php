@@ -167,12 +167,17 @@
           <ul id="ddmenu_5" class="collapse dropdown-nav @yield('logistica-show')">
             <li>
               @can('logistica.registro_compra')
-                <a class="@yield('registro_compra-active')" href="{{route('logistica.registro_compra.index')}}">Registro de Compras</a>
+                <a class="@yield('registro_compra-active')">Registro de Compras</a>
               @endcan
             </li>
             <li>
               @can('logistica.registro_salida')
                 <a href="signup.html">Registro de Salidas</a>
+              @endcan
+            </li>
+            <li>
+              @can('logistica.cotizacion_compra')
+                <a class="@yield('cotizacion_compra-active')" href="{{route('logistica.cotizacion_compra.index')}}" >Cotización Compra</a>
               @endcan
             </li>
           </ul>

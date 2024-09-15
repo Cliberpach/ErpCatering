@@ -22,7 +22,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="table-responsive">
-                        @include('logistica.registro_compra.tables.table_productos')
+                        @include('logistica.cotizacion_compra.tables.table_productos')
                     </div>
                 </div>
             </div>
@@ -76,6 +76,9 @@
         producto_elegido.categoria_nombre       =   producto.categoria_nombre;
         producto_elegido.marca_nombre           =   producto.marca_nombre;
         producto_elegido.producto_unidad_medida =   producto.producto_unidad_medida;
+
+        console.log('PRODUCTO ELEGIDO');
+        console.log(producto_elegido);
 
 
         $('#mdlProductos').modal('hide');
