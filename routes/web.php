@@ -3,6 +3,8 @@
 use App\Http\Controllers\Herramientas\RolController;
 use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
 use App\Http\Controllers\Jornales\RegistroLaborController;
+use App\Http\Controllers\Logistica\CotizacionCompraController;
+use App\Http\Controllers\Logistica\RegistroCompraController;
 use App\Http\Controllers\Registros\AlmacenController;
 use App\Http\Controllers\Registros\CargoController;
 use App\Http\Controllers\Registros\CategoriaController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\TrabajoEquipo\RegistroTareaController;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Middleware\CheckCustomPermission;
 use App\Models\Herramientas\TablaGeneralDetalle;
+use App\Models\Logistica\CotizacionCompra;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -225,6 +228,25 @@ Route::group(['prefix' => 'trabajo_equipos', 'middleware' => ['auth','checkCusto
 });
 
 //============= FIN TRABAJO EQUIPOS ===========
+
+
+//============ INICIO LOGÍSTICA =======
+Route::group(['prefix' => 'logistica', 'middleware' => ['auth','checkCustomPermission:logistica.cotizacion_compra']], function () {
+
+    Route::get('/index', [CotizacionCompraController::class, 'index'])->name('logistica.cotizacion_compra.index');
+    Route::post('/store', [CotizacionCompraController::class, 'store'])->name('logistica.cotizacion_compra.store');
+    Route::get('/edit/{id}', [CotizacionCompraController::class, 'edit'])->name('logistica.cotizacion_compra.edit');
+    Route::put('/update/{id}', [CotizacionCompraController::class, 'update'])->name('logistica.cotizacion_compra.update');
+    Route::get('/create', [CotizacionCompraController::class, 'create'])->name('logistica.cotizacion_compra.create');
+    Route::get('/getProductosByCategoria/{categoria_id}', [ProductoController::class, 'getProductosByCategoria'])->name('logistica.cotizacion_compra.getProductosByCategoria');
+    Route::delete('/destroy/{id}', [CotizacionCompraController::class, 'destroy'])->name('logistica.cotizacion_compra.destroy');
+    Route::get('/getCotizacionesCompra', [CotizacionCompraController::class, 'getCotizacionesCompra'])->name('logistica.cotizacion_compra.getCotizacionesCompra');
+    Route::get('/pdf/{id}', [CotizacionCompraController::class, 'pdf'])->name('logistica.cotizacion_compra.pdf');
+    //Route::post('/marcarSalida', [RegistroLaborController::class, 'marcarSalida'])->name('jornales.registro_labor.marcarSalida');
+
+});
+
+//============= FIN LOGÍSTICA ===========
 
 Route::group(['prefix' => 'utils', 'middleware' => ['auth']], function () {
 
