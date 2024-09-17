@@ -16,5 +16,13 @@ class CategoriaSeeder extends Seeder
         $categoria              =   new Categoria();
         $categoria->descripcion =   'PRODUCTO';
         $categoria->save();
+
+        $categoria              =   new Categoria();
+        $categoria->descripcion =   'CEMENTO';
+        $categoria->save();
+
+        $categoria              =   new Categoria();
+        $categoria->descripcion =   'FIERRO';
+        $categoria->save();
     }
 }

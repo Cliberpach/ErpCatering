@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call(EmpresaSeeder::class);
+        $this->call(ProveedorSeeder::class);
         $this->call(TablaGeneralSeeder::class);
         $this->call(TipoDocumentoSeeder::class);
         $this->call(CargoSeed::class);
@@ -33,6 +34,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RolSeeder::class);
         $this->call(CategoriaSeeder::class);
         $this->call(MarcaSeeder::class);
+        $this->call(ProductoSeeder::class);
         $this->call(TipoGastoSeeder::class);
 
     }

@@ -1,20 +1,25 @@
 @extends('layouts.layout')
 @section('title-page')
-    EDITAR COTIZACIÓN DE COMPRA
+    REGISTRAR COMPRA
 @endsection
+
+@section('logistica-collapsed', '')
+@section('logistica-expanded', 'true')
+@section('logistica-show', 'show')
+@section('registro_compra-active', 'active')
 
 @section('section-page')
 
-@include('logistica.cotizacion_compra.modals.modal_productos')
+@include('logistica.registro_compra.modals.modal_productos')
 @include('logistica.cotizacion_compra.modals.modal_edit_item')
 
 
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Datos de la Cotización de Compra <i class="fa-solid fa-toolbox"></i></h6>
+      <h6>Datos de la Compra <i class="fa-solid fa-toolbox"></i></h6>
     </div>
     <div class="card-body">
-        @include('logistica.cotizacion_compra.forms.form_edit_cotizacion_compra')
+        @include('logistica.registro_compra.forms.form_create_compra')
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
@@ -23,7 +28,7 @@
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
-            <button class="btn btn-primary" type="submit" form="formActualizarCotizacionCompra">
+            <button class="btn btn-primary" type="submit" form="formRegistrarCompra">
                 <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
             </button>
         </div>
@@ -34,13 +39,11 @@
 
 
 <script>
-    let dtProductos             =   null;
-    let dtCompraDetalle         =   null;
-    const lstCotizacionCompra   =   [];
+    let dtProductos         =   null;
+    let dtCompraDetalle     =   null;
+    const lstCompra         =   [];
 
     document.addEventListener('DOMContentLoaded',()=>{
-        cargarDetallePrevio();
-        pintarTableCompraDetalle(lstCotizacionCompra);
         iniciarSelect2();
         iniciarDataTableProductos();
         iniciarDataTableCompraDetalle();
@@ -50,28 +53,39 @@
     function events(){
         eventsMdlEditItem();
 
-        document.querySelector('#formActualizarCotizacionCompra').addEventListener('submit',(e)=>{
+        document.querySelector('#formRegistrarCompra').addEventListener('submit',(e)=>{
             e.preventDefault();
-            const validacion    =   validacionactualizarCotizacionCompra();
+            const validacion    =   validacionRegistrarCompra();
             if(validacion){
-                actualizarCotizacionCompra();
+                registrarCompra();
+            }
+        })
+
+        document.querySelector('#igv').addEventListener('change',(e)=>{
+            toastr.clear();
+            const estado    =   e.target.checked;
+            const valorIgv  =   e.target.value;
+
+            if(lstCompra.length > 0){
+                const montos =  calcularMontos(lstCompra,estado,valorIgv);
+                pintarTableMontos(montos);
+                toastr.info('MONTOS ACTUALIZADOS');
             }
         })
 
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
-                const rutaIndex         =   '{{route('logistica.cotizacion_compra.index')}}';
+                const rutaIndex         =   '{{route('logistica.registro_compra.index')}}';
                 window.location.href    =   rutaIndex;
             }
 
             if (e.target.closest('.btnAgregarProducto')) {
                 toastr.clear();
-                const inputCantidad =   document.querySelector('#cantidad'); 
                 const validacion    =   validacionAgregarProducto();
 
                 if(validacion){
                     mostrarAnimacion1();
-                    agregarProducto({...producto_elegido},inputCantidad.value);
+                    agregarProducto({...producto_elegido});
                     limpiarFormSelectProducto();
                     ocultarAnimacion1();
                 }
@@ -140,7 +154,6 @@
         });
     }
 
-
     function iniciarDataTableCompraDetalle(){
         dtCompraDetalle  =   new DataTable('#table_compra_detalle',{
             language: {
@@ -167,14 +180,6 @@
         });
     }
 
-    function cargarDetallePrevio() {
-        const cotizacion_compra_detalle =   @json($cotizacion_compra_detalle);
-        console.log(cotizacion_compra_detalle);
-        cotizacion_compra_detalle.forEach((ccd)=>{
-            lstCotizacionCompra.push(ccd);
-        })
-    }
-
     function validacionAgregarProducto(){
         
         if(!producto_elegido.producto_id){
@@ -183,30 +188,69 @@
         }
 
         const inputCantidad =   document.querySelector('#cantidad'); 
-        if(!inputCantidad){
+        const inputPrecio   =   document.querySelector('#precio'); 
+
+        if(!inputCantidad.value){
             toastr.error('DEBE INGRESAR UNA CANTIDAD!!');
             return false;
         }
-        if(inputCantidad == 0){
+        if(inputCantidad.value == 0){
             toastr.error('LA CANTIDAD DEBE SER MAYOR A 0!!');
             return false;
         }
 
+        if(!inputPrecio.value){
+            toastr.error('DEBE INGRESAR UN PRECIO!!');
+            return false;
+        }
+        // if(inputPrecio == 0){
+        //     toastr.error('EL PRECIO DEBE SER MAYOR A 0!');
+        //     return false;
+        // }
+
         return true;
     }
 
-    function validacionactualizarCotizacionCompra(){
-        if(lstCotizacionCompra.length === 0){
+    function calcularMontos(lstItems,chkIgv,valorIgv){
+        let subtotal = 0, monto_igv = 0, total = 0;
+        valorIgv    =   parseFloat(valorIgv);
+
+        if(chkIgv){ //======= PRECIOS CON IGV ======
+            
+            lstItems.forEach((item)=>{
+                total   +=  parseFloat(item.total);
+            })
+
+            subtotal    =   total/((100 + valorIgv)/100);
+            monto_igv   =   total - subtotal;
+        }else{
+
+            //======= PRECIOS SIN IGV =======
+            lstItems.forEach((item)=>{
+                subtotal   +=  item.total;
+            })
+
+            monto_igv   =   (valorIgv/100)*subtotal;
+            total       =   subtotal + monto_igv;
+        }
+
+        return {subtotal,monto_igv,total};
+    }
+    
+    function validacionRegistrarCompra(){
+        if(lstCompra.length === 0){
             toastr.error('EL DETALLE DE LA COMPRA ESTÁ VACÍO!!!');
             return false;
         }
         return true;
     }
 
-    function agregarProducto(producto,cantidad){
-        producto.cantidad   =   cantidad;
+    function agregarProducto(producto){
+        producto.cantidad   =   document.querySelector('#cantidad').value;
+        producto.precio     =   document.querySelector('#precio').value;
+        producto.total      =   parseFloat(producto.cantidad) * parseFloat(producto.precio);
 
-        const indiceProducto    =   lstCotizacionCompra.findIndex((p)=>{
+        const indiceProducto    =   lstCompra.findIndex((p)=>{
             return p.producto_id == producto.producto_id;
         })
 
@@ -215,12 +259,35 @@
             return;
         }
 
-        lstCotizacionCompra.push(producto);
+        lstCompra.push(producto);
         limpiarTabla('table_compra_detalle');
         destruirDataTableCompraDetalle();
-        pintarTableCompraDetalle(lstCotizacionCompra);
+        pintarTableCompraDetalle(lstCompra);
         iniciarDataTableCompraDetalle();
+
+        const inputIgv  =   document.querySelector('#igv');
+        const montos    =   calcularMontos(lstCompra,inputIgv.checked,inputIgv.value);
+        pintarTableMontos(montos);
         toastr.info('PRODUCTO AGREGADO AL DETALLE');
+    }
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('es-PE', {
+            style: 'currency',
+            currency: 'PEN',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount);
+    }
+
+    function pintarTableMontos(montos){
+        const tdSubtotal    =   document.querySelector('#tbl_subtotal');
+        const tdMontoIgv    =   document.querySelector('#tbl_monto_igv');
+        const tdTotal       =   document.querySelector('#tbl_total');
+
+        tdSubtotal.textContent  = formatCurrency(montos.subtotal);
+        tdMontoIgv.textContent  = formatCurrency(montos.monto_igv);
+        tdTotal.textContent     = formatCurrency(montos.total);
     }
 
     function pintarTableCompraDetalle(lstItems){
@@ -237,7 +304,9 @@
                             <td>${producto.categoria_nombre}</td>
                             <td>${producto.marca_nombre}</td>
                             <td>${producto.producto_unidad_medida}</td>
+                            <td>${producto.precio}</td>
                             <td>${producto.cantidad}</td>
+                            <td>${producto.total}</td>
                         </tr>`;
         })
 
@@ -278,7 +347,7 @@
             }
 
         } catch (error) {
-            toastr.error(error,'ERROR EN LA PETICION OBTENER PRODUCTOS');
+            toastr.error(error,'ERROR EN LA PETICION REGISTRAR COTIZACIÓN DE COMPRA');
         }finally{
             ocultarAnimacion1();
         }
@@ -315,7 +384,7 @@
     }
 
 
-    function actualizarCotizacionCompra(){
+    function registrarCompra(){
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -324,28 +393,26 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA ACTUALIZAR LA COTIZACIÓN?",
-        text: "Cotización de compra!",
+        title: "DESEA REGISTRAR LA COMPRA?",
+        text: "DOCUMENTO DE COMPRA!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "SÍ, ACTUALIZAR!",
+        confirmButtonText: "SÍ, REGISTRAR!",
         cancelButtonText: "NO, CANCELAR!",
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
             limpiarErroresValidacion('msgError');
             const token                             =   document.querySelector('input[name="_token"]').value;
-            const formActualizarCotizacionCompra    =   document.querySelector('#formActualizarCotizacionCompra');
-            const formData                          =   new FormData();
-            const id                                =   @json($id);
-            let urlActualizarCotizacionCompra       =   `{{ route('logistica.cotizacion_compra.update', ['id' => ':id']) }}`;
-            urlActualizarCotizacionCompra           =   urlActualizarCotizacionCompra.replace(':id', id);
+            const formRegistrarCompra               =   document.querySelector('#formRegistrarCompra');
+            const formData                          =   new FormData(formRegistrarCompra);
+            const urlRegistrarCompra                =   @json(route('logistica.registro_compra.store'));
 
-            formData.append('lstCotizacionCompra',JSON.stringify(lstCotizacionCompra))
+            formData.append('lstCompra',JSON.stringify(lstCompra))
 
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Actualizando cotización de compra...',
+                html: 'Registrando nueva compra...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -353,11 +420,10 @@
             });
 
             try {
-                const response  =   await fetch(urlActualizarCotizacionCompra, {
+                const response  =   await fetch(urlRegistrarCompra, {
                                         method: 'POST',
                                         headers: {
-                                            'X-CSRF-TOKEN': token,
-                                            'X-HTTP-Method-Override': 'PUT' 
+                                            'X-CSRF-TOKEN': token 
                                         },
                                         body: formData
                                     });
@@ -375,9 +441,9 @@
                 }
                 
                 if(res.success){
-                    const cotizacion_compra_index     =   @json(route('logistica.cotizacion_compra.index'));
+                    const compra_index      =   @json(route('logistica.registro_compra.index'));
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                    window.location.href    =   cotizacion_compra_index;
+                    window.location.href    =   compra_index;
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
@@ -385,7 +451,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ACTUALIZAR COTIZACIÓN DE COMPRA');
+                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR COMPRA');
                 Swal.close();
             }
           
@@ -407,6 +473,48 @@
         }
     }
 
+
+    async function getTipoCambio(tipo_cambio){
+        mostrarAnimacion1();
+        try {
+            document.querySelector('#tipo_cambio').value        =   '';
+            document.querySelector('#tipo_cambio').readOnly     =   true;
+
+            if(!tipo_cambio || tipo_cambio === 'SOLES'){
+                return;
+            }
+
+            const token             =   document.querySelector('input[name="_token"]').value;
+            const urlGetTipoCambio  =   @json(route('utils.tipoCambio'));
+
+            const response  =   await fetch(urlGetTipoCambio, {
+                                    method: 'GET',
+                                    headers: {
+                                        'X-CSRF-TOKEN': token 
+                                    },
+                                });
+
+            const   res =   await response.json();
+
+            if(res.success){
+                setTipoCambio(res.data);
+                document.querySelector('#tipo_cambio').readOnly     =   false;
+                document.querySelector('#lbl_tipo_cambio').classList.add('required_field');
+                toastr.info('TIPO CAMBIO OBTENIDO');
+            }else{
+                toastr.error(res.message,'ERROR EN EL SERVIDOR AL OBTENER TIPO DE CAMBIO');
+            }
+        } catch (error) {
+            toastr.error(error,'ERROR EN LA PETICIÓN AL OBTENER TIPO DE CAMBIO');
+        }finally{
+            ocultarAnimacion1();
+        }
+    }
+
+    function setTipoCambio(data){
+        const inputTipoCambio   =   document.querySelector('#tipo_cambio');
+        inputTipoCambio.value   =   data.venta;
+    }
 </script>
 
 

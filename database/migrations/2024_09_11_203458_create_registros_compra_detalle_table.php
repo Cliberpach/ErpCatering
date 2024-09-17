@@ -19,6 +19,12 @@ return new class extends Migration
             $table->unsignedBigInteger('producto_id');
             $table->foreign('producto_id')->references('id')->on('productos');
 
+            $table->decimal('precio_soles',16,2)->unsigned();
+            $table->decimal('precio_dolares',16,2)->unsigned();
+
+            $table->decimal('precio_mas_igv_soles',16,2)->unsigned();
+            $table->decimal('precio_mas_igv_dolares',16,2)->unsigned();
+
             $table->primary(['registro_compra_id', 'producto_id']);
             $table->timestamps();
         });

@@ -16,5 +16,25 @@ class MarcaSeeder extends Seeder
         $marca              =   new Marca();
         $marca->descripcion =   'NACIONAL';
         $marca->save();
+
+        $marca              =   new Marca();
+        $marca->descripcion =   'PACASMAYO';
+        $marca->save();
+
+        $marca              =   new Marca();
+        $marca->descripcion =   'MOCHICA';
+        $marca->save();
+
+        $marca              =   new Marca();
+        $marca->descripcion =   'SIDER';
+        $marca->save();
+
+        $marca              =   new Marca();
+        $marca->descripcion =   'AREQUIPA';
+        $marca->save();
+
+        $marca              =   new Marca();
+        $marca->descripcion =   'EUROTUBO';
+        $marca->save();
     }
 }

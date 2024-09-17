@@ -167,7 +167,7 @@
           <ul id="ddmenu_5" class="collapse dropdown-nav @yield('logistica-show')">
             <li>
               @can('logistica.registro_compra')
-                <a class="@yield('registro_compra-active')">Registro de Compras</a>
+                <a class="@yield('registro_compra-active')" href="{{route('logistica.registro_compra.index')}}">Registro de Compras</a>
               @endcan
             </li>
             <li>

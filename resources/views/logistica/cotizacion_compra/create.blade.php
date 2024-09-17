@@ -11,7 +11,7 @@
 
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Datos de la Compra <i class="fa-solid fa-toolbox"></i></h6>
+      <h6>Datos de la Cotización de Compra <i class="fa-solid fa-toolbox"></i></h6>
     </div>
     <div class="card-body">
         @include('logistica.cotizacion_compra.forms.form_create_cotizacion_compra')
@@ -63,25 +63,17 @@
             }
 
             if (e.target.closest('.btnAgregarProducto')) {
-
+                toastr.clear();
                 const inputCantidad =   document.querySelector('#cantidad'); 
+                const validacion    =   validacionAgregarProducto();
 
-                if(!inputCantidad.value){
-                    toastr.error('INGRESE UNA CANTIDAD VÁLIDA');
-                    inputCantidad.focus();
-                    return;
+                if(validacion){
+                    mostrarAnimacion1();
+                    agregarProducto({...producto_elegido},inputCantidad.value);
+                    limpiarFormSelectProducto();
+                    ocultarAnimacion1();
                 }
-
-                if(inputCantidad.value === '0'){
-                    toastr.error('INGRESE UNA CANTIDAD MAYOR A 0');
-                    inputCantidad.focus();
-                    return;
-                }
-
-                mostrarAnimacion1();
-                agregarProducto({...producto_elegido},inputCantidad.value);
-                ocultarAnimacion1();
-
+              
             }
         })
 
@@ -97,7 +89,31 @@
     }
 
     function iniciarDataTableProductos(){
+        const urlGetProductos   =   @json(route('registros.producto.getProductos'));
+        
         dtProductos  =   new DataTable('#table_productos',{
+            serverSide: true,  
+            processing: true,  
+            ajax: {
+                url: urlGetProductos, 
+                type: 'GET',  
+                data: function(d) {
+                    d.categoria_id  =   $('#categoria').val();  
+                    d.marca_id      =   $('#marca').val();  
+                },
+            },
+            columns: [
+                { data: 'id', name: 'id' },
+                { data: 'nombre', name: 'nombre' },
+                { data: 'marca_nombre', name: 'marca_nombre' },
+                { data: 'categoria_nombre', name: 'categoria_nombre' },
+                { data: 'stock', name: 'Stock' }
+            ],
+            createdRow: function(row, data, dataIndex) {
+                $(row).css('cursor', 'pointer');
+                
+                $(row).attr('onclick', 'seleccionarProducto(' + data.id + ')');
+            },
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
@@ -146,6 +162,26 @@
                 }
             }
         });
+    }
+
+    function validacionAgregarProducto(){
+        
+        if(!producto_elegido.producto_id){
+            toastr.error('DEBE SELECCIONAR UN PRODUCTO!!');
+            return false;
+        }
+
+        const inputCantidad =   document.querySelector('#cantidad'); 
+        if(!inputCantidad.value){
+            toastr.error('DEBE INGRESAR UNA CANTIDAD!!');
+            return false;
+        }
+        if(inputCantidad.value == 0){
+            toastr.error('LA CANTIDAD DEBE SER MAYOR A 0!!');
+            return false;
+        }
+
+        return true;
     }
 
     function validacionRegistrarCotizacionCompra(){

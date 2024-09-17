@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Utils;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class UtilController extends Controller
@@ -31,6 +32,28 @@ class UtilController extends Controller
             return response()->json(['success'=>false,'data'=>$th->getMessage()]);
         }
 
+    }
+
+    public function tipoCambio(){
+
+        try {
+            $fecha  =   Carbon::now()->toDateString();
+            $ctx    =   stream_context_create(array(
+                'http' =>
+                array(
+                    'timeout' => 1200,  //1200 Seconds is 20 Minutes
+                )
+            ));
+            $data       =   file_get_contents("https://api.apis.net.pe/v1/tipo-cambio-sunat?fecha=" . $fecha, false, $ctx);
+            
+            $infodata   =   json_decode($data, false);
+
+            return response()->json(['success'=>true,'data'=>$infodata]);
+
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+      
     }
 
 }

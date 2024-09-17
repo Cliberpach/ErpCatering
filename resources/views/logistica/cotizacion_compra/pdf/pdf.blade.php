@@ -21,12 +21,12 @@
             border-radius: 8px; /* Bordes redondeados */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera para profundidad */
         }
-        .header, .footer-table, .products-table {
+        .header, .footer-table, .products-table, .solicitud-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
         }
-        .header td, .footer-table td, .products-table td {
+        .header td, .footer-table td, .products-table td, .solicitud-table td {
             padding: 12px;
             vertical-align: middle;
             font-size: 14px;
@@ -43,23 +43,18 @@
             font-weight: bold;
             color: #007bff; /* Color azul para el nombre de la empresa */
             margin-bottom: 10px;
+            text-align: center; /* Alinea el texto al centro */
         }
         .header .address, .header .phone, .header .email {
             font-size: 14px;
             color: #666; /* Color de texto gris claro */
             margin-bottom: 5px;
+            text-align: center; /* Alinea el texto al centro */
         }
-        .header .additional {
-            text-align: center; /* Centra el contenido en la columna adicional */
-            font-size: 14px;
-            color: #007bff; /* Color azul para el contenido adicional */
-            border: 1px solid #007bff; /* Borde azul */
-            border-radius: 8px; /* Bordes redondeados */
-            padding: 10px;
-            background-color: #e9f5ff; /* Fondo azul muy claro */
-            max-width: 150px;
-            margin: 0 auto; /* Centra el cuadro dentro de la columna */
-            box-sizing: border-box; /* Asegura que el padding no afecte al tamaño total del cuadro */
+        .info-column {
+            vertical-align: bottom; /* Alinea el contenido de la columna al fondo */
+            padding-left: 10px; /* Opcional: espaciado interno a la izquierda */
+            text-align: center; /* Alinea el texto al centro horizontalmente */
         }
         .footer-table {
             border: 1px solid #ddd; /* Borde gris claro para la tabla del pie de página */
@@ -86,6 +81,13 @@
         .products-table tr:nth-child(even) {
             background-color: #f9f9f9; /* Fondo gris claro para filas pares */
         }
+        .solicitud-table td {
+            text-align: right; /* Alinea el texto al final de la celda */
+            padding: 20px; /* Espaciado adicional para mejor apariencia */
+            font-size: 16px; /* Tamaño de fuente más grande para el texto */
+            font-weight: bold; /* Texto en negrita para resaltar */
+            color: #007bff; /* Color azul para el texto */
+        }
     </style>
 </head>
 <body>
@@ -93,49 +95,64 @@
         <!-- Primera Tabla -->
         <table class="header">
             <tr>
-                <td class="image-column">
+                <td class="image-column" style="width: 30%;">
                     <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($empresa->img_ruta))) }}" alt="Logo">
                 </td>
-                <td class="info-column">
+                <td class="info-column" style="width: 70%; vertical-align: bottom; text-align: center;">
                     <div class="company">{{$empresa->nombre}}</div>
+                    <div class="address">RUC: {{$empresa->ruc}}</div>
                     <div class="address">{{$empresa->direccion}}</div>
                     <div class="phone">Teléfono: {{$empresa->telefono}}</div>
                     <div class="email">Correo: {{$empresa->correo}}</div>
-                </td>
-                <td class="additional-column">
-                    <div class="additional">
-                        <div class="additional-content">RUC: {{$empresa->ruc}}</div>
-                        <div>{{"CO-".$cotizacion_compra->id}}</div>
-                    </div>
                 </td>
             </tr>
         </table>
 
         <!-- Segunda Tabla -->
+        <table class="solicitud-table">
+            <tr>
+                <td>SOLICITUD DE COTIZACIÓN DE MATERIALES</td>
+            </tr>
+        </table>
+
+        <!-- Tercera Tabla (con información del proveedor) -->
         <table class="footer-table">
+            <tr>
+                <td>SEÑORES:</td>
+                <td>-</td>
+            </tr>
             <tr>
                 <td>USUARIO:</td>
                 <td>{{$cotizacion_compra->colaborador_nombre}}</td>
             </tr>
             <tr>
-                <td>FECHA IMPRESIÓN:</td>
+                <td>FECHA:</td>
                 <td>{{$fecha_impresion}}</td>
+            </tr>
+            <!-- Nueva fila añadida al final de la tercera tabla -->
+            <tr>
+                <td colspan="2">
+                    Estimados señores:<br>
+                    Mediante la presente hacemos llegar nuestra solicitud de cotización
+                </td>
             </tr>
         </table>
 
-        <!-- Tercera Tabla -->
+        <!-- Cuarta Tabla -->
         <table class="products-table">
             <thead>
                 <tr>
+                    <th>CANT</th>
                     <th>PRODUCTO</th>
-                    <th>CANTIDAD</th>
+                    <th>UNIDAD</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($cotizacion_compra_detalle as $item)
                     <tr>
-                        <td>{{$item->producto_nombre}}</td>
                         <td>{{$item->cantidad}}</td>
+                        <td>{{$item->producto_nombre}}</td>
+                        <td>{{$item->producto_unidad_medida}}</td>
                     </tr>         
                 @endforeach
             </tbody>

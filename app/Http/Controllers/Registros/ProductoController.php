@@ -33,6 +33,9 @@ class ProductoController extends Controller
 
     public function getProductos(Request $request){
 
+        $categoria_id   =   $request->get('categoria_id');
+        $marca_id       =   $request->get('marca_id');
+
         $productos = DB::table('productos as p')
                     ->join('marcas as m', 'm.id', '=', 'p.marca_id')
                     ->join('categorias as c', 'c.id', '=', 'p.categoria_id')
@@ -51,8 +54,17 @@ class ProductoController extends Controller
                         'tgd.descripcion as unidad_medida_nombre',
                         'p.estado'
                     )
-                    ->where('p.estado','ACTIVO')
-                    ->get();
+                    ->where('p.estado','ACTIVO');
+
+        if($categoria_id){
+            $productos  =   $productos->where('p.categoria_id',$categoria_id);
+        }
+
+        if($marca_id){
+            $productos  =   $productos->where('p.marca_id',$marca_id);
+        }
+
+        $productos  =   $productos->get();
 
 
         return DataTables::of($productos)

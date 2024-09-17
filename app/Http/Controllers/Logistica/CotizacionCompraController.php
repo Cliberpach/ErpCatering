@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Logistica\CotizacionCompra;
 use App\Models\Logistica\CotizacionCompraDetalle;
 use App\Models\Registros\Categoria;
+use App\Models\Registros\Marca;
 use Auth;
 use Carbon\Carbon;
 use Exception;
@@ -42,8 +43,9 @@ class CotizacionCompraController extends Controller
 
     public function create(){
         $categorias =   Categoria::where('estado','ACTIVO')->get();
+        $marcas     =   Marca::where('estado','ACTIVO')->get();
 
-        return view('logistica.cotizacion_compra.create',compact('categorias'));
+        return view('logistica.cotizacion_compra.create',compact('categorias','marcas'));
     }
 
     public function edit($id){
@@ -61,9 +63,11 @@ class CotizacionCompraController extends Controller
                                         inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
                                         where ccd.cotizacion_compra_id = ?',[$id]);
 
-        $categorias                 =   Categoria::where('estado','ACTIVO')->get();
+        $categorias =   Categoria::where('estado','ACTIVO')->get();
+        $marcas     =   Marca::where('estado','ACTIVO')->get();
 
-        return view('logistica.cotizacion_compra.edit',compact('cotizacion_compra_detalle','categorias','id'));
+        return view('logistica.cotizacion_compra.edit',
+        compact('cotizacion_compra_detalle','categorias','marcas','id'));
     }
 
     public function store(Request $request){
@@ -191,8 +195,11 @@ class CotizacionCompraController extends Controller
                                 inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
                                 where ccd.cotizacion_compra_id = ?',[$id]);
 
+        Carbon::setLocale('es');
         $fecha_impresion = Carbon::now();
-        $fecha_impresion = $fecha_impresion->format('Y-m-d');
+        $fecha_impresion = $fecha_impresion->translatedFormat('l, d \d\e F \d\e\l Y');
+        $fecha_impresion = strtoupper($fecha_impresion);
+
                 
         // Configurar las opciones de DOMPDF si es necesario
         $options = new Options();

@@ -14,9 +14,33 @@ return new class extends Migration
         Schema::create('registros_compra', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('colaborador_id');
-            $table->foreign('colaborador_id')->references('id')->on('colaboradores');
+            $table->unsignedBigInteger('colaborador_registro_id');
+            $table->foreign('colaborador_registro_id')->references('id')->on('colaboradores');
 
+            //$table->unsignedBigInteger('colaborador_compra_id');
+            //$table->foreign('colaborador_compra_id')->references('id')->on('colaboradores');
+
+            $table->unsignedBigInteger('proveedor_id');
+            $table->foreign('proveedor_id')->references('id')->on('proveedores');
+
+            $table->timestamp('fecha_documento')->nullable();
+            $table->timestamp('fecha_entrega')->nullable();
+
+            $table->string('serie',20);
+            $table->bigInteger('correlativo')->unsigned(); 
+
+            $table->tinyInteger('precios_igv')->unsigned();
+            $table->decimal('igv',16,2)->unsigned();
+
+            $table->decimal('subtotal',16,2)->unsigned();
+            $table->decimal('monto_igv',16,2)->unsigned();
+            $table->decimal('total',16,2)->unsigned();
+
+            $table->decimal('subtotal_soles',16,2)->unsigned();
+            $table->decimal('monto_igv_soles',16,2)->unsigned();
+            $table->decimal('total_soles',16,2)->unsigned();
+
+            $table->string('observacion',300)->nullable();
 
             $table->enum('estado', ['ACTIVO', 'ANULADO','FINALIZADO'])->default('ACTIVO');
 

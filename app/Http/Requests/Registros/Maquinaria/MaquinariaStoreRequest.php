@@ -64,10 +64,10 @@ class MaquinariaStoreRequest extends FormRequest
     }
 
     protected function failedValidation(Validator $validator)
-{
-    throw new ValidationException($validator, response()->json([
-        'errors' => $validator->errors()
-    ], 422));
-}
+    {
+        throw new ValidationException($validator, response()->json([
+            'errors' => $validator->errors()
+        ], 422));
+    }
 
 }
