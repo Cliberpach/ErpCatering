@@ -57,10 +57,12 @@
                     destruirDataTableCompraDetalle();
                     pintarTableCompraDetalle(lstCompra);
                     iniciarDataTableCompraDetalle();
+                    const estado    =   e.target.checked;
+                    const valorIgv  =   e.target.value;
+                    const montos    =  calcularMontos(lstCompra,estado,valorIgv);
+                    pintarTableMontos(montos);
                     toastr.success('ITEM ELIMINADO!!');
-                }
-
-                
+                }    
             }
 
         })
@@ -79,6 +81,12 @@
                     destruirDataTableCompraDetalle();
                     pintarTableCompraDetalle(lstCompra);
                     iniciarDataTableCompraDetalle();
+
+                    const estado    =   e.target.checked;
+                    const valorIgv  =   e.target.value;
+                    const montos    =  calcularMontos(lstCompra,estado,valorIgv);
+                    pintarTableMontos(montos);
+
                     $('#mdlEditItem').modal('hide');
                     toastr.success('ITEM ACTUALIZADO');
                 }
