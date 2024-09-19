@@ -6,7 +6,7 @@
 @section('logistica-collapsed', '')
 @section('logistica-expanded', 'true')
 @section('logistica-show', 'show')
-@section('registro_compra-active', 'active')
+@section('registro_salida-active', 'active')
 
 @section('section-page')
 @include('logistica.registro_salida.modals.modal_productos')
@@ -37,13 +37,13 @@
 
 <script>
     let dtProductos         =   null;
-    let dtCompraDetalle     =   null;
-    const lstCompra         =   [];
+    let dtSalidaDetalle     =   null;
+    const lstSalida         =   [];
 
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarSelect2();
         iniciarDataTableProductos();
-        iniciarDataTableCompraDetalle();
+        iniciarDataTableSalidaDetalle();
         events();
     })
 
@@ -51,18 +51,40 @@
 
         document.querySelector('#formRegistrarSalida').addEventListener('submit',(e)=>{
             e.preventDefault();
-            const validacion    =   validacionRegistrarCompra();
+            const validacion    =   validacionRegistrarSalida();
             if(validacion){
-                registrarCompra();
+                registrarSalida();
             }
         })
 
-       
+        document.querySelector('#cantidad').addEventListener('input',(e)=>{
+            const select_almacen    =   document.querySelector('#almacen_origen');
+            const producto_id       =   producto_elegido.producto_id;
+            const inputCantidad     =   document.querySelector('#cantidad');
+
+            toastr.clear();
+            if(!select_almacen.value){
+                toastr.error('DEBE SELECCIONAR UN ALMACÉN DE ORIGEN!!!');
+                select_almacen.focus();
+                return;
+            }
+            if(!producto_id){
+                toastr.error('DEBE SELECCIONAR UN PRODUCTO!!!');
+                document.querySelector('.btnBuscarProducto').focus();
+                return;
+            }
+            if(!inputCantidad.value){
+                return;
+            }
+
+            validarCantidad(select_almacen.value,producto_id,inputCantidad.value);
+
+        })
      
 
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
-                const rutaIndex         =   '{{route('logistica.registro_compra.index')}}';
+                const rutaIndex         =   '{{route('logistica.registro_salida.index')}}';
                 window.location.href    =   rutaIndex;
             }
 
@@ -92,7 +114,7 @@
     }
 
     function iniciarDataTableProductos(){
-        const urlGetProductos   =   @json(route('registros.producto.getProductos'));
+        const urlGetProductos   =   @json(route('registros.producto.getProductosByAlmacen'));
         
         dtProductos  =   new DataTable('#table_productos',{
             serverSide: true,  
@@ -103,6 +125,7 @@
                 data: function(d) {
                     d.categoria_id  =   $('#categoria').val();  
                     d.marca_id      =   $('#marca').val();  
+                    d.almacen_id    =   $('#almacen_origen').val();  
                 },
             },
             columns: [
@@ -110,7 +133,7 @@
                 { data: 'nombre', name: 'nombre' },
                 { data: 'marca_nombre', name: 'marca_nombre' },
                 { data: 'categoria_nombre', name: 'categoria_nombre' },
-                { data: 'stock', name: 'Stock' }
+                { data: 'stock', name: 'stock' }
             ],
             createdRow: function(row, data, dataIndex) {
                 $(row).css('cursor', 'pointer');
@@ -141,8 +164,8 @@
         });
     }
 
-    function iniciarDataTableCompraDetalle(){
-        dtCompraDetalle  =   new DataTable('#table_compra_detalle',{
+    function iniciarDataTableSalidaDetalle(){
+        dtSalidaDetalle  =   new DataTable('#table_salida_detalle',{
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
@@ -175,9 +198,7 @@
         }
 
         const inputCantidad =   document.querySelector('#cantidad'); 
-        const inputPrecio   =   document.querySelector('#precio'); 
-        const selectAlmacen =   document.querySelector('#almacen');
-
+      
         if(!inputCantidad.value){
             inputCantidad.focus();
             toastr.error('DEBE INGRESAR UNA CANTIDAD!!');
@@ -189,54 +210,12 @@
             return false;
         }
 
-        if(!inputPrecio.value){
-            inputPrecio.focus();
-            toastr.error('DEBE INGRESAR UN PRECIO!!');
-            return false;
-        }
-
-        if(!selectAlmacen.value){
-            selectAlmacen.focus();
-            toastr.error('DEBE SELECCIONAR UN ALMACÉN!!');
-            return false;
-        }
-        // if(inputPrecio == 0){
-        //     toastr.error('EL PRECIO DEBE SER MAYOR A 0!');
-        //     return false;
-        // }
-
         return true;
     }
 
-    function calcularMontos(lstItems,chkIgv,valorIgv){
-        let subtotal = 0, monto_igv = 0, total = 0;
-        valorIgv    =   parseFloat(valorIgv);
-
-        if(chkIgv){ //======= PRECIOS CON IGV ======
-            
-            lstItems.forEach((item)=>{
-                total   +=  parseFloat(item.total);
-            })
-
-            subtotal    =   total/((100 + valorIgv)/100);
-            monto_igv   =   total - subtotal;
-        }else{
-
-            //======= PRECIOS SIN IGV =======
-            lstItems.forEach((item)=>{
-                subtotal   +=  item.total;
-            })
-
-            monto_igv   =   (valorIgv/100)*subtotal;
-            total       =   subtotal + monto_igv;
-        }
-
-        return {subtotal,monto_igv,total};
-    }
-    
-    function validacionRegistrarCompra(){
-        if(lstCompra.length === 0){
-            toastr.error('EL DETALLE DE LA COMPRA ESTÁ VACÍO!!!');
+    function validacionRegistrarSalida(){
+        if(lstSalida.length === 0){
+            toastr.error('EL DETALLE DE LA SALIDA ESTÁ VACÍO!!!');
             return false;
         }
         return true;
@@ -244,12 +223,8 @@
 
     function agregarProducto(producto){
         producto.cantidad       =   document.querySelector('#cantidad').value;
-        producto.precio         =   document.querySelector('#precio').value;
-        producto.total          =   parseFloat(producto.cantidad) * parseFloat(producto.precio);
-        producto.almacen_id     =   document.querySelector('#almacen').value;
-        producto.almacen_nombre =   document.querySelector('#almacen').options[document.querySelector('#almacen').selectedIndex].textContent;
 
-        const indiceProducto    =   lstCompra.findIndex((p)=>{
+        const indiceProducto    =   lstSalida.findIndex((p)=>{
             return p.producto_id == producto.producto_id;
         })
 
@@ -258,15 +233,11 @@
             return;
         }
 
-        lstCompra.push(producto);
-        limpiarTabla('table_compra_detalle');
-        destruirDataTableCompraDetalle();
-        pintarTableCompraDetalle(lstCompra);
-        iniciarDataTableCompraDetalle();
-
-        const inputIgv  =   document.querySelector('#igv');
-        const montos    =   calcularMontos(lstCompra,inputIgv.checked,inputIgv.value);
-        pintarTableMontos(montos);
+        lstSalida.push(producto);
+        limpiarTabla('table_salida_detalle');
+        destruirDataTableSalidaDetalle();
+        pintarTableSalidaDetalle(lstSalida);
+        iniciarDataTableSalidaDetalle();
         toastr.info('PRODUCTO AGREGADO AL DETALLE');
     }
 
@@ -289,7 +260,7 @@
         tdTotal.textContent     = formatCurrency(montos.total);
     }
 
-    function pintarTableCompraDetalle(lstItems){
+    function pintarTableSalidaDetalle(lstItems){
         let filas   =   ``;
         lstItems.forEach((producto)=>{
             filas   +=  `<tr>
@@ -302,25 +273,23 @@
                             <td>${producto.producto_nombre}</td>
                             <td>${producto.categoria_nombre}</td>
                             <td>${producto.marca_nombre}</td>
-                            <td>${producto.almacen_nombre}</td>
                             <td>${producto.producto_unidad_medida}</td>
-                            <td>${producto.precio}</td>
                             <td>${producto.cantidad}</td>
-                            <td>${producto.total.toFixed(2)}</td>
+                          
                         </tr>`;
         })
 
-        const tbody =   document.querySelector('#table_compra_detalle tbody');
+        const tbody =   document.querySelector('#table_salida_detalle tbody');
         tbody.innerHTML =   filas;
     }
 
-    async function getProductosByCategoria(categoria_id){
+    async function getProductosByAlmacen(almacen_id){
         try {
             mostrarAnimacion1();
 
             const token                         =   document.querySelector('input[name="_token"]').value;
-            const urlGetProductosByCategoria    =   @json(route('logistica.cotizacion_compra.getProductosByCategoria', ['categoria_id' => 'CATEGORIA_ID']));
-            const url                           =   urlGetProductosByCategoria.replace('CATEGORIA_ID', categoria_id);
+            const urlGetProductosByAlmacen      =   @json(route('registros.producto.getProductosByAlmacen', ['almacen_id' => ':almacen_id']));
+            const url                           =   urlGetProductosByAlmacen.replace(':almacen_id', almacen_id);
 
             const response  =   await fetch(url, {
                                         method: 'GET',
@@ -330,24 +299,24 @@
                                     });
 
             const   res =   await response.json();
-
+            console.log(res);
             if(res.success){
 
-                lstTableProductos.length = 0;
-                res.productos.forEach((p)=>{
-                    lstTableProductos.push(p);
-                })
+                // lstTableProductos.length = 0;
+                // res.productos.forEach((p)=>{
+                //     lstTableProductos.push(p);
+                // })
 
-                destruirDataTableProductos();
-                limpiarTabla('table_productos');
-                pintarProductos(res.productos);
-                iniciarDataTableProductos();
+                // destruirDataTableProductos();
+                // limpiarTabla('table_productos');
+                // pintarProductos(res.productos);
+                // iniciarDataTableProductos();
             }else{
-                toastr.error(res.message,'ERROR EN EL SERVIDOR AL OBTENER PRODUCTOS');
+                toastr.error(res.message,'ERROR EN EL SERVIDOR AL OBTENER PRODUCTOS POR ALMACÉN');
             }
 
         } catch (error) {
-            toastr.error(error,'ERROR EN LA PETICION REGISTRAR COTIZACIÓN DE COMPRA');
+            toastr.error(error,'ERROR EN LA PETICION OBTENER PRODUCTOS POR ALMACÉN');
         }finally{
             ocultarAnimacion1();
         }
@@ -360,10 +329,10 @@
         }
     }
 
-    function destruirDataTableCompraDetalle(){
-        if(dtCompraDetalle){
-            dtCompraDetalle.destroy();
-            dtCompraDetalle =   null;
+    function destruirDataTableSalidaDetalle(){
+        if(dtSalidaDetalle){
+            dtSalidaDetalle.destroy();
+            dtSalidaDetalle =   null;
         }
     }
 
@@ -384,7 +353,7 @@
     }
 
 
-    function registrarCompra(){
+    function registrarSalida(){
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -393,8 +362,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA REGISTRAR LA COMPRA?",
-        text: "DOCUMENTO DE COMPRA!",
+        title: "DESEA REGISTRAR LA SALIDA?",
+        text: "OPERACIÓN NO REVERSIBLE!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "SÍ, REGISTRAR!",
@@ -406,13 +375,13 @@
             const token                             =   document.querySelector('input[name="_token"]').value;
             const formRegistrarSalida               =   document.querySelector('#formRegistrarSalida');
             const formData                          =   new FormData(formRegistrarSalida);
-            const urlRegistrarCompra                =   @json(route('logistica.registro_compra.store'));
+            const urlRegistrarSalida                =   @json(route('logistica.registro_salida.store'));
 
-            formData.append('lstCompra',JSON.stringify(lstCompra))
+            formData.append('lstSalida',JSON.stringify(lstSalida))
 
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Registrando nueva compra...',
+                html: 'Registrando nueva salida...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -420,7 +389,7 @@
             });
 
             try {
-                const response  =   await fetch(urlRegistrarCompra, {
+                const response  =   await fetch(urlRegistrarSalida, {
                                         method: 'POST',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -429,9 +398,7 @@
                                     });
 
                 const   res =   await response.json();
-                
-                console.log(res);
-                
+                                
                 if(response.status === 422){
                     if('errors' in res){
                         pintarErroresValidacion(res.errors);
@@ -441,9 +408,9 @@
                 }
                 
                 if(res.success){
-                    const compra_index      =   @json(route('logistica.registro_compra.index'));
+                    const salida_index      =   @json(route('logistica.registro_salida.index'));
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                    window.location.href    =   compra_index;
+                    window.location.href    =   salida_index;
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
@@ -451,7 +418,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR COMPRA');
+                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR SALIDA');
                 Swal.close();
             }
           
@@ -469,16 +436,16 @@
     function pintarErroresValidacion(objErroresValidacion) {
         toastr.clear();
 
-        let erroresLstCompra = '';
+        let erroresLstSalida = '';
 
         for (let clave in objErroresValidacion) {
-            if (clave.startsWith('lstCompra')) {
+            if (clave.startsWith('lstSalida')) {
                 const mensaje = objErroresValidacion[clave][0];
                     
                 const partes = clave.split('.');
                 const index = partes[1];
                     
-                erroresLstCompra += `->${mensaje}<br>`;
+                erroresLstSalida += `->${mensaje}<br>`;
             } else {
                 const pError = document.querySelector(`.${clave}_error`);
                 if (pError) {
@@ -487,7 +454,7 @@
             }
         }
 
-        if (erroresLstCompra) {
+        if (erroresLstSalida) {
             toastr.options = {
                 escapeHtml: false, 
                 timeOut: 0,
@@ -499,25 +466,39 @@
                     }
                 }
             };
-            toastr.error(erroresLstCompra, 'ERROR DE VALIDACIÓN');
+            toastr.error(erroresLstSalida, 'ERROR DE VALIDACIÓN');
         }
     }
 
 
+    function cambiarAlmacenOrigen(){
+        dtProductos.ajax.reload();
+        lstSalida.length    =   0;
+        limpiarFormSelectProducto();
+        limpiarTabla('table_salida_detalle');
+        destruirDataTable(dtSalidaDetalle);
+        pintarTableSalidaDetalle(lstSalida)
+        iniciarDataTableSalidaDetalle();
+        $('#almacen_destino').val(null).trigger('change');
+        toastr.clear();
+        toastr.info('ALMACÉN ORIGEN CAMBIADO');
+    }
 
-    async function getTipoCambio(){
+    async function validarCantidad(almacen_id,producto_id,cantidad){
         mostrarAnimacion1();
         try {
-            document.querySelector('#tipo_cambio').value        =   '';
-            document.querySelector('#tipo_cambio').readOnly     =   true;
-            document.querySelector('#lbl_tipo_cambio').classList.remove('required_field');
+            const btnAgregarProducto    =   document.querySelector('.btnAgregarProducto');
+            const token                 =   document.querySelector('input[name="_token"]').value;
+            let urlValidarCantidad      =   `{{ route('logistica.registro_salida.validarCantidad', ['almacen_id' => ':almacen_id', 'producto_id' => ':producto_id', 'cantidad' => ':cantidad']) }}`;
 
-         
+            urlValidarCantidad = urlValidarCantidad
+                .replace(':almacen_id', almacen_id)
+                .replace(':producto_id', producto_id)
+                .replace(':cantidad', cantidad);
 
-            const token             =   document.querySelector('input[name="_token"]').value;
-            const urlGetTipoCambio  =   @json(route('utils.tipoCambio'));
+            btnAgregarProducto.disabled =   true;
 
-            const response  =   await fetch(urlGetTipoCambio, {
+            const response  =   await fetch(urlValidarCantidad, {
                                     method: 'GET',
                                     headers: {
                                         'X-CSRF-TOKEN': token 
@@ -527,24 +508,43 @@
             const   res =   await response.json();
 
             if(res.success){
-                setTipoCambio(res.data);
-                document.querySelector('#tipo_cambio').readOnly     =   false;
-                document.querySelector('#lbl_tipo_cambio').classList.add('required_field');
-                toastr.info('TIPO CAMBIO OBTENIDO');
+                if(res.validacion){
+                    btnAgregarProducto.disabled =   false;
+                    toastr.success(res.message);
+                }else{
+                    btnAgregarProducto.disabled =   true;
+                    toastr.error(res.message);
+                    document.querySelector('#cantidad').value   =   '';
+                    document.querySelector('#cantidad').focus();
+                }
             }else{
-                toastr.error(res.message,'ERROR EN EL SERVIDOR AL OBTENER TIPO DE CAMBIO');
+                toastr.error(res.message,'ERROR EN EL SERVIDOR AL VALIDAR CANTIDAD');
             }
         } catch (error) {
-            toastr.error(error,'ERROR EN LA PETICIÓN AL OBTENER TIPO DE CAMBIO');
+            toastr.error(error,'ERROR EN LA PETICIÓN VALIDAR CANTIDAD');
         }finally{
             ocultarAnimacion1();
         }
     }
 
-    function setTipoCambio(data){
-        const inputTipoCambio   =   document.querySelector('#tipo_cambio');
-        inputTipoCambio.value   =   data.venta;
+    function cambiarAlmacenDestino(almacen_destino_id){
+        toastr.clear();
+        const almacen_origen_id =   document.querySelector('#almacen_origen').value;
+        if(!almacen_origen_id){
+            toastr.error('DEBE SELECCIONAR UN ALMACÉN DE ORIGEN PREVIAMENTE!!!');
+            return;
+        }
+        if(almacen_destino_id == almacen_origen_id){
+            $('#almacen_destino').val(null).trigger('change');
+            document.querySelector('#almacen_destino').focus();
+            toastr.error('EL ALMACÉN DE DESTINO DEBE SER DIFERENTE AL DE ORIGEN!!!');
+            return;
+        }
+
     }
+    
+
+   
 </script>
 
 

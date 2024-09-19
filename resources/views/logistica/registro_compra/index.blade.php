@@ -125,17 +125,8 @@
                                         <i class="fa-solid fa-eye"></i> Ver
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="${urlEdit}">
-                                        <i class="fa-solid fa-file-pen"></i> Editar
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarCotizacionCompra(${data.id})">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
-                                    </a>
-                                </li>
+                               
+                               
                             </ul>
                             </div>
                         `;

@@ -70,7 +70,7 @@ class RegistroCompraController extends Controller
 
 
             $registro_compra                            =   new RegistroCompra();
-            $registro_compra->colaborador_registro_id   =   Auth::user()->id;
+            $registro_compra->colaborador_registro_id   =   Auth::user()->colaborador_id;
             $registro_compra->proveedor_id              =   $request->get('proveedor');
             $registro_compra->fecha_emision             =   $request->get('fecha_emision');
             $registro_compra->fecha_entrega             =   $request->get('fecha_entrega');

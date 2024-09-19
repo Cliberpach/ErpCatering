@@ -173,7 +173,7 @@ class RegistroLaborController extends Controller
 
                 $extension      =   $file->getClientOriginalExtension();
             
-                $fileName =  $registro_labor->id.'_'.$registro_labor->proyecto_id.'_'.$request->get('colaborador_id'). '.' . $extension;
+                $fileName       =  $registro_labor->id.'_'.$registro_labor->proyecto_id.'_'.$request->get('colaborador_id'). '.' . $extension;
             
                 $file->move($destinationPath, $fileName);
 

@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                 <label class="required_field" for="almacen_origen" style="font-weight: bold;">ORIGEN</label>
-                <select name="almacen_origen" id="almacen_origen" class="select2_form">
+                <select required data-placeholder="Seleccione una opción" name="almacen_origen" id="almacen_origen" class="select2_form" onchange="cambiarAlmacenOrigen()" >
                     @foreach ($almacenes as $almacen)
                         <option value="{{$almacen->id}}">{{$almacen->descripcion}}</option>
                     @endforeach
@@ -13,7 +13,8 @@
             </div>
             <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                 <label class="required_field" style="font-weight: bold;" for="almacen_destino">DESTINO</label>
-                <select name="almacen_destino" id="almacen_destino" class="select2_form">
+                <select required data-placeholder="Seleccione una opción" name="almacen_destino" id="almacen_destino" class="select2_form" onchange="cambiarAlmacenDestino(this.value)">
+                    <option value=""></option>
                     @foreach ($almacenes as $almacen)
                         <option value="{{$almacen->id}}">{{$almacen->descripcion}}</option>
                     @endforeach
@@ -35,7 +36,7 @@
 
                                 <div class="input-group mb-3">
                                     <input id="producto" name="producto" readonly type="text" class="form-control" placeholder="Producto" aria-label="Recipient's username" aria-describedby="button-addon2">
-                                    <button class="btn btn-primary" type="button" id="button-addon2" onclick="openMdlProductos()">
+                                    <button  class="btn btn-primary btnBuscarProducto" type="button" id="button-addon2" onclick="openMdlProductos()">
                                         <i class="fa-solid fa-magnifying-glass"></i> Buscar
                                     </button>
                                   </div>
@@ -57,14 +58,14 @@
                                     <span class="input-group-text" id="basic-addon1">
                                         <i class="fa-solid fa-box-open"></i>                                    
                                     </span>
-                                    <input id="cantidad" name="cantidad" type="text" class="form-control inputEnteroPositivo" placeholder="Cantidad" aria-label="Username" aria-describedby="basic-addon1">
+                                    <input id="cantidad" name="cantidad" type="text" class="form-control inputDecimalPositivo" placeholder="Cantidad" aria-label="Username" aria-describedby="basic-addon1">
                                   </div>
                             </div>
                         </div>
 
                         <div class="row justify-content-end">
                             <div class="col-3 d-flex justify-content-end">
-                                <button class="btn btn-primary btnAgregarProducto" type="button">
+                                <button disabled class="btn btn-primary btnAgregarProducto" type="button">
                                     <i class="fa-solid fa-cart-plus"></i> AGREGAR 
                                 </button>
                             </div>

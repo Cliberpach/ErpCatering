@@ -177,26 +177,48 @@ class ProductoController extends Controller
         }        
     }
 
-    public function getProductosByCategoria($categoria_id){
+    public function getProductosByAlmacen(Request $request){
         try {
-            $productos  =   DB::select('select 
-                            p.id as producto_id,
-                            p.marca_id,
-                            p.categoria_id,
-                            p.nombre as producto_nombre,
-                            m.descripcion as marca_nombre,
-                            c.descripcion as categoria_nombre,
-                            p.stock as producto_stock,
-                            tgd.descripcion as producto_unidad_medida
-                            from productos as p
-                            inner join marcas as m on m.id = p.marca_id
-                            inner join categorias as c on c.id = p.categoria_id 
-                            inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
-                            where p.estado = "ACTIVO" and p.categoria_id = ?',
-                            [$categoria_id]);
+            $categoria_id   =   $request->get('categoria_id');
+            $marca_id       =   $request->get('marca_id');
+            $almacen_id     =   $request->get('almacen_id'); 
 
-            return response()->json(['success'=>true,'productos'=>$productos]);
-        } catch (\Throwable $th) {
+            $productos  =   DB::table('productos as p')
+                            ->leftJoin('almacen_productos as ap', function($join) use ($almacen_id) {
+                                $join->on('ap.producto_id', '=', 'p.id')
+                                    ->where('ap.almacen_id', '=', $almacen_id); 
+                            })
+                            ->leftJoin('marcas as m', 'm.id', '=', 'p.marca_id')
+                            ->leftJoin('categorias as c', 'c.id', '=', 'p.categoria_id')
+                            ->leftJoin('tablas_generales_detalles as tgd', 'tgd.id', '=', 'p.unidad_medida_id')
+                            ->select(
+                                'p.id', 
+                                'p.marca_id',
+                                'p.categoria_id',
+                                'p.nombre',
+                                'm.descripcion as marca_nombre',
+                                'c.descripcion as categoria_nombre',
+                                'ap.almacen_id',
+                                DB::raw('IF(ap.stock is null, 0, ap.stock) as stock'), 
+                                'tgd.descripcion as unidad_medida_nombre',
+                                'p.estado'
+                            )
+                            ->where('p.estado', 'ACTIVO')
+                            ->where('ap.stock','>', 0); ; 
+
+            if ($categoria_id) {
+                $productos = $productos->where('p.categoria_id', $categoria_id);
+            }
+
+            if ($marca_id) {
+                $productos = $productos->where('p.marca_id', $marca_id);
+            }
+
+            $productos = $productos->get();
+
+            return DataTables::of($productos)->make(true);
+            
+        } catch (Throwable $th) {
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }

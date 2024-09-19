@@ -54,6 +54,7 @@
                                     categoria_nombre:null,
                                     marca_nombre:null,
                                     producto_unidad_medida:null,
+                                    stock:null,
                                     cantidad:null
                                 }
 
@@ -62,6 +63,13 @@
     }
 
     function openMdlProductos(){
+        const almacen_origen    =   document.querySelector('#almacen_origen').value;
+        toastr.clear();
+        if(!almacen_origen){
+            toastr.error('DEBE SELECCIONAR UN ALMACÉN DE ORIGEN!!!');
+            document.querySelector('#almacen_origen').focus();
+            return;
+        }
         $('#mdlProductos').modal('show');
     }
 
@@ -85,10 +93,11 @@
         producto_elegido.producto_nombre        =   producto.nombre;
         producto_elegido.categoria_nombre       =   producto.categoria_nombre;
         producto_elegido.marca_nombre           =   producto.marca_nombre;
+        producto_elegido.stock                  =   producto.stock;
         producto_elegido.producto_unidad_medida =   producto.unidad_medida_nombre;
 
-        console.log('PRODUCTO ELEGIDO');
-        console.log(producto_elegido);
+        //===== LIMPIAR CANTIDAD PREVIA =======
+        document.querySelector('#cantidad').value   =   '';
 
 
         $('#mdlProductos').modal('hide');
@@ -110,8 +119,7 @@
         producto_elegido.marca_nombre           =   null;
         producto_elegido.producto_unidad_medida =   null;
         producto_elegido.cantidad               =   null;
-
-
+        producto_elegido.stock                  =   null;
     }
 
 </script>

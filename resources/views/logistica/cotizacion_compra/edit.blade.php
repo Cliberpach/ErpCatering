@@ -245,45 +245,6 @@
         tbody.innerHTML =   filas;
     }
 
-    async function getProductosByCategoria(categoria_id){
-        try {
-            mostrarAnimacion1();
-
-            const token                         =   document.querySelector('input[name="_token"]').value;
-            const urlGetProductosByCategoria    =   @json(route('logistica.cotizacion_compra.getProductosByCategoria', ['categoria_id' => 'CATEGORIA_ID']));
-            const url                           =   urlGetProductosByCategoria.replace('CATEGORIA_ID', categoria_id);
-
-            const response  =   await fetch(url, {
-                                        method: 'GET',
-                                        headers: {
-                                            'X-CSRF-TOKEN': token 
-                                        },
-                                    });
-
-            const   res =   await response.json();
-
-            if(res.success){
-
-                lstTableProductos.length = 0;
-                res.productos.forEach((p)=>{
-                    lstTableProductos.push(p);
-                })
-
-                destruirDataTableProductos();
-                limpiarTabla('table_productos');
-                pintarProductos(res.productos);
-                iniciarDataTableProductos();
-            }else{
-                toastr.error(res.message,'ERROR EN EL SERVIDOR AL OBTENER PRODUCTOS');
-            }
-
-        } catch (error) {
-            toastr.error(error,'ERROR EN LA PETICION OBTENER PRODUCTOS');
-        }finally{
-            ocultarAnimacion1();
-        }
-    }
-
     function destruirDataTableProductos(){
         if(dtProductos){
             dtProductos.destroy();

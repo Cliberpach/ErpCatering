@@ -10,6 +10,7 @@
 @section('registro_salida-active', 'active')
 
 @section('section-page')
+@include('logistica.registro_salida.modals.modal_show')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -21,7 +22,7 @@
             </button>
     </div>
     <div class="table-responsive">
-        @include('logistica.registro_compra.tables.table_list_compras')
+        @include('logistica.registro_salida.tables.table_list_salidas')
     </div>
 </div>
 <!-- end card -->
@@ -35,21 +36,21 @@
 @endif
 
 <script>
-    let dtCotizacionesCompra    =   null;
+    let dtSalidas    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarDataTableSalidas();
     })
 
     function iniciarDataTableSalidas(){
-        const urlGetCompras = '{{ route('logistica.registro_compra.getCompras') }}';
+        const urlGetSalidas = '{{ route('logistica.registro_salida.getSalidas') }}';
 
-        dtCotizacionesCompra  =   new DataTable('#table_list_compras',{
+        dtSalidas  =   new DataTable('#table_list_salidas',{
             serverSide: true,
             processing: true,
             responsive:true,
             ajax: {
-                url: urlGetCompras,
+                url: urlGetSalidas,
                 type: 'GET',
             },
             columns: [
@@ -61,52 +62,20 @@
                     }
                 },
                 { data: 'colaborador_nombre', name: 'colaborador_nombre' },
-                { data: 'documento', name: 'documento' },
-                { 
-                    data: 'precios_igv', 
-                    name: 'precios_igv',
-                    render: function (data, type, row) {
-                        if(data == 1){
-                            return "CON IGV";
-                        }
-                        if (data == 0) {
-                            return "SIN IGV";
-                        }
-                    }
-                },
-                { 
-                    data: 'subtotal_soles', 
-                    name: 'subtotal_soles',
-                    render: function (data, type, row) {
-                        return type === 'display' ? (Number(data) || 0).toFixed(2) : data;
-                    }
-                },
-                { 
-                    data: 'monto_igv_soles', 
-                    name: 'monto_igv_soles',
-                    render: function (data, type, row) {
-                        return type === 'display' ? (Number(data) || 0).toFixed(2) : data;
-                    }
-                },
-                { 
-                    data: 'total_soles', 
-                    name: 'total_soles',
-                    render: function (data, type, row) {
-                        return type === 'display' ? (Number(data) || 0).toFixed(2) : data;
-                    }
-                },
+                { data: 'almacen_origen_nombre', name: 'almacen_origen_nombre' },
+                { data: 'almacen_destino_nombre', name: 'almacen_destino_nombre' },
                 { data: 'fecha_registro', name: 'fecha_registro' },
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('logistica.cotizacion_compra.edit', ['id' => ':id']) }}`;
-                        urlEdit             =   baseUrlEdit.replace(':id', data.id); 
+                        // const baseUrlEdit   =   `{{ route('logistica.cotizacion_compra.edit', ['id' => ':id']) }}`;
+                        // urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
                         const baseUrlShow   =   `{{ route('logistica.registro_compra.show', ['id' => ':id']) }}`;
                         urlShow             =   baseUrlShow.replace(':id', data.id); 
 
-                        const urlDelete = `{{ route('logistica.cotizacion_compra.destroy', ':id') }}`.replace(':id', data.id);
-                        const urlPdf    = `{{ route('logistica.cotizacion_compra.pdf', ':id') }}`.replace(':id', data.id);
+                        // const urlDelete = `{{ route('logistica.cotizacion_compra.destroy', ':id') }}`.replace(':id', data.id);
+                        // const urlPdf    = `{{ route('logistica.cotizacion_compra.pdf', ':id') }}`.replace(':id', data.id);
 
 
                         return `
@@ -115,27 +84,13 @@
                                 <i class="fa-solid fa-grip"></i>
                             </button>
                             <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                                
                                  <li>
-                                    <a class="dropdown-item" href="${urlPdf}" target="_blank">
-                                        <i class="fa-solid fa-file-pdf"></i> PDF
-                                    </a>
-                                </li>
-                                 <li>
-                                    <a class="dropdown-item" href="${urlShow}">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShow(${data.id});">
                                         <i class="fa-solid fa-eye"></i> Ver
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="${urlEdit}">
-                                        <i class="fa-solid fa-file-pen"></i> Editar
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarCotizacionCompra(${data.id})">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
-                                    </a>
-                                </li>
+                               
                             </ul>
                             </div>
                         `;
@@ -177,7 +132,7 @@
 
     function eliminarCotizacionCompra(id){
         toastr.clear();
-        let row             =   getRowById(dtCotizacionesCompra,id);
+        let row             =   getRowById(dtSalidas,id);
         let message         =   '';
 
         message =   `Desea eliminar la cotización de compra N°${id}`;
@@ -224,7 +179,7 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtCotizacionesCompra.draw();
+                    dtSalidas.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR COTIZACIÓN DE COMPRA');

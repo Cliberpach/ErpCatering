@@ -128,6 +128,7 @@ Route::group(['prefix' => 'productos', 'middleware' => ['auth','checkCustomPermi
     Route::get('/edit/{id}', [ProductoController::class, 'edit'])->name('registros.producto.edit');
     Route::put('/update/{id}', [ProductoController::class, 'update'])->name('registros.producto.update');
     Route::get('/getProductos', [ProductoController::class, 'getProductos'])->name('registros.producto.getProductos');
+    Route::get('/getProductosByAlmacen', [ProductoController::class, 'getProductosByAlmacen'])->name('registros.producto.getProductosByAlmacen');
     Route::delete('/destroy/{id}', [ProductoController::class, 'destroy'])->name('registros.producto.destroy');
     Route::get('/show/{id}', [ProductoController::class, 'show'])->name('registros.producto.show');
 
@@ -240,7 +241,7 @@ Route::group(['prefix' => 'cotizacion_compra', 'middleware' => ['auth','checkCus
     Route::get('/edit/{id}', [CotizacionCompraController::class, 'edit'])->name('logistica.cotizacion_compra.edit');
     Route::put('/update/{id}', [CotizacionCompraController::class, 'update'])->name('logistica.cotizacion_compra.update');
     Route::get('/create', [CotizacionCompraController::class, 'create'])->name('logistica.cotizacion_compra.create');
-    Route::get('/getProductosByCategoria/{categoria_id}', [ProductoController::class, 'getProductosByCategoria'])->name('logistica.cotizacion_compra.getProductosByCategoria');
+    //Route::get('/getProductosByCategoria/{categoria_id}', [ProductoController::class, 'getProductosByCategoria'])->name('logistica.cotizacion_compra.getProductosByCategoria');
     Route::delete('/destroy/{id}', [CotizacionCompraController::class, 'destroy'])->name('logistica.cotizacion_compra.destroy');
     Route::get('/getCotizacionesCompra', [CotizacionCompraController::class, 'getCotizacionesCompra'])->name('logistica.cotizacion_compra.getCotizacionesCompra');
     Route::get('/pdf/{id}', [CotizacionCompraController::class, 'pdf'])->name('logistica.cotizacion_compra.pdf');
@@ -265,6 +266,10 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
 
     Route::get('/index', [RegistroSalidaController::class, 'index'])->name('logistica.registro_salida.index');
     Route::get('/create', [RegistroSalidaController::class, 'create'])->name('logistica.registro_salida.create');
+    Route::get('/getSalidas', [RegistroSalidaController::class, 'getSalidas'])->name('logistica.registro_salida.getSalidas');
+    Route::get('/validarCantidad/{almacen_id}/{producto_id}/{cantidad}', [RegistroSalidaController::class, 'validarCantidad'])->name('logistica.registro_salida.validarCantidad');
+    Route::post('/store', [RegistroSalidaController::class, 'store'])->name('logistica.registro_salida.store');
+    Route::get('/show/{salida_id}', [RegistroSalidaController::class, 'show'])->name('logistica.registro_salida.show');
 
 });
 
