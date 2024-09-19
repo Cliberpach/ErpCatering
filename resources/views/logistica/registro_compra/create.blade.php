@@ -223,7 +223,9 @@
     }
 
     function calcularMontos(lstItems,chkIgv,valorIgv){
-        let subtotal = 0, monto_igv = 0, total = 0;
+        let subtotal    =   0;
+        let monto_igv   =   0;
+        let total       =   0;
         valorIgv    =   parseFloat(valorIgv);
 
         if(chkIgv){ //======= PRECIOS CON IGV ======

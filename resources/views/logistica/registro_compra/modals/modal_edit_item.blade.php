@@ -57,9 +57,10 @@
                     destruirDataTableCompraDetalle();
                     pintarTableCompraDetalle(lstCompra);
                     iniciarDataTableCompraDetalle();
-                    const estado    =   e.target.checked;
-                    const valorIgv  =   e.target.value;
-                    const montos    =  calcularMontos(lstCompra,estado,valorIgv);
+                    const estado    =   document.querySelector('#igv').checked;
+                    const valorIgv  =   document.querySelector('#igv').value;
+                    const montos    =   calcularMontos(lstCompra,estado,valorIgv);
+                    console.log(montos);
                     pintarTableMontos(montos);
                     toastr.success('ITEM ELIMINADO!!');
                 }    
@@ -82,9 +83,10 @@
                     pintarTableCompraDetalle(lstCompra);
                     iniciarDataTableCompraDetalle();
 
-                    const estado    =   e.target.checked;
-                    const valorIgv  =   e.target.value;
-                    const montos    =  calcularMontos(lstCompra,estado,valorIgv);
+                    const estado    =   document.querySelector('#igv').checked;
+                    const valorIgv  =   document.querySelector('#igv').value;
+                    const montos    =   calcularMontos(lstCompra,estado,valorIgv);
+                    console.log(montos);
                     pintarTableMontos(montos);
 
                     $('#mdlEditItem').modal('hide');
