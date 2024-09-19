@@ -32,7 +32,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="table-responsive">
-                        @include('logistica.registro_compra.tables.table_productos')
+                        @include('logistica.cotizacion_compra.tables.table_productos')
                     </div>
                 </div>
             </div>
@@ -47,15 +47,14 @@
 </div>
 
 <script>
+    const lstTableProductos =   [];
     const producto_elegido  =   {
                                     producto_id:null,
                                     producto_nombre:null,
                                     categoria_nombre:null,
                                     marca_nombre:null,
                                     producto_unidad_medida:null,
-                                    cantidad:null,
-                                    precio:null,
-                                    almacen_id:null
+                                    cantidad:null
                                 }
 
     function eventsMdlProductos(){
@@ -81,16 +80,12 @@
         const producto                              =   fila;
         document.querySelector('#producto').value   =   producto.nombre;
         document.querySelector('#unidad').value     =   producto.unidad_medida_nombre;
-        document.querySelector('#precio').value     =   producto.precio;
-            
-
 
         producto_elegido.producto_id            =   producto.id;
         producto_elegido.producto_nombre        =   producto.nombre;
         producto_elegido.categoria_nombre       =   producto.categoria_nombre;
         producto_elegido.marca_nombre           =   producto.marca_nombre;
         producto_elegido.producto_unidad_medida =   producto.unidad_medida_nombre;
-        producto_elegido.precio                 =   producto.precio;
 
         console.log('PRODUCTO ELEGIDO');
         console.log(producto_elegido);
@@ -105,20 +100,16 @@
         const inputProducto =   document.querySelector('#producto');
         const inputUnidad   =   document.querySelector('#unidad');
         const inputCantidad =   document.querySelector('#cantidad');
-        const inputPrecio   =   document.querySelector('#precio');
 
         inputProducto.value =   '';
         inputUnidad.value   =   '';
         inputCantidad.value =   '';
-        inputPrecio.value   =   '';
         producto_elegido.producto_id            =   null;
         producto_elegido.producto_nombre        =   null;
         producto_elegido.categoria_nombre       =   null;
         producto_elegido.marca_nombre           =   null;
         producto_elegido.producto_unidad_medida =   null;
         producto_elegido.cantidad               =   null;
-        producto_elegido.precio                 =   null;
-        $('#almacen').val(1).trigger('change');
 
 
     }

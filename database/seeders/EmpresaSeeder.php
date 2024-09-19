@@ -24,6 +24,7 @@ class EmpresaSeeder extends Seeder
         $empresa->correo        =   'tucorreo@gmail.com';
         $empresa->img_ruta      =   'img/empresa/img_default.png';
         $empresa->img_nombre    =   'img_default.png';
+        $empresa->igv           =   18;
         $empresa->save();
 
     }

@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Registros\Marca;
 use App\Models\Registros\Categoria;
 use Exception;
+use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -144,6 +145,36 @@ class ProductoController extends Controller
             DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
+    }
+
+    public function show($id){
+        try {
+            $producto   =   DB::select('select 
+                            p.nombre as producto_nombre,
+                            m.descripcion as marca_nombre,
+                            ca.descripcion as categoria_nombre,
+                            tgd.descripcion as unidad_medida_nombre,
+                            p.precio as producto_precio
+                            from productos as p
+                            inner join marcas as m on m.id = p.marca_id 
+                            inner join categorias as ca on ca.id = p.categoria_id
+                            inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id 
+                            where p.id = ? ',[$id])[0];
+
+            $stocks     =   DB::select('select 
+                            p.nombre as producto_nombre,
+                            a.descripcion as almacen_nombre,
+                            ap.stock as producto_stock
+                            from almacen_productos as ap
+                            inner join productos as p on p.id = ap.producto_id
+                            inner join almacenes as a on a.id = ap.almacen_id
+                            where ap.producto_id = ?',[$id]);
+
+
+            return response()->json(['success'=>true,'producto'=>$producto,'stocks'=>$stocks]);
+        } catch (Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }        
     }
 
     public function getProductosByCategoria($categoria_id){

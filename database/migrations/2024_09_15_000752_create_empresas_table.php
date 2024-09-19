@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('correo', 200)->nullable(); 
             $table->longText('img_ruta')->nullable();
             $table->string('img_nombre', 100)->nullable(); 
+            $table->decimal('igv', 10, 2)->unsigned();
             $table->timestamps(); 
            
         });

@@ -33,6 +33,27 @@ function eventsUtils(){
             input.value = value;
         }
 
+        if (e.target.classList.contains('inputDecimalPositivoLibre')) {
+            const input = e.target;
+    
+            // Reemplaza cualquier carácter que no sea un dígito o un punto decimal
+            let value = input.value.replace(/[^0-9.]/g, '');
+    
+            // Asegúrate de que el punto decimal no esté al inicio
+            if (value.startsWith('.')) {
+                value = value.slice(1);
+            }
+    
+            // Permite solo un punto decimal
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+    
+            // Actualiza el valor del input
+            input.value = value;
+        }
+
         if (e.target.classList.contains('inputDecimal')) {
             const input = e.target;
         
@@ -95,6 +116,13 @@ function limpiarTabla(idTabla) {
     const tbody =   document.querySelector(`#${idTabla} tbody`);
     while (tbody.firstChild) {
         tbody.removeChild(tbody.firstChild);
+    }
+}
+
+function destruirDataTable(dtTable){
+    if(dtTable){
+        dtTable.destroy();
+        dtTable =   null;
     }
 }
 

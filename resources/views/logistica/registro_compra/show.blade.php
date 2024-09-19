@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 @section('title-page')
-    REGISTRAR COMPRA
+    VER COMPRA
 @endsection
 
 @section('logistica-collapsed', '')
@@ -9,32 +9,117 @@
 @section('registro_compra-active', 'active')
 
 @section('section-page')
+<div class="container">
+    <div class="card card-style settings-card-1 mb-30 border-primary shadow-lg rounded-lg">
+        <!-- Encabezado de la tarjeta -->
+        <div class="card-header bg-primary text-light d-flex justify-content-between align-items-center rounded-top" style="text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);">
+            <h5 class="mb-0" style="color: white;">Detalles de la Compra</h5>
+            <i class="fa-solid fa-box fa-2x"></i>
+        </div>
 
-@include('logistica.registro_compra.modals.modal_productos')
-@include('logistica.registro_compra.modals.modal_edit_item')
+        <!-- Cuerpo de la tarjeta -->
+        <div class="card-body bg-light">
+            <div class="row">
 
+                <!-- Información de la Compra -->
+                <div class="col-md-12">
+                    <div class="border rounded p-4 bg-white">
+                        <div class="row">
+                            @php
+                                $fields = [
+                                    '#'                 =>  'RC-'.$compra->id,
+                                    'Colaborador'       =>  $compra->colaborador_nombre,
+                                    'Proveedor'         =>  $compra->proveedor_nombre,
+                                    'Fecha Emisión'     =>  $compra->fecha_emision ?: 'No especificado',
+                                    'Fecha Entrega'     =>  $compra->fecha_entrega ?: 'No especificado',
+                                    'Documento'         =>  $compra->serie.'-'.$compra->correlativo,
+                                    'Moneda'            =>  $compra->moneda,
+                                    'Tipo de Cambio'    =>  number_format($compra->tipo_cambio, 4),
+                                    'TIPO PRECIOS'      =>  $compra->precios_igv == 1 ? 'CON IGV' : 'SIN IGV',
+                                    'IGV'               =>  number_format($compra->igv, 2),
+                                    'Subtotal'          =>  number_format($compra->subtotal, 2),
+                                    'Monto IGV'         =>  number_format($compra->monto_igv, 2),
+                                    'Total'             =>  number_format($compra->total, 2),
+                                    'Subtotal (S/)'     =>  number_format($compra->subtotal_soles, 2),
+                                    'Monto IGV (S/)'    =>  number_format($compra->monto_igv_soles, 2),
+                                    'Total (S/)'        =>  number_format($compra->total_soles, 2),
+                                    'Observación'       =>  $compra->observacion ?: 'No hay observaciones',
+                                    'Creado'            =>  $compra->fecha_registro ?: 'No especificado',
+                                    'Actualizado'       =>  $compra->fecha_modificacion ?: 'No especificado'
+                                ];
+                            @endphp
 
-<div class="card-style settings-card-1 mb-30">
-    <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Datos de la Compra <i class="fa-solid fa-toolbox"></i></h6>
-    </div>
-    <div class="card-body">
-        @include('logistica.registro_compra.forms.form_create_compra')
-    </div>
-    <div class="card-footer d-flex justify-content-between align-items-center">
-        <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
-        
-        <div style="display:flex;">
-            <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
-                <i class="fa-solid fa-door-open"></i> VOLVER
-            </button>
-            <button class="btn btn-primary" type="submit" form="formRegistrarCompra">
-                <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
-            </button>
+                            @foreach ($fields as $label => $value)
+                                <div class="col-lg-6 col-md-12 mb-3">
+                                    <div class="d-block d-md-flex justify-content-between align-items-center p-2">
+                                        <strong class="text-dark">{{ $label }}:</strong>
+                                        @if ($label == 'Observación')
+                                            <span class="text-muted" style="white-space: pre-wrap;">{{ $value }}</span>
+                                        @else
+                                            <span class="text-muted">{{ $value }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Productos -->
+                    <div class="col-12 mt-4">
+                            <div class="border rounded p-4 bg-white">
+                                <h6 class="text-primary mb-3 border-bottom pb-2">Lista de Productos</h6>
+                                <div class="table-responsive">
+                                <!-- Tabla responsiva -->
+                                <table class="table table-hover table-bordered" id="tbl_compra_detalle">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Almacén</th>
+                                            <th>Producto</th>
+                                            <th>Precio S/</th>
+                                            <th>Precio $</th>
+                                            <th>Precio + IGV (S/)</th>
+                                            <th>Precio + IGV ($)</th>
+                                            <th>Cantidad</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($productos as $index => $producto)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>{{ $producto->almacen_nombre }}</td>
+                                            <td>{{ $producto->producto_nombre }}</td>
+                                            <td>{{ number_format($producto->precio_soles, 2) }}</td>
+                                            <td>{{ number_format($producto->precio_dolares, 2) }}</td>
+                                            <td>{{ number_format($producto->precio_mas_igv_soles, 2) }}</td>
+                                            <td>{{ number_format($producto->precio_mas_igv_dolares, 2) }}</td>
+                                            <td>{{ number_format($producto->cantidad, 2) }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+               
+            </div>
+        </div>
+
+        <!-- Pie de la tarjeta -->
+        <div class="card-footer bg-primary text-white d-flex justify-content-end align-items-center">
+            <div class="d-flex">
+                <button class="btn btn-danger btnVolver me-2" type="button">
+                    <i class="fa-solid fa-arrow-left"></i> VOLVER
+                </button>
+            </div>
         </div>
     </div>
 </div>
-<!-- end card -->
+
+
+
+
 @endsection
 
 
@@ -45,34 +130,15 @@
 
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarSelect2();
-        iniciarDataTableProductos();
         iniciarDataTableCompraDetalle();
-        getTipoCambio();
         events();
     })
 
     function events(){
-        eventsMdlEditItem();
 
-        document.querySelector('#formRegistrarCompra').addEventListener('submit',(e)=>{
-            e.preventDefault();
-            const validacion    =   validacionRegistrarCompra();
-            if(validacion){
-                registrarCompra();
-            }
-        })
+        
 
-        document.querySelector('#igv').addEventListener('change',(e)=>{
-            toastr.clear();
-            const estado    =   e.target.checked;
-            const valorIgv  =   e.target.value;
-
-            if(lstCompra.length > 0){
-                const montos =  calcularMontos(lstCompra,estado,valorIgv);
-                pintarTableMontos(montos);
-                toastr.info('MONTOS ACTUALIZADOS');
-            }
-        })
+      
 
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
@@ -80,18 +146,7 @@
                 window.location.href    =   rutaIndex;
             }
 
-            if (e.target.closest('.btnAgregarProducto')) {
-                toastr.clear();
-                const validacion    =   validacionAgregarProducto();
-
-                if(validacion){
-                    mostrarAnimacion1();
-                    agregarProducto({...producto_elegido});
-                    limpiarFormSelectProducto();
-                    ocultarAnimacion1();
-                }
-              
-            }
+           
         })
 
     }
@@ -105,58 +160,9 @@
         } );
     }
 
-    function iniciarDataTableProductos(){
-        const urlGetProductos   =   @json(route('registros.producto.getProductos'));
-        
-        dtProductos  =   new DataTable('#table_productos',{
-            serverSide: true,  
-            processing: true,  
-            ajax: {
-                url: urlGetProductos, 
-                type: 'GET',  
-                data: function(d) {
-                    d.categoria_id  =   $('#categoria').val();  
-                    d.marca_id      =   $('#marca').val();  
-                },
-            },
-            columns: [
-                { data: 'id', name: 'id' },
-                { data: 'nombre', name: 'nombre' },
-                { data: 'marca_nombre', name: 'marca_nombre' },
-                { data: 'categoria_nombre', name: 'categoria_nombre' },
-                { data: 'stock', name: 'Stock' }
-            ],
-            createdRow: function(row, data, dataIndex) {
-                $(row).css('cursor', 'pointer');
-                
-                $(row).attr('onclick', 'seleccionarProducto(' + data.id + ')');
-            },
-            language: {
-                "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "No se encontraron resultados",
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                "infoEmpty": "Mostrando 0 a 0 de 0 registros",
-                "infoFiltered": "(filtrado de _MAX_ registros totales)",
-                "search": "Buscar:",
-                "paginate": {
-                    "first": "Primero",
-                    "last": "Último",
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                },
-                "loadingRecords": "Cargando...",
-                "processing": "Procesando...",
-                "emptyTable": "No hay datos disponibles en la tabla",
-                "aria": {
-                    "sortAscending": ": activar para ordenar la columna de manera ascendente",
-                    "sortDescending": ": activar para ordenar la columna de manera descendente"
-                }
-            }
-        });
-    }
-
+   
     function iniciarDataTableCompraDetalle(){
-        dtCompraDetalle  =   new DataTable('#table_compra_detalle',{
+        dtCompraDetalle  =   new DataTable('#tbl_compra_detalle',{
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
@@ -320,7 +326,7 @@
                             <td>${producto.producto_unidad_medida}</td>
                             <td>${producto.precio}</td>
                             <td>${producto.cantidad}</td>
-                            <td>${producto.total.toFixed(2)}</td>
+                            <td>${producto.total}</td>
                         </tr>`;
         })
 

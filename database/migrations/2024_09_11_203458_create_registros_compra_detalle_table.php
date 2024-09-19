@@ -15,6 +15,9 @@ return new class extends Migration
             
             $table->unsignedBigInteger('registro_compra_id');
             $table->foreign('registro_compra_id')->references('id')->on('registros_compra');
+            
+            $table->unsignedBigInteger('almacen_id');
+            $table->foreign('almacen_id')->references('id')->on('almacenes');
 
             $table->unsignedBigInteger('producto_id');
             $table->foreign('producto_id')->references('id')->on('productos');
@@ -25,7 +28,10 @@ return new class extends Migration
             $table->decimal('precio_mas_igv_soles',16,2)->unsigned();
             $table->decimal('precio_mas_igv_dolares',16,2)->unsigned();
 
-            $table->primary(['registro_compra_id', 'producto_id']);
+            $table->decimal('cantidad',16,2)->unsigned();
+
+
+            $table->primary(['registro_compra_id','almacen_id', 'producto_id']);
             $table->timestamps();
         });
     }

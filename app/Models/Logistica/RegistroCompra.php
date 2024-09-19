@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class RegistroCompra extends Model
 {
     use HasFactory;
+    protected $table = 'registros_compra';
+
+    protected $guarded = [''];
 }

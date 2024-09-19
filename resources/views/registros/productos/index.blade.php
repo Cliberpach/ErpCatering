@@ -10,6 +10,8 @@
 
 
 @section('section-page')
+@include('registros.productos.modals.modal_show')
+
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -23,7 +25,6 @@
         @include('registros.productos.tables.table_list_productos')
     </div>
 </div>
-<!-- end card -->
 @endsection
 
 @if(Session::has('message_success'))
@@ -38,6 +39,7 @@
 
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarDataTableProductos();
+        iniciarDataTableStocks();
     })
 
     function iniciarDataTableProductos(){
@@ -65,6 +67,8 @@
                         const baseUrlEdit   =   `{{ route('registros.producto.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
+                      
+
                         const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
 
                         return `
@@ -73,6 +77,11 @@
                                 <i class="fa-solid fa-grip"></i>
                             </button>
                             <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
+                                 <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowProducto(${data.id})">
+                                        <i class="fa-solid fa-eye"></i> Ver
+                                    </a>
+                                </li>
                                 <li>
                                     <a class="dropdown-item" href="${urlEdit}">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar

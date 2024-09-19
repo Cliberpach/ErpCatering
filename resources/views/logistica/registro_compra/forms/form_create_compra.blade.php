@@ -6,11 +6,11 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                         <label class="required_field" for="fecha_emision" style="font-weight: bold;">FECHA EMISIÓN</label>
-                        <input required type="date" name="fecha_emision" id="fecha_emision" class="form-control">
+                        <input value="<?php echo date('Y-m-d'); ?>" required type="date" name="fecha_emision" id="fecha_emision" class="form-control">
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                         <label class="required_field" for="fecha_entrega" style="font-weight: bold;">FECHA ENTREGA</label>
-                        <input required type="date" name="fecha_entrega" id="fecha_entrega" class="form-control">
+                        <input value="<?php echo date('Y-m-d'); ?>" required type="date" name="fecha_entrega" id="fecha_entrega" class="form-control">
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                         <label class="required_field" for="proveedor" style="font-weight: bold;">PROVEEDOR</label>
@@ -33,18 +33,19 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                         <label class="required_field" for="moneda" style="font-weight: bold;">MONEDA</label>
-                        <select required name="moneda" id="moneda" onchange="getTipoCambio(this.value)" data-placeholder="Seleccionar" class="select2_form">
+                        <select required name="moneda" id="moneda" data-placeholder="Seleccionar" class="select2_form">
                             <option value="SOLES">SOLES</option>
                             <option value="DÓLARES">DÓLARES</option>
                         </select>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                         <label for="tipo_cambio" id="lbl_tipo_cambio" style="font-weight: bold;">TIPO CAMBIO S/</label>
+                        <i class="fa-solid fa-rotate btn btn-primary" onclick="getTipoCambio()"></i>
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="basic-addon1">
                                 <i class="fa-solid fa-hand-holding-dollar"></i>                            
                             </span>
-                            <input required readonly  id="tipo_cambio" name="tipo_cambio" type="text" class="form-control" placeholder="Tipo cambio" aria-label="Username" aria-describedby="basic-addon1">
+                            <input required readonly  id="tipo_cambio" name="tipo_cambio" type="text" class="form-control inputDecimalPositivoLibre" placeholder="Tipo cambio" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
                     </div>
 
@@ -79,7 +80,7 @@
                             <span class="input-group-text" id="basic-addon1">
                                 <i class="fa-solid fa-hashtag"></i>
                             </span>
-                            <input required id="numero" name="numero" type="text" class="form-control" placeholder="Número" aria-label="Username" aria-describedby="basic-addon1">
+                            <input required id="numero" name="numero" type="text" class="form-control inputEnteroPositivo" placeholder="Número" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
                     </div>
                 </div>
@@ -127,7 +128,6 @@
                                     <input id="precio" name="precio" type="text" class="form-control inputDecimalPositivo" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
                                   </div>
                             </div>
-
                             <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                                 <label for="categoria" style="font-weight: bold;">CANTIDAD</label>
                                 <div class="input-group mb-3">
@@ -135,7 +135,17 @@
                                         <i class="fa-solid fa-box-open"></i>                                    
                                     </span>
                                     <input id="cantidad" name="cantidad" type="text" class="form-control inputDecimalPositivo" placeholder="Cantidad" aria-label="Username" aria-describedby="basic-addon1">
-                                  </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                                <label for="almacen" style="font-weight: bold;">ALMACÉN</label>
+                                <div class="input-group mb-3">
+                                    <select name="almacen" id="almacen" data-placeholder="Seleccionar" class="select2_form">
+                                        @foreach ($almacenes as $almacen)
+                                            <option value="{{$almacen->id}}">{{$almacen->descripcion}}</option> 
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
 

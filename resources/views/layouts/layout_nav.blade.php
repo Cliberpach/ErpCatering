@@ -172,7 +172,7 @@
             </li>
             <li>
               @can('logistica.registro_salida')
-                <a href="signup.html">Registro de Salidas</a>
+                <a class="@yield('registro_salida-active')" href="{{route('logistica.registro_salida.index')}}">Registro de Salidas</a>
               @endcan
             </li>
             <li>

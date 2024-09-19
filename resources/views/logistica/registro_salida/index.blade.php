@@ -1,22 +1,22 @@
 
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE COMPRAS
+    LISTADO DE SALIDAS
 @endsection
 
 @section('logistica-collapsed', '')
 @section('logistica-expanded', 'true')
 @section('logistica-show', 'show')
-@section('registro_compra-active', 'active')
+@section('registro_salida-active', 'active')
 
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Registro de Compra <i class="fa-solid fa-cart-shopping"></i>
+      <h6>Registro de Salidas <i class="fa-solid fa-truck-arrow-right"></i>
       </h6>
         
-            <button class="btn btn-primary" onclick="goToRegistrarCompra()">
+            <button class="btn btn-primary" onclick="goToRegistrarSalida()">
                 <i class="fa-solid fa-plus"></i> NUEVO
             </button>
     </div>
@@ -38,10 +38,10 @@
     let dtCotizacionesCompra    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableCompra();
+        iniciarDataTableSalidas();
     })
 
-    function iniciarDataTableCompra(){
+    function iniciarDataTableSalidas(){
         const urlGetCompras = '{{ route('logistica.registro_compra.getCompras') }}';
 
         dtCotizacionesCompra  =   new DataTable('#table_list_compras',{
@@ -170,8 +170,8 @@
     }
 
 
-    function goToRegistrarCompra(){
-        window.location.href = @json(route('logistica.registro_compra.create'));
+    function goToRegistrarSalida(){
+        window.location.href = @json(route('logistica.registro_salida.create'));
     }
 
 

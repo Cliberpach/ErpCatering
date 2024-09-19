@@ -23,22 +23,25 @@ return new class extends Migration
             $table->unsignedBigInteger('proveedor_id');
             $table->foreign('proveedor_id')->references('id')->on('proveedores');
 
-            $table->timestamp('fecha_documento')->nullable();
+            $table->timestamp('fecha_emision')->nullable();
             $table->timestamp('fecha_entrega')->nullable();
 
             $table->string('serie',20);
             $table->bigInteger('correlativo')->unsigned(); 
 
+            $table->string('moneda',100);
+            $table->decimal('tipo_cambio',10,4)->unsigned()->nullable();
+
             $table->tinyInteger('precios_igv')->unsigned();
-            $table->decimal('igv',16,2)->unsigned();
+            $table->decimal('igv',16,4)->unsigned();
 
-            $table->decimal('subtotal',16,2)->unsigned();
-            $table->decimal('monto_igv',16,2)->unsigned();
-            $table->decimal('total',16,2)->unsigned();
+            $table->decimal('subtotal',16,4)->unsigned();
+            $table->decimal('monto_igv',16,4)->unsigned();
+            $table->decimal('total',16,4)->unsigned();
 
-            $table->decimal('subtotal_soles',16,2)->unsigned();
-            $table->decimal('monto_igv_soles',16,2)->unsigned();
-            $table->decimal('total_soles',16,2)->unsigned();
+            $table->decimal('subtotal_soles',16,4)->unsigned();
+            $table->decimal('monto_igv_soles',16,4)->unsigned();
+            $table->decimal('total_soles',16,4)->unsigned();
 
             $table->string('observacion',300)->nullable();
 

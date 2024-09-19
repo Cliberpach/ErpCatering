@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 @section('title-page')
-    REGISTRAR COMPRA
+    REGISTRAR SALIDA
 @endsection
 
 @section('logistica-collapsed', '')
@@ -9,17 +9,14 @@
 @section('registro_compra-active', 'active')
 
 @section('section-page')
-
-@include('logistica.registro_compra.modals.modal_productos')
-@include('logistica.registro_compra.modals.modal_edit_item')
-
+@include('logistica.registro_salida.modals.modal_productos')
 
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Datos de la Compra <i class="fa-solid fa-toolbox"></i></h6>
+      <h6>Datos de la Salida <i class="fa-solid fa-toolbox"></i></h6>
     </div>
     <div class="card-body">
-        @include('logistica.registro_compra.forms.form_create_compra')
+        @include('logistica.registro_salida.forms.form_create_salida') 
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
@@ -28,7 +25,7 @@
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
-            <button class="btn btn-primary" type="submit" form="formRegistrarCompra">
+            <button class="btn btn-primary" type="submit" form="formRegistrarSalida">
                 <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
             </button>
         </div>
@@ -47,14 +44,12 @@
         iniciarSelect2();
         iniciarDataTableProductos();
         iniciarDataTableCompraDetalle();
-        getTipoCambio();
         events();
     })
 
     function events(){
-        eventsMdlEditItem();
 
-        document.querySelector('#formRegistrarCompra').addEventListener('submit',(e)=>{
+        document.querySelector('#formRegistrarSalida').addEventListener('submit',(e)=>{
             e.preventDefault();
             const validacion    =   validacionRegistrarCompra();
             if(validacion){
@@ -62,17 +57,8 @@
             }
         })
 
-        document.querySelector('#igv').addEventListener('change',(e)=>{
-            toastr.clear();
-            const estado    =   e.target.checked;
-            const valorIgv  =   e.target.value;
-
-            if(lstCompra.length > 0){
-                const montos =  calcularMontos(lstCompra,estado,valorIgv);
-                pintarTableMontos(montos);
-                toastr.info('MONTOS ACTUALIZADOS');
-            }
-        })
+       
+     
 
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
@@ -418,8 +404,8 @@
         if (result.isConfirmed) {
             limpiarErroresValidacion('msgError');
             const token                             =   document.querySelector('input[name="_token"]').value;
-            const formRegistrarCompra               =   document.querySelector('#formRegistrarCompra');
-            const formData                          =   new FormData(formRegistrarCompra);
+            const formRegistrarSalida               =   document.querySelector('#formRegistrarSalida');
+            const formData                          =   new FormData(formRegistrarSalida);
             const urlRegistrarCompra                =   @json(route('logistica.registro_compra.store'));
 
             formData.append('lstCompra',JSON.stringify(lstCompra))

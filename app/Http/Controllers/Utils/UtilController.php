@@ -34,7 +34,7 @@ class UtilController extends Controller
 
     }
 
-    public function tipoCambio(){
+    public static function tipoCambio(){
 
         try {
             $fecha  =   Carbon::now()->toDateString();

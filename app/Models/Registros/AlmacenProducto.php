@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Models\Logistica;
+namespace App\Models\Registros;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RegistroCompraDetalle extends Model
+class AlmacenProducto extends Model
 {
     use HasFactory;
-    protected $table = 'registros_compra_detalle';
+    protected $table = 'almacen_productos';
 
     protected $guarded = [''];
 }
