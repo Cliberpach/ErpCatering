@@ -32,8 +32,8 @@ class ProyectoController extends Controller
     public function getProyectos(Request $request){
 
         $proyectos = Proyecto::where('proyectos.estado', 'ACTIVO')
-                    ->leftJoin('users', 'proyectos.supervisor_id', '=', 'users.id')
-                    ->select('proyectos.*', 'users.name as supervisor_nombre') 
+                    ->leftJoin('colaboradores', 'proyectos.supervisor_id', '=', 'colaboradores.id')
+                    ->select('proyectos.*', 'colaboradores.nombre as supervisor_nombre') 
                     ->get();
 
 

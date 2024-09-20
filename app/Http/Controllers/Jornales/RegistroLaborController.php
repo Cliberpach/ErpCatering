@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Jornales;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Jornales\RegistroLabor\MarcarEntradaRequest;
 use App\Http\Requests\Jornales\RegistroLabor\RegistroLaborStoreRequest;
 use App\Models\Jornales\RegistroLabor;
 use App\Models\Jornales\RegistroLaborDetalle;
@@ -63,9 +64,10 @@ class RegistroLaborController extends Controller
             }
             
             //========== REGISTRAR MAESTRO ASISTENCIA =======
-            $registro_labor                 =   new RegistroLabor();
-            $registro_labor->supervisor_id  =   $colaborador[0]->id;
-            $registro_labor->proyecto_id    =   $proyecto[0]->id;
+            $registro_labor                     =   new RegistroLabor();
+            $registro_labor->supervisor_id      =   $colaborador[0]->id;
+            $registro_labor->proyecto_id        =   $proyecto[0]->id;
+            $registro_labor->fecha_asistencia   =   Carbon::today();
             $registro_labor->save();
 
             //===== OBTENER TODOS LOS USUARIOS ASOCIADOS A ESE PROYECTO ======
@@ -131,14 +133,21 @@ class RegistroLaborController extends Controller
         compact('colaboradores','registro_labor_maestro','colaborador_actual_id'));
     }
 
-    public function marcarEntrada(Request $request){
+    public function marcarEntrada(MarcarEntradaRequest $request){
         DB::beginTransaction();
         try {
-           
+            $tipo_asistencia    =   $request->get('tipo_asistencia',null);
+            $hora_entrada       =   $request->get('hora_entrada',null);
+            $registro_labor_id  =   $request->get('registro_labor_id',null);
+            $colaborador_id     =   $request->get('colaborador_id',null);
 
-            $registro_labor                             =   RegistroLabor::find($request->get('registro_labor_id'));
-            if(!$registro_labor){
-                throw new Exception("No se encontró el registro de asistencia");
+            $registro_labor     =   RegistroLabor::find($registro_labor_id);
+
+            //======= VALIDACIÓN COMPLEJA =======
+            RegistroLaborController::validacionMarcarEntrada($registro_labor,$colaborador_id);
+            
+            if ($tipo_asistencia === 'AUTOMATICO') {
+                $hora_entrada = Carbon::now()->format('H:i');
             }
 
             //========= MARCAR ASISTENCIA HORA ENTRADA =======
@@ -146,9 +155,9 @@ class RegistroLaborController extends Controller
                 update registros_labor_detalle
                 set hora_entrada = ?
                 where proyecto_id = ? and colaborador_id = ? and registro_labor_id = ?',
-                [Carbon::now(), 
+                [$hora_entrada, 
                 $registro_labor->proyecto_id,
-                $request->get('colaborador_id'), 
+                $colaborador_id, 
                 $registro_labor->id]
             );
 
@@ -201,6 +210,30 @@ class RegistroLaborController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public static function validacionMarcarEntrada($registro_labor,$colaborador_id){
+        
+        //=========== PROYECTO DIFERENTE A NULL =======
+        if(!$registro_labor->proyecto_id){
+            throw new Exception("EL REGISTRO DE LABOR NO ESTÁS ASOCIADO A NINGÚN PROYECTO");
+        }
+
+        //======== VERIFICANDO QUE EL SUPERVISOR ESTÉ ASOCIADO A ESE PROYECTO =========
+        $asociado   =   DB::select('select p.id
+                        from proyectos as p
+                        where p.id = ? 
+                        and p.supervisor_id = ?',[$registro_labor->proyecto_id,Auth::user()->colaborador_id]);
+    
+        if(count($asociado) === 0){
+            throw new Exception("EL SUPERVISOR NO ESTÁ ASOCIADO AL PROYECTO");
+        }
+
+        //======== VERIFICANDO QUE EL USUARIO HAYA CREADO ESTA ASISTENCIA =========
+        if($registro_labor->supervisor_id !== Auth::user()->colaborador_id){
+            throw new Exception("USTED NO HA CREADO ESTE REGISTRO DE ASISTENCIA!!");
+        }
+
+    } 
 
     public function getColaboradoresAsistencia($proyecto_id,$registro_labor_id){
 

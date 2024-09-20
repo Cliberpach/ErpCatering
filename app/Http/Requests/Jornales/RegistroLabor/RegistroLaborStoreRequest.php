@@ -19,6 +19,10 @@ class RegistroLaborStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if(!Auth::user()->colaborador_id){
+            $this->authorizationError = 'Su usuario no tiene asignado un registro de colaborador.';
+            return false;
+        }
 
         //======== VERIFICAR SI EL USUARIO TIENE ROL DE SUPERVISOR =========
         $rol = DB::table('model_has_roles')

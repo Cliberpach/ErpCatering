@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Consultas\CPersonalController;
 use App\Http\Controllers\Herramientas\RolController;
 use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
 use App\Http\Controllers\Jornales\RegistroLaborController;
@@ -273,9 +274,27 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
 
 });
 
-
-
 //============= FIN LOGÍSTICA ===========
+
+
+//========== INICIO CONSULTAS ===========
+
+Route::group(['prefix' => 'consultas_personal', 'middleware' => ['auth','checkCustomPermission:consultas.personal']], function () {
+
+    Route::get('/index', [CPersonalController::class, 'index'])->name('consultas.personal.index');
+    // Route::post('/store', [CotizacionCompraController::class, 'store'])->name('logistica.cotizacion_compra.store');
+    // Route::get('/edit/{id}', [CotizacionCompraController::class, 'edit'])->name('logistica.cotizacion_compra.edit');
+    // Route::put('/update/{id}', [CotizacionCompraController::class, 'update'])->name('logistica.cotizacion_compra.update');
+    // Route::get('/create', [CotizacionCompraController::class, 'create'])->name('logistica.cotizacion_compra.create');
+    // //Route::get('/getProductosByCategoria/{categoria_id}', [ProductoController::class, 'getProductosByCategoria'])->name('logistica.cotizacion_compra.getProductosByCategoria');
+    // Route::delete('/destroy/{id}', [CotizacionCompraController::class, 'destroy'])->name('logistica.cotizacion_compra.destroy');
+    // Route::get('/getCotizacionesCompra', [CotizacionCompraController::class, 'getCotizacionesCompra'])->name('logistica.cotizacion_compra.getCotizacionesCompra');
+    // Route::get('/pdf/{id}', [CotizacionCompraController::class, 'pdf'])->name('logistica.cotizacion_compra.pdf');
+
+});
+
+
+//======= FIN CONSULTAS ============
 
 Route::group(['prefix' => 'utils', 'middleware' => ['auth']], function () {
 

@@ -33,7 +33,9 @@ class PermisoSeeder extends Seeder
             'logistica.cotizacion_compra',
             'herramientas.usuarios',
             'herramientas.roles',
-            'herramientas.tabla_general'
+            'herramientas.tabla_general',
+            'consultas.personal',
+            'consultas.maquinaria'
         ];
         
         foreach ($items as $item) {

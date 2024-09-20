@@ -170,6 +170,7 @@
                     dtRegistrosLabor.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
+                    //======== ERRORES SERVIDOR Y ACCESO NO AUTORIZADO =======
                     toastr.error(res.message,'ERROR EN EL SERVIDOR AL INICIAR ASISTENCIA');
                 }
 

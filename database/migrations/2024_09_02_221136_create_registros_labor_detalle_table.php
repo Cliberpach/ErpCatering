@@ -28,8 +28,8 @@ return new class extends Migration
             $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
 
-            $table->timestamp('hora_entrada')->nullable();
-            $table->timestamp('hora_salida')->nullable();
+            $table->time('hora_entrada')->nullable();
+            $table->time('hora_salida')->nullable();
 
             $table->longText('img_ruta')->nullable();
             $table->string('img_nombre',260)->nullable();

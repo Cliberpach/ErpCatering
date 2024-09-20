@@ -211,7 +211,34 @@
             </li>
           </ul>
         </li>
-        
+        <li class="nav-item nav-item-has-children">
+          <a
+            href="#0"
+            class="@yield('consultas-collapsed', 'collapsed')"
+            data-bs-toggle="collapse"
+            data-bs-target="#ddmenu_7"
+            aria-controls="ddmenu_7"
+            aria-expanded="@yield('consultas-expanded')"
+            aria-label="Toggle navigation"
+          >
+            <span class="icon">
+              <i class="fa-solid fa-clipboard-question"></i>
+            </span>
+            <span class="text">Consultas</span>
+          </a>
+          <ul id="ddmenu_7" class="collapse dropdown-nav @yield('consultas-show')">
+            <li>
+              @can('consultas.personal')
+                <a class="@yield('personal-active')" href="{{route('consultas.personal.index')}}">Personal</a>
+              @endcan
+            </li>
+            <li>
+              @can('consultas.maquinaria')
+                <a class="@yield('maquinaria-active')" href="#">Maquinaria</a>
+              @endcan
+            </li>
+          </ul>
+        </li>
       </ul>
     </nav>
     {{-- <div class="promo-box">

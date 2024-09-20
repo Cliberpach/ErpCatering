@@ -56,6 +56,27 @@
             
         });
 
+        document.getElementById('tipo_asistencia').addEventListener('change', function() {
+            const horaEntradaContainer = document.getElementById('hora_entrada_container');
+            
+            if (this.checked) {  // (AUTOMÁTICA)
+                horaEntradaContainer.classList.remove('visible');
+                horaEntradaContainer.classList.add('hidden');
+
+                document.querySelector('#lbl_hora_entrada').classList.remove('required_field');
+                document.querySelector('#hora_entrada').required = false;
+
+            } else {  //(MANUAL)
+                horaEntradaContainer.classList.remove('hidden');
+                horaEntradaContainer.classList.add('visible');
+
+                document.querySelector('#lbl_hora_entrada').classList.add('required_field');
+                document.querySelector('#hora_entrada').required = true;
+
+            }
+        });
+
+
     }
 
     function openMdlAsistenciaEntrada(indice,colaborador_id){
@@ -89,7 +110,8 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            
+            toastr.clear();
+            limpiarErroresValidacion('msgError');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formAsistenciaEntrada     =   document.querySelector('#formAsistenciaEntrada');
             const formData                  =   new FormData(formAsistenciaEntrada);
@@ -118,7 +140,13 @@
 
                 const   res =   await response.json();
                 
-                console.log(res);
+                if(response.status === 422){
+                    if('errors' in res){
+                        pintarErroresValidacion(res.errors);
+                    }
+                    Swal.close();
+                    return;
+                }
                 
                 if(res.success){
                     destruirDataTableDetalleAsistencia();
@@ -154,9 +182,19 @@
     function pintarErroresValidacion(objErroresValidacion){
         for (let clave in objErroresValidacion) {
             const pError        =   document.querySelector(`.${clave}_error`);
-            pError.textContent  =   objErroresValidacion[clave][0];
+            if(pError){
+                pError.textContent  =   objErroresValidacion[clave][0];
+            }
+            if(clave === 'registro_labor_id'){
+                toastr.error(objErroresValidacion[clave][0],'ERROR VALIDACIÓN');
+            }
+            if(clave === 'colaborador_id'){
+                toastr.error(objErroresValidacion[clave][0],'ERROR VALIDACIÓN');
+            }
         }
     }
+
+
 
  
 
