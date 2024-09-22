@@ -1,18 +1,20 @@
 <?php
+
 namespace App\Exports\Consultas;
 
-use App\Models\Registros\Proyecto;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Auth;
 use Carbon\Carbon;
 use DB;
 use Exception;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use App\Models\Registros\Proyecto;
 
-class PersonalExport implements FromCollection, ShouldAutoSize, WithStyles
+
+class MaquinariaExport implements FromCollection, ShouldAutoSize, WithStyles
 {
     protected $fecha_inicio;
     protected $fecha_fin;
@@ -33,38 +35,32 @@ class PersonalExport implements FromCollection, ShouldAutoSize, WithStyles
             return ['EL PROYECTO NO EXISTE EN LA BD'];
         }
 
-        $consulta = DB::table('registros_labor_detalle as rld')
-            ->join('colaboradores as c', 'c.id', 'rld.colaborador_id')
-            ->join('cargos as ca', 'ca.id', 'c.cargo_id')
-            ->join('tipos_documento as td', 'td.id', 'c.tipo_documento_id')
-            ->select(
-                'td.descripcion as tipo_documento',
-                'c.nro_documento',
-                'c.nombre as colaborador_nombre',
-                'ca.descripcion as cargo',
-                DB::raw("SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado)), 0)) as tiempo_trabajado"),
-                DB::raw("LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))) as horas_trabajadas"),
-                DB::raw("ROUND(IFNULL(c.pago_hora, 0), 2) as pago_hora"),
-                DB::raw("ROUND(IFNULL(c.pago_hora, 0) * LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))), 2) as pago")
-            );
+        $consulta   =   DB::table('registros_tarea as rt')
+                        ->join('colaboradores as c', 'c.id', 'rt.supervisor_id')
+                        ->join('maquinarias as m', 'm.id', 'rt.maquinaria_id')
+                        ->select(
+                            'm.nombre as maquinaria_nombre',
+                            'c.nombre as supervisor_nombre',
+                            DB::raw("IFNULL(SUM(rt.cantidad_horas_viajes), 0) as cantidad_horas_viajes")
+                        );
 
         if ($this->proyecto_id) {
-            $consulta->where('rld.proyecto_id', $this->proyecto_id);
+            $consulta->where('rt.proyecto_id', $this->proyecto_id);
         }
 
         if ($this->fecha_inicio) {
-            $consulta->where('rld.created_at', '>=', $this->fecha_inicio . ' 00:00:00');
+            $consulta->where('rt.created_at', '>=', $this->fecha_inicio . ' 00:00:00');
         }
 
         if ($this->fecha_fin) {
-            $consulta->where('rld.created_at', '<=', $this->fecha_fin . ' 23:59:59');
+            $consulta->where('rt.created_at', '<=', $this->fecha_fin . ' 23:59:59');
         }
 
-        $consulta->groupBy('c.id', 'c.nombre', 'c.pago_hora', 'td.descripcion', 'c.nro_documento', 'ca.descripcion');
+        $consulta->groupBy('m.nombre', 'c.nombre');
 
         $data = $consulta->get();
 
-        $data->prepend(['TIPO DOC', 'N° DOC', 'PERSONAL', 'CARGO', 'TIEMPO TRABAJADO', 'HORAS TRABAJADAS', 'PAGO/HORA', 'PAGO']);
+        $data->prepend(['MAQUINARIA', 'SUPERVISOR', 'CANT HORAS/VUELTAS']);
         $data->prepend(['']);
         $data->prepend(['FECHA REPORTE:',Carbon::now(),'','USUARIO:',Auth::user()->name]);
         $data->prepend(['FECHA INICIO REPORTE:',$this->fecha_inicio,'','FECHA FIN REPORTE:',$this->fecha_fin]);

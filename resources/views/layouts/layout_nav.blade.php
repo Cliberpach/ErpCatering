@@ -234,7 +234,7 @@
             </li>
             <li>
               @can('consultas.maquinaria')
-                <a class="@yield('maquinaria-active')" href="#">Maquinaria</a>
+                <a class="@yield('consulta_maquinaria-active')" href="{{route('consultas.maquinaria.index')}}">Maquinaria</a>
               @endcan
             </li>
           </ul>

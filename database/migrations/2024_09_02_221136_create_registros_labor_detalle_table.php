@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('registros_labor_detalle', function (Blueprint $table) {
 
-            $table->id();
-
             $table->unsignedBigInteger('registro_labor_id');
             $table->foreign('registro_labor_id')->references('id')->on('registros_labor');
 
@@ -36,6 +34,7 @@ return new class extends Migration
             $table->longText('img_ruta')->nullable();
             $table->string('img_nombre',260)->nullable();
 
+            $table->primary(['registro_labor_id', 'colaborador_id', 'proyecto_id', 'supervisor_id'], 'pk_registros_labor_detalle');
             $table->timestamps();
         });
     }

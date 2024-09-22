@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Consultas\CMaquinariaController;
 use App\Http\Controllers\Consultas\CPersonalController;
 use App\Http\Controllers\Herramientas\RolController;
 use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
@@ -286,7 +287,15 @@ Route::group(['prefix' => 'consultas_personal', 'middleware' => ['auth','checkCu
     Route::get('/excel', [CPersonalController::class, 'excel'])->name('consultas.personal.excel');
     Route::get('/pdf', [CPersonalController::class, 'pdf'])->name('consultas.personal.pdf');
  
+});
 
+Route::group(['prefix' => 'consultar_maquinaria', 'middleware' => ['auth','checkCustomPermission:consultas.maquinaria']], function () {
+
+    Route::get('/index', [CMaquinariaController::class, 'index'])->name('consultas.maquinaria.index');
+    Route::get('/getConsultaMaquinaria', [CMaquinariaController::class, 'getConsultaMaquinaria'])->name('consultas.maquinaria.getConsultaMaquinaria');
+    Route::get('/excel', [CMaquinariaController::class, 'excel'])->name('consultas.maquinaria.excel');
+    Route::get('/pdf', [CMaquinariaController::class, 'pdf'])->name('consultas.maquinaria.pdf');
+ 
 });
 
 

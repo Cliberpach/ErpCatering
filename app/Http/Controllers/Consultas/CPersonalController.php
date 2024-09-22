@@ -36,7 +36,7 @@ class CPersonalController extends Controller
                             'ca.descripcion as cargo',
                             DB::raw("SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado)), 0)) as tiempo_trabajado"),
                             DB::raw("LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))) as horas_trabajadas"),
-                            'c.pago_hora',
+                            DB::raw("ROUND(IFNULL(c.pago_hora, 0), 2) as pago_hora"),
                             DB::raw("ROUND(IFNULL(c.pago_hora, 0) * LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))), 2) as pago") 
                         );
 
@@ -64,8 +64,9 @@ class CPersonalController extends Controller
         $fecha_inicio   =   $request->query('fecha_inicio');
         $fecha_fin      =   $request->query('fecha_fin');
         $proyecto_id    =   $request->query('proyecto_id');
+        $fecha_actual   =   Carbon::now();
 
-        return Excel::download(new PersonalExport($fecha_inicio, $fecha_fin, $proyecto_id), 'personal.xlsx');
+        return Excel::download(new PersonalExport($fecha_inicio, $fecha_fin, $proyecto_id), 'reporte_personal_'.$fecha_actual.'.xlsx');
     }
 
     public function pdf(Request $request){
@@ -90,7 +91,7 @@ class CPersonalController extends Controller
                             'ca.descripcion as cargo',
                             DB::raw("SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado)), 0)) as tiempo_trabajado"),
                             DB::raw("LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))) as horas_trabajadas"),
-                            'c.pago_hora',
+                            DB::raw("ROUND(IFNULL(c.pago_hora, 0), 2) as pago_hora"),
                             DB::raw("ROUND(IFNULL(c.pago_hora, 0) * LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))), 2) as pago") 
                         );
 
@@ -140,6 +141,6 @@ class CPersonalController extends Controller
         $dompdf->render();
 
         // Visualizar el PDF en una nueva ventana en lugar de descargarlo
-        return $dompdf->stream('archivo.pdf', ['Attachment' => false]);
+        return $dompdf->stream('reporte_personal.pdf', ['Attachment' => false]);
     }
 }

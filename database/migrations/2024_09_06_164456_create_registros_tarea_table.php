@@ -23,7 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('supervisor_id');
             $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
-            $table->string('observacion',300);
+            $table->string('observacion',300)->nullable();
             $table->unsignedInteger('cantidad_horas_viajes');
             $table->enum('estado', ['ACTIVO', 'ANULADO','FINALIZADO'])->default('ACTIVO');
             $table->timestamps();

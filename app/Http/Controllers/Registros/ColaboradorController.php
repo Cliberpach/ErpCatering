@@ -95,6 +95,7 @@ class ColaboradorController extends Controller
             $colaborador->horas_semana      =   $request->get('horas_semana');
             $colaborador->pago_semana       =   $request->get('pago_semana');
             $colaborador->nro_documento     =   $request->get('nro_documento');
+            $colaborador->pago_hora         =   $request->get('pago_semana')/$request->get('horas_semana');
             $colaborador->update();
 
             DB::commit();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Jornales\RegistroLabor;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -56,6 +57,19 @@ class RegistroLaborStoreRequest extends FormRequest
             $this->authorizationError = 'YA CUENTAS CON UN PROCESO DE ASISTENCIA ACTIVO!!.';
             return false;
         }
+
+        //=========== VERIFICAR QUE EL USUARIO NO INICIE 2 PROCESOS DE ASISTENCIA EN EL MISMO DÍA =========
+        $maestro_asistencia =   DB::table('registros_labor')
+                                ->where('supervisor_id', Auth::user()->id)
+                                ->where('estado', "FINALIZADO")
+                                ->whereDate('fecha_asistencia', Carbon::today())                                
+                                ->exists();
+
+        if ($maestro_asistencia) {
+            $this->authorizationError = 'SOLO SE PERMITE 1 PROCESO DE ASISTENCIA POR DÍA!!.';
+            return false;
+        }                        
+
 
         return true;
     }

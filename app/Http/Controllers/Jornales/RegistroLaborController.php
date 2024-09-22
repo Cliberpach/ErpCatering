@@ -45,7 +45,6 @@ class RegistroLaborController extends Controller
     }
 
     public function store(RegistroLaborStoreRequest $request){
-        dd($request->all());
         DB::beginTransaction();
         try {
 
@@ -271,6 +270,36 @@ class RegistroLaborController extends Controller
         return $colaboradores;
     }
 
+    public static function validacionMarcarSalida($registro_labor,$hora_salida,$colaborador_id){
+        //========= VALIDANDO HORA DE SALIDA ======
+        if(!$hora_salida){
+            throw new Exception("La hora de salida es nula");
+        }
+
+        $registro_labor_detalle =   DB::select('select 
+                                    rld.hora_entrada
+                                    from registros_labor_detalle as rld
+                                    where rld.registro_labor_id = ? 
+                                    and rld.colaborador_id = ? 
+                                    and rld.proyecto_id = ? 
+                                    and rld.supervisor_id = ?',
+                                    [$registro_labor->id, 
+                                    $colaborador_id, 
+                                    $registro_labor->proyecto_id,
+                                    Auth::user()->colaborador_id]);
+
+        if (count($registro_labor_detalle) === 0) {
+            throw new Exception("NO EXISTE EL REGISTRO DE ASISTENCIA DEL COLABORADOR EN LA BD");
+        }
+
+        $hora_salida    = Carbon::parse($hora_salida); 
+        $hora_entrada   = Carbon::parse($registro_labor_detalle[0]->hora_entrada); 
+
+        if ($hora_salida->lt($hora_entrada)) { 
+            throw new Exception("La hora de salida: " . $hora_salida->format('H:i:s') . " es menor que la hora de entrada: " . $hora_entrada->format('H:i:s'));
+        }
+    }
+
     public function marcarSalida(MarcarSalidaRequest $request){
         DB::beginTransaction();
         try {
@@ -284,14 +313,13 @@ class RegistroLaborController extends Controller
 
             //======= VALIDACIÓN COMPLEJA =======
             RegistroLaborController::validacionMarcarAsistencia($registro_labor,$colaborador_id);
-            
+
             if ($tipo_asistencia === 'AUTOMATICO') {
                 $hora_salida = Carbon::now()->format('H:i');
             }
 
-            if(!$hora_salida){
-                throw new Exception("La hora de salida es nula");
-            }
+            //========= VALIDACIÓN MARCAR SALIDA =======
+            RegistroLaborController::validacionMarcarSalida($registro_labor,$hora_salida,$colaborador_id);
 
             DB::update('
                 UPDATE registros_labor_detalle
@@ -299,13 +327,15 @@ class RegistroLaborController extends Controller
                     tiempo_trabajado = TIMEDIFF(?, hora_entrada)
                 WHERE proyecto_id = ? 
                 AND colaborador_id = ? 
-                AND registro_labor_id = ?',
+                AND registro_labor_id = ?
+                AND supervisor_id = ?',
                 [
                     $hora_salida, 
                     $hora_salida, 
                     $registro_labor->proyecto_id, 
                     $request->get('colaborador_id'), 
-                    $registro_labor->id
+                    $registro_labor->id,
+                    Auth::user()->colaborador_id
                 ]
             );
         
@@ -317,7 +347,7 @@ class RegistroLaborController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+            return response()->json(['success'=>false,'message'=>$th->getMessage(),'line'=>$th->getLine()]);
         }
     }
 

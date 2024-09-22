@@ -109,6 +109,7 @@
                 { data: 'observacion', name: 'observacion' },
                 { data: 'estado', name: 'estado' }
             ],
+            order: [[3, 'desc']],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
