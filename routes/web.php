@@ -203,7 +203,7 @@ Route::group(['prefix' => 'jornales', 'middleware' => ['auth','checkCustomPermis
     Route::get('/index', [RegistroLaborController::class, 'index'])->name('jornales.registro_labor.index');
     Route::post('/store', [RegistroLaborController::class, 'store'])->name('jornales.registro_labor.store');
     // Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('registros.proyecto.edit');
-    // Route::put('/update/{id}', [ProyectoController::class, 'update'])->name('registros.proyecto.update');
+    Route::put( '/finalizar/{id}', [RegistroLaborController::class, 'finalizar'])->name('jornales.registro_labor.finalizar');
     Route::get('/getRegistrosLabor', [RegistroLaborController::class, 'getRegistrosLabor'])->name('jornales.registro_labor.getRegistrosLabor');
     Route::delete('/destroy/{id}', [RegistroLaborController::class, 'destroy'])->name('jornales.registro_labor.destroy');
     Route::get('/asistencias/{id}', [RegistroLaborController::class, 'asistenciasCreate'])->name('jornales.registro_labor.asistenciasCreate');
@@ -282,14 +282,10 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
 Route::group(['prefix' => 'consultas_personal', 'middleware' => ['auth','checkCustomPermission:consultas.personal']], function () {
 
     Route::get('/index', [CPersonalController::class, 'index'])->name('consultas.personal.index');
-    // Route::post('/store', [CotizacionCompraController::class, 'store'])->name('logistica.cotizacion_compra.store');
-    // Route::get('/edit/{id}', [CotizacionCompraController::class, 'edit'])->name('logistica.cotizacion_compra.edit');
-    // Route::put('/update/{id}', [CotizacionCompraController::class, 'update'])->name('logistica.cotizacion_compra.update');
-    // Route::get('/create', [CotizacionCompraController::class, 'create'])->name('logistica.cotizacion_compra.create');
-    // //Route::get('/getProductosByCategoria/{categoria_id}', [ProductoController::class, 'getProductosByCategoria'])->name('logistica.cotizacion_compra.getProductosByCategoria');
-    // Route::delete('/destroy/{id}', [CotizacionCompraController::class, 'destroy'])->name('logistica.cotizacion_compra.destroy');
-    // Route::get('/getCotizacionesCompra', [CotizacionCompraController::class, 'getCotizacionesCompra'])->name('logistica.cotizacion_compra.getCotizacionesCompra');
-    // Route::get('/pdf/{id}', [CotizacionCompraController::class, 'pdf'])->name('logistica.cotizacion_compra.pdf');
+    Route::get('/getConsultaPersonal', [CPersonalController::class, 'getConsultaPersonal'])->name('consultas.personal.getConsultaPersonal');
+    Route::get('/excel', [CPersonalController::class, 'excel'])->name('consultas.personal.excel');
+    Route::get('/pdf', [CPersonalController::class, 'pdf'])->name('consultas.personal.pdf');
+ 
 
 });
 

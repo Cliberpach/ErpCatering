@@ -7,6 +7,7 @@
 
 @include('reutilizables.lightbox.lightbox')
 @include('jornales.registro_labor.modals.modal_asistencia_entrada')
+@include('jornales.registro_labor.modals.modal_asistencia_salida')
 
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -40,7 +41,7 @@
 
     function events(){
         eventsMdlAsistenciaEntrada();
-
+        eventsMdlAsistenciaSalida();
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
                 const rutaIndex         =   '{{route('jornales.registro_labor.index')}}';
@@ -73,12 +74,13 @@
         const tbody                 =   document.querySelector('#table_detalle_asistencia tbody');
         let acciones                =   ``;
         const supervisor_id         =   @json($registro_labor_maestro->supervisor_id);
+        const asistencia_estado     =   @json($registro_labor_maestro->estado);
         const colaborador_actual_id =   @json($colaborador_actual_id);
 
       
         lstColaboradores.forEach((c, index) => {
 
-            if((c.hora_entrada && c.hora_salida) || (supervisor_id != colaborador_actual_id)){
+            if((c.hora_entrada && c.hora_salida) || (supervisor_id != colaborador_actual_id) || (asistencia_estado === 'FINALIZADO') || (asistencia_estado === 'ANULADO') ){
                 acciones    =   ``;
             }else{
 
@@ -96,7 +98,7 @@
                                         ` : ''}
                                         ${c.hora_entrada && !c.hora_salida ? `
                                             <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" onclick="marcarSalida(${index}, ${c.colaborador_id})">
+                                                <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsistenciaSalida(${index}, ${c.colaborador_id})">
                                                     <i class="fa-solid fa-person-walking-dashed-line-arrow-right"></i> Marcar salida
                                                 </a>
                                             </li>

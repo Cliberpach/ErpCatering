@@ -52,7 +52,7 @@ class ColaboradorController extends Controller
     public function store(ColaboradorStoreRequest $request){
         DB::beginTransaction();
         try {
-            $colaborador    =   new Colaborador();
+            $colaborador                    =   new Colaborador();
             $colaborador->tipo_documento_id =   $request->get('tipo_documento');
             $colaborador->nombre            =   Str::upper($request->get('nombre'));
             $colaborador->cargo_id          =   $request->get('cargo');
@@ -61,6 +61,7 @@ class ColaboradorController extends Controller
             $colaborador->horas_semana      =   $request->get('horas_semana');
             $colaborador->pago_semana       =   $request->get('pago_semana');
             $colaborador->nro_documento     =   $request->get('nro_documento');
+            $colaborador->pago_hora         =   $request->get('pago_semana')/$request->get('horas_semana');
             $colaborador->save();
 
             DB::commit();

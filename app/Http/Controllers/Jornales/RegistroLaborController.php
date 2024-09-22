@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Jornales;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Jornales\RegistroLabor\MarcarEntradaRequest;
+use App\Http\Requests\Jornales\RegistroLabor\MarcarSalidaRequest;
 use App\Http\Requests\Jornales\RegistroLabor\RegistroLaborStoreRequest;
 use App\Models\Jornales\RegistroLabor;
 use App\Models\Jornales\RegistroLaborDetalle;
@@ -34,7 +35,7 @@ class RegistroLaborController extends Controller
                                 'rl.cant_trabajadores',
                                 'rl.observacion',
                                 'rl.created_at as fecha_registro',
-                                'rl.created_at as observacion',
+                                'rl.observacion as observacion',
                                 'rl.estado'
                             )->where('rl.estado','!=','ANULADO')
                             ->get();
@@ -44,6 +45,7 @@ class RegistroLaborController extends Controller
     }
 
     public function store(RegistroLaborStoreRequest $request){
+        dd($request->all());
         DB::beginTransaction();
         try {
 
@@ -144,7 +146,7 @@ class RegistroLaborController extends Controller
             $registro_labor     =   RegistroLabor::find($registro_labor_id);
 
             //======= VALIDACIÓN COMPLEJA =======
-            RegistroLaborController::validacionMarcarEntrada($registro_labor,$colaborador_id);
+            RegistroLaborController::validacionMarcarAsistencia($registro_labor,$colaborador_id);
             
             if ($tipo_asistencia === 'AUTOMATICO') {
                 $hora_entrada = Carbon::now()->format('H:i');
@@ -211,11 +213,19 @@ class RegistroLaborController extends Controller
         }
     }
 
-    public static function validacionMarcarEntrada($registro_labor,$colaborador_id){
+    public static function validacionMarcarAsistencia($registro_labor,$colaborador_id){
         
         //=========== PROYECTO DIFERENTE A NULL =======
         if(!$registro_labor->proyecto_id){
             throw new Exception("EL REGISTRO DE LABOR NO ESTÁS ASOCIADO A NINGÚN PROYECTO");
+        }
+
+        //========== ASISTENCIA ACTIVA =========
+        if($registro_labor->estado === 'FINALIZADO'){
+            throw new Exception("ERROR, EL REGISTRO DE LABOR ESTÁ FINALIZADO");
+        }
+        if($registro_labor->estado === 'ANULADO'){
+            throw new Exception("ERROR, EL REGISTRO DE LABOR ESTÁ ANULADO");
         }
 
         //======== VERIFICANDO QUE EL SUPERVISOR ESTÉ ASOCIADO A ESE PROYECTO =========
@@ -261,29 +271,44 @@ class RegistroLaborController extends Controller
         return $colaboradores;
     }
 
-    public function marcarSalida(Request $request){
+    public function marcarSalida(MarcarSalidaRequest $request){
         DB::beginTransaction();
         try {
            
+            $tipo_asistencia    =   $request->get('tipo_asistencia_salida',null);
+            $hora_salida        =   $request->get('hora_salida',null);
+            $registro_labor_id  =   $request->get('registro_labor_id',null);
+            $colaborador_id     =   $request->get('colaborador_id',null);
 
-            $registro_labor                             =   RegistroLabor::find($request->get('registro_labor_id'));
-            if(!$registro_labor){
-                throw new Exception("No se encontró el registro de asistencia");
+            $registro_labor     =   RegistroLabor::find($registro_labor_id);
+
+            //======= VALIDACIÓN COMPLEJA =======
+            RegistroLaborController::validacionMarcarAsistencia($registro_labor,$colaborador_id);
+            
+            if ($tipo_asistencia === 'AUTOMATICO') {
+                $hora_salida = Carbon::now()->format('H:i');
+            }
+
+            if(!$hora_salida){
+                throw new Exception("La hora de salida es nula");
             }
 
             DB::update('
-                update registros_labor_detalle
-                set hora_salida = ?
-                where proyecto_id = ?
-                and colaborador_id = ? 
-                and registro_labor_id = ?',
-                [Carbon::now(), 
-                $registro_labor->proyecto_id, 
-                $request->get('colaborador_id'), 
-                $registro_labor->id]
+                UPDATE registros_labor_detalle
+                SET hora_salida = ?, 
+                    tiempo_trabajado = TIMEDIFF(?, hora_entrada)
+                WHERE proyecto_id = ? 
+                AND colaborador_id = ? 
+                AND registro_labor_id = ?',
+                [
+                    $hora_salida, 
+                    $hora_salida, 
+                    $registro_labor->proyecto_id, 
+                    $request->get('colaborador_id'), 
+                    $registro_labor->id
+                ]
             );
-
-           
+        
             $colaboradores    =   $this->getColaboradoresAsistencia($registro_labor->proyecto_id,$registro_labor->id);
 
 
@@ -305,6 +330,22 @@ class RegistroLaborController extends Controller
 
             DB::commit();
             return response()->json(['success'=>true,'message'=>'ASISTENCIA ELIMINADA']);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+    public function finalizar($id){
+        DB::beginTransaction();
+        try {
+            $registro_labor                    =   RegistroLabor::find($id);
+            $registro_labor->estado            =   'FINALIZADO';
+            $registro_labor->update();
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'ASISTENCIA FINALIZADA']);
 
         } catch (\Throwable $th) {
             DB::rollBack();

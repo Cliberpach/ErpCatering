@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('telefono',20);
             $table->decimal('horas_semana',20)->unsigned();
             $table->decimal('pago_semana', 10, 2)->unsigned();
+            $table->decimal('pago_hora', 10, 2)->unsigned();
             $table->enum('estado', ['ACTIVO', 'ANULADO'])->default('ACTIVO');
 
             $table->timestamps();

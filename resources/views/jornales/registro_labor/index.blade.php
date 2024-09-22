@@ -64,31 +64,40 @@
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('jornales.registro_labor.asistenciasCreate', ['id' => ':id']) }}`;
-                        urlEdit             =   baseUrlEdit.replace(':id', data.id); 
+                        const baseUrlAsistencia     =   `{{ route('jornales.registro_labor.asistenciasCreate', ['id' => ':id']) }}`;
+                        urlAsistencia                     =   baseUrlAsistencia.replace(':id', data.id); 
 
                         const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
 
-                        return `
-                            <div class="btn-group">
-                            <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-grip"></i>
-                            </button>
-                            <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
-                                <li>
-                                    <a class="dropdown-item" href="${urlEdit}">
-                                        <i class="fa-solid fa-file-pen"></i> Asistencias
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarRegistroLabor(${data.id})">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
-                                    </a>
-                                </li>
-                            </ul>
-                            </div>
-                        `;
+                        let acciones    =   `
+                                                <div class="btn-group">
+                                                <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fa-solid fa-grip"></i>
+                                                </button>
+                                                <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                                                    <li>
+                                                        <a class="dropdown-item" href="${urlAsistencia}">
+                                                            <i class="fa-solid fa-file-pen"></i> Asistencias
+                                                        </a>
+                                                    </li>
+                                            `;
+
+                        if(data.estado === 'ACTIVO'){
+                            acciones    +=  `<li>
+                                                <a class="dropdown-item" href="javascript:void(0);" onclick="finalizarRegistroLabor(${data.id})">
+                                                    <i class="fa-solid fa-door-closed"></i> Finalizar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarRegistroLabor(${data.id})">
+                                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                                </a>
+                                            </li>`;
+                        }
+
+                        acciones    +=  ` </ul></div>`;
+
+                        return acciones;
                     },
                     name: 'actions', 
                     orderable: false, 
@@ -269,5 +278,80 @@
         });
     }
 
+    function finalizarRegistroLabor(id){
+        toastr.clear();
+        let row             =   getRowById(dtRegistrosLabor,id);
+        let message         =   '';
+        let tipo_documento  =   '';
+
+        message =   `Desea finalizar la asistencia: ${row.fecha_registro}`;
+
+        const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+        title: message,
+        text: "Operación no reversible!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, finalizar!",
+        cancelButtonText: "No, cancelar!",
+        reverseButtons: true
+        }).then(async (result) => {
+        if (result.isConfirmed) {
+            
+            Swal.fire({
+                title: 'Cargando...',
+                html: 'Finalizando asistencia...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading(); 
+                }
+            });
+
+            try {
+                let urlEliminarAsistencia       =   `{{ route('jornales.registro_labor.finalizar', ['id' => ':id']) }}`;
+                urlEliminarAsistencia           =   urlEliminarAsistencia.replace(':id', id);
+                const token                     =   document.querySelector('input[name="_token"]').value;
+
+                const response  =   await fetch(urlEliminarAsistencia, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': token,
+                                            'X-HTTP-Method-Override': 'PUT'
+                                        }
+                                    });
+
+                const   res =   await response.json();
+
+                if(res.success){
+                    dtRegistrosLabor.draw();
+                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
+                }else{
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL FINALIZAR ASISTENCIA');
+                }
+
+            } catch (error) {
+                toastr.error(error,'ERROR EN LA PETICIÓN FINALIZAR ASISTENCIA');
+            }finally{
+                Swal.close();
+            }
+
+        } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            swalWithBootstrapButtons.fire({
+            title: "Operación cancelada",
+            text: "No se realizaron acciones",
+            icon: "error"
+            });
+        }
+        });
+    }
 
 </script>

@@ -10,16 +10,42 @@
 
 
 @section('section-page')
-@include('registros.productos.modals.modal_show')
 
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Horarios <i class="fa-solid fa-clock"></i>
-      </h6>
-      <button class="btn btn-primary" onclick="goToCrearProducto()">
-        <i class="fa-solid fa-plus"></i> NUEVO
-      </button>
+      <h6>Horarios <i class="fa-solid fa-clock"></i></h6>
+    </div>
+    <div class="row mb-3">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+            <label for="proyecto" style="font-weight: bold;">PROYECTO</label>
+            <select name="proyecto" id="proyecto" class="select2_form" onchange="dtConsultaPersonal.ajax.reload();">
+                @foreach ($proyectos as $proyecto)
+                    <option value="{{$proyecto->id}}">{{$proyecto->nombre}}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+            <label for="fecha_inicio" style="font-weight: bold;">FECHA INICIO</label>
+            <input value="<?php echo date('Y-m-d'); ?>" type="date" id="fecha_inicio" class="form-control" onchange="cambioFechaInicio();">
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+            <label for="fecha_fin" style="font-weight: bold;">FECHA FIN</label>
+            <input value="<?php echo date('Y-m-d'); ?>" type="date" id="fecha_fin" class="form-control" onchange="cambioFechaFin();">
+        </div>
+    </div>
+    <div class="row mb-3 justify-content-end">
+        
+        <div class="col-12 d-flex justify-content-end">
+            <button class="btn btn-primary" style="margin-right: 6px;" onclick="exportarPDF();">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+            </button>
+            <button class="btn btn-primary" onclick="exportarExcel();">
+                <i class="fa-solid fa-file-excel"></i> Excel
+            </button>
+        </div>
     </div>
     <div class="table-responsive">
         @include('consultas.personal.tables.table_list')
@@ -35,72 +61,45 @@
 @endif
 
 <script>
-    let dtProductos    =   null;
+    let dtConsultaPersonal    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableProductos();
-        iniciarDataTableStocks();
+        iniciarDataTableConsultaPersonal();
+        iniciarSelect2();
     })
 
-    function iniciarDataTableProductos(){
-        const urlGetProductos = '{{ route('registros.producto.getProductos') }}';
+    function iniciarSelect2(){
+        $( '.select2_form' ).select2( {
+            theme: "bootstrap-5",
+            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+        } );
+    }
 
-        dtProductos  =   new DataTable('#table_productos',{
+    function iniciarDataTableConsultaPersonal(){
+        const urlGetConsultaPersonal = '{{ route('consultas.personal.getConsultaPersonal') }}';
+
+        dtConsultaPersonal  =   new DataTable('#table_consulta_personal',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: urlGetProductos,
+                url: urlGetConsultaPersonal,
                 type: 'GET',
+                data: function (d) {
+                    d.fecha_inicio  =   $('#fecha_inicio').val();
+                    d.fecha_fin     =   $('#fecha_fin').val();
+                    d.proyecto_id   =   $('#proyecto').val();
+                },
             },
             columns: [
-                { data: 'id', name: 'id' },
-                { data: 'nombre', name: 'nombre' },
-                { data: 'categoria_nombre', name: 'categoria_nombre' },
-                { data: 'marca_nombre', name: 'marca_nombre' },
-                { data: 'precio', name: 'precio' },
-                { data: 'stock', name: 'stock' },
-                { data: 'stock_minimo', name: 'stock_minimo' },
-                { data: 'unidad_medida_nombre', name: 'unidad_medida_nombre' },
-                {
-                    data: null, 
-                    render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('registros.producto.edit', ['id' => ':id']) }}`;
-                        urlEdit             =   baseUrlEdit.replace(':id', data.id); 
-
-                      
-
-                        const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
-
-                        return `
-                            <div class="btn-group dropstart">
-                            <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-grip"></i>
-                            </button>
-                            <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
-                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowProducto(${data.id})">
-                                        <i class="fa-solid fa-eye"></i> Ver
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="${urlEdit}">
-                                        <i class="fa-solid fa-pen-to-square"></i> Editar
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProducto(${data.id})">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
-                                    </a>
-                                </li>
-                            </ul>
-                            </div>
-                        `;
-                    },
-                    name: 'actions', 
-                    orderable: false, 
-                    searchable: false 
-                }
+                { data: 'tipo_documento', name: 'tipo_documento' },
+                { data: 'nro_documento', name: 'nro_documento' },
+                { data: 'colaborador_nombre', name: 'colaborador_nombre' },
+                { data: 'cargo', name: 'cargo' },
+                { data: 'tiempo_trabajado', name: 'tiempo_trabajado' },
+                { data: 'horas_trabajadas', name: 'horas_trabajadas' },
+                { data: 'pago_hora', name: 'pago_hora' },
+                { data: 'pago', name: 'pago' },
             ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
@@ -133,7 +132,7 @@
 
     function eliminarProducto(id){
         toastr.clear();
-        let row             =   getRowById(dtProductos,id);
+        let row             =   getRowById(dtConsultaPersonal,id);
         let message         =   '';
         let tipo_documento  =   '';
 
@@ -181,7 +180,7 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtProductos.draw();
+                    dtConsultaPersonal.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PRODUCTO');
@@ -206,5 +205,52 @@
         });
     }
 
+    function cambioFechaFin(){
+        const fecha_inicio  =   document.querySelector('#fecha_inicio');
+        const fecha_fin     =   document.querySelector('#fecha_fin');
+        
+        if(fecha_fin.value < fecha_inicio.value){
+            toastr.error('LA FECHA DE FIN DEBE SER MAYOR A LA FECHA DE INICIO!!');
+            fecha_fin.value =   '';
+            fecha_fin.focus();
+            return;
+        }
+        dtConsultaPersonal.ajax.reload();
+    }
+
+    function cambioFechaInicio() {
+        const fecha_inicio  =   document.querySelector('#fecha_inicio');
+        const fecha_fin     =   document.querySelector('#fecha_fin');
+        
+        if(fecha_inicio.value > fecha_fin.value){
+            toastr.error('LA FECHA DE INICIO DEBE SER MENOR A LA FECHA DE FIN!!');
+            fecha_inicio.value =   '';
+            fecha_inicio.focus();
+            return;
+        }
+        dtConsultaPersonal.ajax.reload();
+    }
+
+
+    function exportarPDF(){
+        const fechaInicio   = document.getElementById('fecha_inicio').value;
+        const fechaFin      = document.getElementById('fecha_fin').value;
+        const proyectoId    = document.getElementById('proyecto').value;
+        
+        const url = '{{ route('consultas.personal.pdf') }}' + `?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}&proyecto_id=${proyectoId}`;
+    
+        window.open(url, '_blank');
+    }
+
+
+    function exportarExcel(){
+        const fechaInicio   = document.getElementById('fecha_inicio').value;
+        const fechaFin      = document.getElementById('fecha_fin').value;
+        const proyectoId    = document.getElementById('proyecto').value;
+        
+        const url = '{{ route('consultas.personal.excel') }}' + `?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}&proyecto_id=${proyectoId}`;
+    
+        window.location.href = url;    
+    }
 
 </script>
