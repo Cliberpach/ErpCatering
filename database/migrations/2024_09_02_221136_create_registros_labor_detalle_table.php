@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('colaborador_id');
             $table->foreign('colaborador_id')->references('id')->on('colaboradores');
 
-            $table->unsignedBigInteger('proyecto_id')->nullable();
+            $table->unsignedBigInteger('proyecto_id');
             $table->foreign('proyecto_id')->references('id')->on('proyectos');
 
             $table->unsignedBigInteger('supervisor_id');
