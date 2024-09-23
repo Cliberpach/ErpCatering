@@ -10,6 +10,7 @@ use App\Http\Requests\TrabajoEquipos\RegistroTarea\RegistroTareaUpdateRequest;
 use App\Models\Herramientas\Departamento;
 use App\Models\Herramientas\Distrito;
 use App\Models\Herramientas\Provincia;
+use App\Models\Registros\Maquinaria;
 use App\Models\Registros\Proyecto;
 use App\Models\TrabajoEquipo\RegistroTarea;
 use Illuminate\Http\Request;
@@ -70,12 +71,16 @@ class RegistroTareaController extends Controller
         DB::beginTransaction();
         try {
 
+            $maquinaria                             =   Maquinaria::find($request->get('maquinaria'));
+
             $registro_tarea                         =   new RegistroTarea(); 
             $registro_tarea->proyecto_id            =   $request->get('proyecto_id');
             $registro_tarea->maquinaria_id          =   $request->get('maquinaria');
             $registro_tarea->supervisor_id          =   Auth::user()->colaborador_id;
             $registro_tarea->cantidad_horas_viajes  =   $request->get('cant_horas_viajes');
             $registro_tarea->observacion            =   $request->get('observacion');
+            $registro_tarea->costo                  =   $maquinaria->costo;
+            $registro_tarea->importe                =   $maquinaria->costo * $request->get('cant_horas_viajes');
             $registro_tarea->save();
 
             DB::commit();
@@ -106,6 +111,7 @@ class RegistroTareaController extends Controller
     public function update(RegistroTareaUpdateRequest $request,$id){
         DB::beginTransaction();
         try {
+            $maquinaria                             =   Maquinaria::find($request->get('maquinaria'));
 
             $registro_tarea                         =   RegistroTarea::find($id); 
             //$registro_tarea->proyecto_id          =   $request->get('proyecto_id');
@@ -113,6 +119,8 @@ class RegistroTareaController extends Controller
             //$registro_tarea->supervisor_id        =   Auth::user()->colaborador_id;
             $registro_tarea->cantidad_horas_viajes  =   $request->get('cant_horas_viajes');
             $registro_tarea->observacion            =   $request->get('observacion');
+            $registro_tarea->costo                  =   $maquinaria->costo;
+            $registro_tarea->importe                =   $maquinaria->costo * $request->get('cant_horas_viajes');
             $registro_tarea->save();
 
             DB::commit();

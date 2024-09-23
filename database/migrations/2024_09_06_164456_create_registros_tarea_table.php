@@ -23,6 +23,10 @@ return new class extends Migration
             $table->unsignedBigInteger('supervisor_id');
             $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
+            $table->decimal('costo',10,4)->unsigned();
+            $table->decimal('importe',10,4)->unsigned();
+
+
             $table->string('observacion',300)->nullable();
             $table->unsignedInteger('cantidad_horas_viajes');
             $table->enum('estado', ['ACTIVO', 'ANULADO','FINALIZADO'])->default('ACTIVO');
