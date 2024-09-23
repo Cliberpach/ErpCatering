@@ -4,6 +4,7 @@
         <th scope="col">MAQUINARIA</th>
         <th scope="col">SUPERVISOR</th>
         <th scope="col">CANT HORAS/VUELTAS</th>
+        <th scope="col">IMPORTE</th>
       </tr>
     </thead>
     <tbody>

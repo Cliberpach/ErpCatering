@@ -32,7 +32,8 @@ class CMaquinariaController extends Controller
                         ->select(
                             'm.nombre as maquinaria_nombre',
                             'c.nombre as supervisor_nombre',
-                            DB::raw("IFNULL(SUM(rt.cantidad_horas_viajes), 0) as cantidad_horas_viajes")
+                            DB::raw("IFNULL(SUM(rt.cantidad_horas_viajes), 0) as cantidad_horas_viajes"),
+                            DB::raw("ROUND(IFNULL(SUM(rt.importe), 0), 2) as importe")
                         );
 
 
@@ -82,7 +83,8 @@ class CMaquinariaController extends Controller
                         ->select(
                             'm.nombre as maquinaria_nombre',
                             'c.nombre as supervisor_nombre',
-                            DB::raw("IFNULL(SUM(rt.cantidad_horas_viajes), 0) as cantidad_horas_viajes")
+                            DB::raw("IFNULL(SUM(rt.cantidad_horas_viajes), 0) as cantidad_horas_viajes"),
+                            DB::raw("ROUND(IFNULL(SUM(rt.importe), 0), 2) as importe")
                         );
 
         if($proyecto_id){

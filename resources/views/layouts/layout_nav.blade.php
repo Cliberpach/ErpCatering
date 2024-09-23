@@ -112,11 +112,11 @@
                   <a class="@yield('registro_labor-active')" href="{{route('jornales.registro_labor.index')}}"> Registro de Labor </a>
                 @endcan
               </li>
-              <li>
+              {{-- <li>
                 @can('jornal.consulta_labor')
                   <a class="@yield('consulta_labor-active')" href="blank-page.html"> Consulta de Labor </a>
                 @endcan
-              </li>
+              </li> --}}
             </ul>
         </li>
 
@@ -141,11 +141,11 @@
                   <a class="@yield('registro_tarea-active')" href="{{route('trabajo_equipos.registro_tarea.index')}}">Registro de Tarea</a>
                 @endcan
               </li>
-              <li>
+              {{-- <li>
                 @can('trabajo_equipo.consulta_tarea')
                   <a href="blank-page.html">Consulta de Tarea</a>
                 @endcan
-              </li>
+              </li> --}}
             </ul>
         </li>
      

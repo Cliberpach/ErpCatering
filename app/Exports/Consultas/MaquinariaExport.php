@@ -41,7 +41,8 @@ class MaquinariaExport implements FromCollection, ShouldAutoSize, WithStyles
                         ->select(
                             'm.nombre as maquinaria_nombre',
                             'c.nombre as supervisor_nombre',
-                            DB::raw("IFNULL(SUM(rt.cantidad_horas_viajes), 0) as cantidad_horas_viajes")
+                            DB::raw("IFNULL(SUM(rt.cantidad_horas_viajes), 0) as cantidad_horas_viajes"),
+                            DB::raw("ROUND(IFNULL(SUM(rt.importe), 0), 2) as importe")
                         );
 
         if ($this->proyecto_id) {
@@ -60,7 +61,7 @@ class MaquinariaExport implements FromCollection, ShouldAutoSize, WithStyles
 
         $data = $consulta->get();
 
-        $data->prepend(['MAQUINARIA', 'SUPERVISOR', 'CANT HORAS/VUELTAS']);
+        $data->prepend(['MAQUINARIA', 'SUPERVISOR', 'CANT HORAS/VUELTAS','IMPORTE']);
         $data->prepend(['']);
         $data->prepend(['FECHA REPORTE:',Carbon::now(),'','USUARIO:',Auth::user()->name]);
         $data->prepend(['FECHA INICIO REPORTE:',$this->fecha_inicio,'','FECHA FIN REPORTE:',$this->fecha_fin]);

@@ -94,7 +94,8 @@
             columns: [
                 { data: 'maquinaria_nombre', name: 'maquinaria_nombre' },
                 { data: 'supervisor_nombre', name: 'supervisor_nombre' },
-                { data: 'cantidad_horas_viajes', name: 'cantidad_horas_viajes' }
+                { data: 'cantidad_horas_viajes', name: 'cantidad_horas_viajes' },
+                { data: 'importe', name: 'importe' }
             ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",

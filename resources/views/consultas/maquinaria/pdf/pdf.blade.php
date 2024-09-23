@@ -152,6 +152,7 @@
                     <th scope="col">MAQUINARIA</th>
                     <th scope="col">SUPERVISOR</th>
                     <th scope="col">CANT HORAS/VUELTAS</th>
+                    <th scope="col">IMPORTE</th>
                 </tr>
             </thead>
             <tbody>
@@ -160,6 +161,7 @@
                         <td>{{$item->maquinaria_nombre}}</td>
                         <td>{{$item->supervisor_nombre}}</td>
                         <td>{{$item->cantidad_horas_viajes}}</td>
+                        <td>{{$item->importe}}</td>
                     </tr>         
                 @endforeach
             </tbody>
