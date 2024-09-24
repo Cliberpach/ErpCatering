@@ -27,7 +27,7 @@
         </div>
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
             <label for="proyecto" style="font-weight: bold;">PROYECTO</label>
-            <select name="proyecto" id="proyecto" class="select2_form" onchange="dtConsultaProducto.ajax.reload();">
+            <select data-placeholder="Seleccionar" name="proyecto" id="proyecto" class="select2_form" onchange="dtConsultaProducto.ajax.reload();">
                 @foreach ($proyectos as $proyecto)
                     <option value="{{$proyecto->id}}">{{$proyecto->nombre}}</option>
                 @endforeach
