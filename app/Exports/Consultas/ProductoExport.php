@@ -69,12 +69,12 @@ class ProductoExport implements FromCollection, ShouldAutoSize, WithStyles
         $data = $consulta->get();
 
 
-        $data->prepend(['ID', 'PRODUCTO', 'STOCK INICIO','INGRESO','SALIDA','STOCK FINAL']);
-        $data->prepend(['']);
-        $data->prepend(['FECHA REPORTE:',Carbon::now(),'','USUARIO:',Auth::user()->name]);
-        $data->prepend(['FECHA INICIO REPORTE:',$this->fecha_inicio,'','FECHA FIN REPORTE:',$this->fecha_fin]);
-        $data->prepend(['PROYECTO:',$proyecto->nombre]);
-        $data->prepend(['EMPRESA:','TU EMPRESA']);
+        // $data->prepend(['ID', 'PRODUCTO', 'STOCK INICIO','INGRESO','SALIDA','STOCK FINAL']);
+        // $data->prepend(['']);
+        // $data->prepend(['FECHA REPORTE:',Carbon::now(),'','USUARIO:',Auth::user()->name]);
+        // $data->prepend(['FECHA INICIO REPORTE:',$this->fecha_inicio,'','FECHA FIN REPORTE:',$this->fecha_fin]);
+        // $data->prepend(['PROYECTO:',$proyecto->nombre]);
+        // $data->prepend(['EMPRESA:','TU EMPRESA']);
         
 
         return $data;
