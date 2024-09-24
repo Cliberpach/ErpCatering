@@ -70,7 +70,7 @@ class ProductoExport implements FromCollection, ShouldAutoSize, WithStyles
         $data->prepend(['']);
         $data->prepend(['FECHA REPORTE:',Carbon::now(),'','USUARIO:',Auth::user()->name]);
         $data->prepend(['FECHA INICIO REPORTE:',$this->fecha_inicio,'','FECHA FIN REPORTE:',$this->fecha_fin]);
-        $data->prepend(['PROYECTO:',$proyecto->nombre?$proyecto->nombre:'-']);
+        $data->prepend(['PROYECTO:',$proyecto?$proyecto->nombre:'-']);
         $data->prepend(['EMPRESA:','TU EMPRESA']);
         
 
