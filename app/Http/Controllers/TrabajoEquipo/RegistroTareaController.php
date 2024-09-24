@@ -80,7 +80,7 @@ class RegistroTareaController extends Controller
             $registro_tarea->cantidad_horas_viajes  =   $request->get('cant_horas_viajes');
             $registro_tarea->observacion            =   $request->get('observacion');
             $registro_tarea->costo                  =   $maquinaria->costo_gasto;
-            $registro_tarea->importe                =   $maquinaria->costo * $request->get('cant_horas_viajes');
+            $registro_tarea->importe                =   $maquinaria->costo_gasto * $request->get('cant_horas_viajes');
             $registro_tarea->save();
 
             DB::commit();
@@ -120,7 +120,7 @@ class RegistroTareaController extends Controller
             $registro_tarea->cantidad_horas_viajes  =   $request->get('cant_horas_viajes');
             $registro_tarea->observacion            =   $request->get('observacion');
             $registro_tarea->costo                  =   $maquinaria->costo_gasto;
-            $registro_tarea->importe                =   $maquinaria->costo * $request->get('cant_horas_viajes');
+            $registro_tarea->importe                =   $maquinaria->costo_gasto * $request->get('cant_horas_viajes');
             $registro_tarea->save();
 
             DB::commit();
