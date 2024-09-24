@@ -41,9 +41,9 @@ class ProductoExport implements FromCollection, ShouldAutoSize, WithStyles
                         'p.id as producto_id',
                         'p.nombre as producto_nombre',
                         DB::raw('(SELECT stock_previo FROM kardex WHERE producto_id = k.producto_id AND almacen_id = k.almacen_id ORDER BY created_at ASC LIMIT 1) as stock_inicial'),
-                        DB::raw('(SELECT stock_posterior FROM kardex WHERE producto_id = k.producto_id AND almacen_id = k.almacen_id ORDER BY created_at DESC LIMIT 1) as stock_final'),
                         DB::raw('SUM(CASE WHEN k.registro_compra_id IS NOT NULL THEN k.cantidad ELSE 0 END) as ingreso'),
-                        DB::raw('SUM(CASE WHEN k.registro_salida_id IS NOT NULL THEN k.cantidad ELSE 0 END) as salida')
+                        DB::raw('SUM(CASE WHEN k.registro_salida_id IS NOT NULL THEN k.cantidad ELSE 0 END) as salida'),
+                        DB::raw('(SELECT stock_posterior FROM kardex WHERE producto_id = k.producto_id AND almacen_id = k.almacen_id ORDER BY created_at DESC LIMIT 1) as stock_final')
                     )
                     ->groupBy('p.id', 'p.nombre', 'k.almacen_id');
 
