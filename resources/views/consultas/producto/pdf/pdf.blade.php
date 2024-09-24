@@ -126,7 +126,11 @@
         <table class="footer-table">
             <tr>
                 <td>PROYECTO:</td>
-                <td>{{$proyecto->nombre}}</td>
+                @if ($proyecto)
+                    <td>{{$proyecto->nombre}}</td>     
+                @else
+                    <td>-</td>     
+                @endif
             </tr>
             <tr>
                 <td>FECHA INICIO REPORTE:</td>
