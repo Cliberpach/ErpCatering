@@ -42,7 +42,7 @@ class CProductoController extends Controller
                                     DB::raw('SUM(CASE WHEN k.registro_compra_id IS NOT NULL THEN k.cantidad ELSE 0 END) as ingreso'),
                                     DB::raw('SUM(CASE WHEN k.registro_salida_id IS NOT NULL THEN k.cantidad ELSE 0 END) as salida')
                                 )
-                                ->groupBy('p.id', 'p.nombre', 'a.proyecto_id');
+                                ->groupBy('p.id', 'p.nombre', 'a.proyecto_id', 'k.almacen_id');
 
         if ($almacen_id) {
             $consulta->where('k.almacen_id', $almacen_id);
