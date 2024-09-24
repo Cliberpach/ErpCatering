@@ -153,33 +153,27 @@ class RegistroCompraController extends Controller
                     $stock_posterior                =   $almacen_producto->stock;
                 }else{
 
-                    $almacen_producto_previo    =   DB::select('select
-                                                ap.stock 
-                                                from almacen_productos as ap
-                                                where ap.almacen_id = ?
-                                                and ap.producto_id = ?',
-                                                [$item->almacen_id,$item->producto_id]);
+                    $almacen_producto_previo = DB::table('almacen_productos')
+                    ->where('almacen_id', $item->almacen_id)
+                    ->where('producto_id', $item->producto_id)
+                    ->value('stock');
 
-                    $stock_previo                   =   $almacen_producto_previo[0]->stock;
-
+                    $stock_previo = $almacen_producto_previo;
 
                     DB::table('almacen_productos')
                     ->where('almacen_id', $item->almacen_id)
                     ->where('producto_id', $item->producto_id)
                     ->update([
-                        'stock'         =>  DB::raw('stock + ' . $item->cantidad),
-                        'updated_at'    =>  Carbon::now(), 
+                    'stock' => DB::raw('stock + ' . $item->cantidad),
+                    'updated_at' => Carbon::now(),
                     ]);
 
+                    $almacen_producto_posterior = DB::table('almacen_productos')
+                                        ->where('almacen_id', $item->almacen_id)
+                                        ->where('producto_id', $item->producto_id)
+                                        ->value('stock');
 
-                    $almacen_producto_posterior    =   DB::select('select
-                                                        ap.stock 
-                                                        from almacen_productos as ap
-                                                        where ap.almacen_id = ?
-                                                        and ap.producto_id = ?',
-                                                        [$item->almacen_id,$item->producto_id]);
-
-                    $stock_posterior                =   $almacen_producto_posterior[0]->stock;
+                    $stock_posterior = $almacen_producto_posterior;
                 }
 
             }
