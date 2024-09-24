@@ -176,9 +176,10 @@ class RegistroCompraController extends Controller
                     $stock_posterior = $almacen_producto_posterior;
                 }
 
+                KardexController::storeCompra($item,$registro_compra->id,$stock_previo,$stock_posterior);
+
             }
 
-            KardexController::storeCompra($lstCompra,$registro_compra->id,$stock_previo,$stock_posterior);
             
             DB::commit();
             return response()->json(['success'=>true,'message'=>'REGISTRO DE COMPRA GUARDADO']);

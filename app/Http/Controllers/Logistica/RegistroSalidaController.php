@@ -137,9 +137,9 @@ class RegistroSalidaController extends Controller
                 $registro_salida_detalle->cantidad              =   $producto->cantidad;
                 $registro_salida_detalle->save();
 
+                KardexController::storeSalida($producto,$registro_salida,$stock_previo,$stock_posterior);
             }
 
-            KardexController::storeSalida($lstSalida,$registro_salida,$stock_previo,$stock_posterior);
 
             DB::commit();
             return response()->json(['success'=>true,'message'=>"MOVIMIENTO REGISTRADO!!"]);
