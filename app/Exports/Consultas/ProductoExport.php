@@ -33,9 +33,6 @@ class ProductoExport implements FromCollection, ShouldAutoSize, WithStyles
     {
 
         $proyecto   = Proyecto::find($this->proyecto_id);
-        if(!$proyecto){
-            $proyecto->nombre   =   '-';
-        }
 
         $consulta = DB::table('kardex as k')
                     ->join('productos as p', 'p.id', '=', 'k.producto_id')
@@ -49,7 +46,6 @@ class ProductoExport implements FromCollection, ShouldAutoSize, WithStyles
                         DB::raw('SUM(CASE WHEN k.registro_salida_id IS NOT NULL THEN k.cantidad ELSE 0 END) as salida')
                     )
                     ->groupBy('p.id', 'p.nombre', 'k.almacen_id');
-        dd($consulta->get());
 
         if ($this->almacen_id) {
             $consulta->where('k.almacen_id', $this->almacen_id);
@@ -74,7 +70,7 @@ class ProductoExport implements FromCollection, ShouldAutoSize, WithStyles
         $data->prepend(['']);
         $data->prepend(['FECHA REPORTE:',Carbon::now(),'','USUARIO:',Auth::user()->name]);
         $data->prepend(['FECHA INICIO REPORTE:',$this->fecha_inicio,'','FECHA FIN REPORTE:',$this->fecha_fin]);
-        $data->prepend(['PROYECTO:',$proyecto->nombre]);
+        $data->prepend(['PROYECTO:',$proyecto->nombre?$proyecto->nombre:'-']);
         $data->prepend(['EMPRESA:','TU EMPRESA']);
         
 
