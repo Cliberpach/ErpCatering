@@ -148,7 +148,7 @@ class RegistroCompraController extends Controller
                     $almacen_producto               =   new AlmacenProducto();
                     $almacen_producto->almacen_id   =   $item->almacen_id;
                     $almacen_producto->producto_id  =   $item->producto_id;
-                    $almacen_producto->stock        +=  $item->cantidad;
+                    $almacen_producto->stock        =   $item->cantidad;
                     $almacen_producto->save();
                     $stock_posterior                =   $almacen_producto->stock;
                 }else{
