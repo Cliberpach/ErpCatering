@@ -35,7 +35,8 @@ class PermisoSeeder extends Seeder
             'herramientas.roles',
             'herramientas.tabla_general',
             'consultas.personal',
-            'consultas.maquinaria'
+            'consultas.maquinaria',
+            'consultas.producto'
         ];
         
         foreach ($items as $item) {

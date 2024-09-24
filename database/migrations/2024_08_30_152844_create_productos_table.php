@@ -25,7 +25,7 @@ return new class extends Migration
 
             $table->string('nombre',200);
             $table->decimal('precio', 20, 2)->unsigned();
-            $table->decimal('stock', 20, 2)->unsigned();
+            //$table->decimal('stock', 20, 2)->unsigned();
             $table->decimal('stock_minimo', 20, 2)->unsigned();
 
             $table->enum('estado', ['ACTIVO', 'ANULADO'])->default('ACTIVO');

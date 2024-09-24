@@ -38,6 +38,10 @@ class ProductoController extends Controller
         $marca_id       =   $request->get('marca_id');
 
         $productos = DB::table('productos as p')
+                    ->leftJoin('almacen_productos as ap', function($join) {
+                        $join->on('ap.producto_id', '=', 'p.id')
+                            ->where('ap.almacen_id', '=', 1); // Filtrar por almacen_id = 1
+                    })
                     ->join('marcas as m', 'm.id', '=', 'p.marca_id')
                     ->join('categorias as c', 'c.id', '=', 'p.categoria_id')
                     ->join('tablas_generales_detalles as tgd', 'tgd.id', '=', 'p.unidad_medida_id')
@@ -48,14 +52,15 @@ class ProductoController extends Controller
                         'p.unidad_medida_id',
                         'p.nombre',
                         'p.precio',
-                        'p.stock',
+                        DB::raw('IFNULL(ap.stock, 0) as stock'), 
                         'p.stock_minimo',
                         'm.descripcion as marca_nombre',
                         'c.descripcion as categoria_nombre',
                         'tgd.descripcion as unidad_medida_nombre',
                         'p.estado'
                     )
-                    ->where('p.estado','ACTIVO');
+                    ->where('p.estado', 'ACTIVO');
+    
 
         if($categoria_id){
             $productos  =   $productos->where('p.categoria_id',$categoria_id);
@@ -83,7 +88,7 @@ class ProductoController extends Controller
             $producto->categoria_id     =   $request->get('categoria');
             $producto->unidad_medida_id =   $request->get('unidad_medida');
             $producto->precio           =   $request->get('precio');
-            $producto->stock            =   $request->get('stock');
+            //$producto->stock            =   $request->get('stock');
             $producto->stock_minimo     =   $request->get('stock_minimo');
             $producto->save();
 
@@ -118,7 +123,7 @@ class ProductoController extends Controller
             $producto->categoria_id     =   $request->get('categoria');
             $producto->unidad_medida_id =   $request->get('unidad_medida');
             $producto->precio           =   $request->get('precio');
-            $producto->stock            =   $request->get('stock');
+            //$producto->stock            =   $request->get('stock');
             $producto->stock_minimo     =   $request->get('stock_minimo');
             $producto->save();
 

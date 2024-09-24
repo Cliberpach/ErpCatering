@@ -67,7 +67,7 @@
                 </div>                  
                 <span class="precio_error msgError"  style="color:red;"></span>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
+            {{-- <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
                 <label for="stock" class="required_field mb-2" style="font-weight: bold;">Stock</label>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">
@@ -76,7 +76,7 @@
                     <input value="0.00" required id="stock" maxlength="20"  name="stock" type="text" class="form-control inputDecimalPositivo" placeholder="Stock" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="stock_error msgError"  style="color:red;"></span>
-            </div>
+            </div> --}}
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
                 <label for="stock_minimo" class="required_field mb-2" style="font-weight: bold;">Stock Mínimo</label>
                 <div class="input-group mb-3">
@@ -87,6 +87,5 @@
                 </div>                  
                 <span class="stock_minimo_error msgError"  style="color:red;"></span>
             </div>
-           
     </div>
 </form> 

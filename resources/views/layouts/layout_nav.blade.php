@@ -237,6 +237,11 @@
                 <a class="@yield('consulta_maquinaria-active')" href="{{route('consultas.maquinaria.index')}}">Maquinaria</a>
               @endcan
             </li>
+            <li>
+              @can('consultas.producto')
+                <a class="@yield('consulta_producto-active')" href="{{route('consultas.producto.index')}}">Producto</a>
+              @endcan
+            </li>
           </ul>
         </li>
       </ul>

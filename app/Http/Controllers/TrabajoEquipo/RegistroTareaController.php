@@ -79,7 +79,7 @@ class RegistroTareaController extends Controller
             $registro_tarea->supervisor_id          =   Auth::user()->colaborador_id;
             $registro_tarea->cantidad_horas_viajes  =   $request->get('cant_horas_viajes');
             $registro_tarea->observacion            =   $request->get('observacion');
-            $registro_tarea->costo                  =   $maquinaria->costo;
+            $registro_tarea->costo                  =   $maquinaria->costo_gasto;
             $registro_tarea->importe                =   $maquinaria->costo * $request->get('cant_horas_viajes');
             $registro_tarea->save();
 
@@ -119,7 +119,7 @@ class RegistroTareaController extends Controller
             //$registro_tarea->supervisor_id        =   Auth::user()->colaborador_id;
             $registro_tarea->cantidad_horas_viajes  =   $request->get('cant_horas_viajes');
             $registro_tarea->observacion            =   $request->get('observacion');
-            $registro_tarea->costo                  =   $maquinaria->costo;
+            $registro_tarea->costo                  =   $maquinaria->costo_gasto;
             $registro_tarea->importe                =   $maquinaria->costo * $request->get('cant_horas_viajes');
             $registro_tarea->save();
 

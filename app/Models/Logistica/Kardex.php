@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Models\Registros;
+namespace App\Models\Logistica;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AlmacenProducto extends Model
+class Kardex extends Model
 {
     use HasFactory;
-    protected $table = 'almacen_productos';
-    protected $primaryKey   =   'almacen_id';
+
+    protected $table = 'kardex';
+
     protected $guarded = [''];
 }

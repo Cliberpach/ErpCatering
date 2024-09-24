@@ -64,6 +64,23 @@ class RegistroSalidaController extends Controller
             $registro_salida->save();
 
             foreach ($lstSalida as $producto) {
+                //======== OBTENIENDO STOCK ANTES DE LA COMPRA =========
+                $stock_previo           =   0;
+                $stock_posterior        =   0;
+
+                $almacen_origen_producto_previo    =   DB::select('select
+                                                        ap.stock 
+                                                        from almacen_productos as ap
+                                                        where ap.almacen_id = ?
+                                                        and ap.producto_id = ?',
+                                                        [$request->get('almacen_origen'),$producto->producto_id]);
+
+                if(count($almacen_origen_producto_previo) === 0){
+                    throw new Exception("NO SE ENCONTRÓ EL ALMACEN ORIGEN DEL PRODUCTO");
+                }
+
+                $stock_previo   =   $almacen_origen_producto_previo[0]->stock;
+
                 //======== DECREMENTANDO STOCK EN ALMACÉN ORIGEN ========
                 DB::update('UPDATE almacen_productos 
                 SET stock = stock - ?, updated_at = ? 
@@ -71,6 +88,19 @@ class RegistroSalidaController extends Controller
                 AND producto_id = ?', 
                 [$producto->cantidad, Carbon::now(), 
                 $request->get('almacen_origen'), $producto->producto_id]);
+                
+                $almacen_origen_producto_posterior  =   DB::select('select
+                                                        ap.stock 
+                                                        from almacen_productos as ap
+                                                        where ap.almacen_id = ?
+                                                        and ap.producto_id = ?',
+                                                        [$request->get('almacen_origen'),$producto->producto_id]);
+
+                if(count($almacen_origen_producto_posterior) === 0){
+                    throw new Exception("NO SE ENCONTRÓ EL ALMACEN ORIGEN DEL PRODUCTO");
+                }
+
+                $stock_posterior   =   $almacen_origen_producto_posterior[0]->stock;
 
                 //======== INCREMENTANDO STOCK EN ALMACÉN DESTINO ========
                 //========= VERIFICAR SI EXISTE EL PRODUCTO EN EL DESTINO =======
@@ -108,6 +138,9 @@ class RegistroSalidaController extends Controller
                 $registro_salida_detalle->save();
 
             }
+
+            KardexController::storeSalida($lstSalida,$registro_salida,$stock_previo,$stock_posterior);
+
             DB::commit();
             return response()->json(['success'=>true,'message'=>"MOVIMIENTO REGISTRADO!!"]);
         } catch (\Throwable $th) {

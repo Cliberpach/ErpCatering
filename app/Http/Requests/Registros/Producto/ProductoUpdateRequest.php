@@ -29,7 +29,6 @@ class ProductoUpdateRequest extends FormRequest
             'marca'         => 'required|exists:marcas,id',
             'unidad_medida' => 'required|exists:tablas_generales_detalles,id',
             'precio'        => 'required|numeric', 
-            'stock'         => 'required|numeric', 
             'stock_minimo'  => 'required|numeric', 
         ];
     }
@@ -53,10 +52,7 @@ class ProductoUpdateRequest extends FormRequest
         
         'precio.required'           => 'El campo Precio es obligatorio.',
         'precio.numeric'            => 'El campo Precio debe ser un número.',
-        
-        'stock.required'            => 'El campo Stock es obligatorio.',
-        'stock.numeric'             => 'El campo Stock debe ser un número.',
-        
+                
         'stock_minimo.required'     => 'El campo Stock Mínimo es obligatorio.',
         'stock_minimo.numeric'      => 'El campo Stock Mínimo debe ser un número.',
     ];

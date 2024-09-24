@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Consultas\CMaquinariaController;
 use App\Http\Controllers\Consultas\CPersonalController;
+use App\Http\Controllers\Consultas\CProductoController;
 use App\Http\Controllers\Herramientas\RolController;
 use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
 use App\Http\Controllers\Jornales\RegistroLaborController;
@@ -289,12 +290,21 @@ Route::group(['prefix' => 'consultas_personal', 'middleware' => ['auth','checkCu
  
 });
 
-Route::group(['prefix' => 'consultar_maquinaria', 'middleware' => ['auth','checkCustomPermission:consultas.maquinaria']], function () {
+Route::group(['prefix' => 'consultas_maquinaria', 'middleware' => ['auth','checkCustomPermission:consultas.maquinaria']], function () {
 
     Route::get('/index', [CMaquinariaController::class, 'index'])->name('consultas.maquinaria.index');
     Route::get('/getConsultaMaquinaria', [CMaquinariaController::class, 'getConsultaMaquinaria'])->name('consultas.maquinaria.getConsultaMaquinaria');
     Route::get('/excel', [CMaquinariaController::class, 'excel'])->name('consultas.maquinaria.excel');
     Route::get('/pdf', [CMaquinariaController::class, 'pdf'])->name('consultas.maquinaria.pdf');
+ 
+});
+
+Route::group(['prefix' => 'consultas_producto', 'middleware' => ['auth','checkCustomPermission:consultas.producto']], function () {
+
+    Route::get('/index', [CProductoController::class, 'index'])->name('consultas.producto.index');
+    Route::get('/getConsultaProducto', [CProductoController::class, 'getConsultaProducto'])->name('consultas.producto.getConsultaProducto');
+    Route::get('/excel', [CProductoController::class, 'excel'])->name('consultas.producto.excel');
+    Route::get('/pdf', [CProductoController::class, 'pdf'])->name('consultas.producto.pdf');
  
 });
 

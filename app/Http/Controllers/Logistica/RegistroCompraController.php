@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Logistica;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Requests\Logistica\RegistroCompra\RegistroCompraStoreRequest;
+use App\Models\Logistica\Kardex;
 use App\Models\Logistica\RegistroCompra;
 use App\Models\Logistica\RegistroCompraDetalle;
 use App\Models\Registros\Almacen;
@@ -13,6 +14,7 @@ use App\Models\Registros\Categoria;
 use App\Models\Registros\Marca;
 use App\Models\Registros\Proveedor;
 use Auth;
+use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -74,7 +76,7 @@ class RegistroCompraController extends Controller
             $registro_compra->proveedor_id              =   $request->get('proveedor');
             $registro_compra->fecha_emision             =   $request->get('fecha_emision');
             $registro_compra->fecha_entrega             =   $request->get('fecha_entrega');
-            $registro_compra->serie                     =   $request->get('serie');
+            $registro_compra->serie                     =   mb_strtoupper($request->get('serie'), 'UTF-8');
             $registro_compra->correlativo               =   $request->get('numero');
             $registro_compra->moneda                    =   $request->get('moneda');
             $registro_compra->tipo_cambio               =   $request->get('tipo_cambio');
@@ -103,6 +105,10 @@ class RegistroCompraController extends Controller
             //======= GUARDANDO DETALLE ========
             foreach ($lstCompra as $item) {
 
+                //======== OBTENIENDO STOCK ANTES DE LA COMPRA =========
+                $stock_previo           =   0;
+                $stock_posterior        =   0;
+              
                 $compra_detalle                     =   new RegistroCompraDetalle();
                 $compra_detalle->registro_compra_id =   $registro_compra->id;
                 $compra_detalle->almacen_id         =   $item->almacen_id;
@@ -144,14 +150,42 @@ class RegistroCompraController extends Controller
                     $almacen_producto->producto_id  =   $item->producto_id;
                     $almacen_producto->stock        +=  $item->cantidad;
                     $almacen_producto->save();
+                    $stock_posterior                =   $almacen_producto->stock;
                 }else{
-                    $almacen_producto               =   AlmacenProducto::find($item->almacen_id);
-                    $almacen_producto->stock        +=  $item->cantidad;
-                    $almacen_producto->update();
+
+                    $almacen_producto_previo    =   DB::select('select
+                                                ap.stock 
+                                                from almacen_productos as ap
+                                                where ap.almacen_id = ?
+                                                and ap.producto_id = ?',
+                                                [$item->almacen_id,$item->producto_id]);
+
+                    $stock_previo                   =   $almacen_producto_previo[0]->stock;
+
+
+                    DB::table('almacen_productos')
+                    ->where('almacen_id', $item->almacen_id)
+                    ->where('producto_id', $item->producto_id)
+                    ->update([
+                        'stock'         =>  DB::raw('stock + ' . $item->cantidad),
+                        'updated_at'    =>  Carbon::now(), 
+                    ]);
+
+
+                    $almacen_producto_posterior    =   DB::select('select
+                                                        ap.stock 
+                                                        from almacen_productos as ap
+                                                        where ap.almacen_id = ?
+                                                        and ap.producto_id = ?',
+                                                        [$item->almacen_id,$item->producto_id]);
+
+                    $stock_posterior                =   $almacen_producto_posterior[0]->stock;
                 }
 
             }
 
+            KardexController::storeCompra($lstCompra,$registro_compra->id,$stock_previo,$stock_posterior);
+            
             DB::commit();
             return response()->json(['success'=>true,'message'=>'REGISTRO DE COMPRA GUARDADO']);
 
