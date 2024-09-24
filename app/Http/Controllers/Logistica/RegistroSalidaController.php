@@ -79,7 +79,7 @@ class RegistroSalidaController extends Controller
                     throw new Exception("NO SE ENCONTRÓ EL ALMACEN ORIGEN DEL PRODUCTO");
                 }
 
-                $stock_previo   =   $almacen_origen_producto_previo[0]->stock;
+                $stock_previo_origen   =   $almacen_origen_producto_previo[0]->stock;
 
                 //======== DECREMENTANDO STOCK EN ALMACÉN ORIGEN ========
                 DB::update('UPDATE almacen_productos 
@@ -100,7 +100,9 @@ class RegistroSalidaController extends Controller
                     throw new Exception("NO SE ENCONTRÓ EL ALMACEN ORIGEN DEL PRODUCTO");
                 }
 
-                $stock_posterior   =   $almacen_origen_producto_posterior[0]->stock;
+                $stock_posterior_origen   =   $almacen_origen_producto_posterior[0]->stock;
+
+                KardexController::storeSalidaOrigen($producto,$registro_salida,$stock_previo_origen,$stock_posterior_origen);
 
                 //======== INCREMENTANDO STOCK EN ALMACÉN DESTINO ========
                 //========= VERIFICAR SI EXISTE EL PRODUCTO EN EL DESTINO =======
@@ -109,7 +111,14 @@ class RegistroSalidaController extends Controller
                                     ->where('producto_id', $producto->producto_id)
                                     ->first();
 
+                $stock_previo_destino           =   0;
+                $stock_posterior_destino        =   0;
+                    
+                               
+
                 if ($existe_producto) {
+
+                    $stock_previo_destino   =   $existe_producto->stock;
 
                     DB::table('almacen_productos')
                     ->where('almacen_id', $request->get('almacen_destino'))
@@ -119,7 +128,16 @@ class RegistroSalidaController extends Controller
                         'updated_at' => Carbon::now(), 
                     ]);
 
+                    $producto_posterior_destino =  DB::table('almacen_productos')
+                                                    ->where('almacen_id', $request->get('almacen_destino'))
+                                                    ->where('producto_id', $producto->producto_id)
+                                                    ->first();
+
+                    $stock_posterior_destino    =   $producto_posterior_destino->stock;
+
                 } else {
+
+                    $stock_previo_destino   =   0;
 
                     DB::table('almacen_productos')->insert([
                         'almacen_id'    => $request->get('almacen_destino'),
@@ -129,6 +147,13 @@ class RegistroSalidaController extends Controller
                         'updated_at'    => Carbon::now(),
                     ]);
 
+                    $producto_posterior_destino =  DB::table('almacen_productos')
+                                                    ->where('almacen_id', $request->get('almacen_destino'))
+                                                    ->where('producto_id', $producto->producto_id)
+                                                    ->first();
+
+                    $stock_posterior_destino    =   $producto_posterior_destino->stock;
+
                 }
 
                 $registro_salida_detalle                        =   new RegistroSalidaDetalle();
@@ -137,7 +162,8 @@ class RegistroSalidaController extends Controller
                 $registro_salida_detalle->cantidad              =   $producto->cantidad;
                 $registro_salida_detalle->save();
 
-                KardexController::storeSalida($producto,$registro_salida,$stock_previo,$stock_posterior);
+                KardexController::storeSalidaDestino($producto,$registro_salida,$stock_previo_destino,$stock_posterior_destino);
+
             }
 
 

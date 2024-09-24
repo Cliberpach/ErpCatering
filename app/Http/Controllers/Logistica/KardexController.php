@@ -21,7 +21,7 @@ class KardexController extends Controller
         
     }
 
-    public static function storeSalida($producto,$registro_salida,$stock_previo,$stock_posterior){
+    public static function storeSalidaOrigen($producto,$registro_salida,$stock_previo,$stock_posterior){
             $kardex                             =   new Kardex();
             $kardex->almacen_id                 =   $registro_salida->almacen_origen_id;
             $kardex->producto_id                =   $producto->producto_id;
@@ -31,4 +31,15 @@ class KardexController extends Controller
             $kardex->stock_posterior            =   $stock_posterior;
             $kardex->save();
     }
+
+    public static function storeSalidaDestino($producto,$registro_salida,$stock_previo,$stock_posterior){
+        $kardex                             =   new Kardex();
+        $kardex->almacen_id                 =   $registro_salida->almacen_destino_id;
+        $kardex->producto_id                =   $producto->producto_id;
+        $kardex->cantidad                   =   $producto->cantidad;
+        $kardex->registro_salida_id         =   $registro_salida->id;
+        $kardex->stock_previo               =   $stock_previo;
+        $kardex->stock_posterior            =   $stock_posterior;
+        $kardex->save();
+}
 }
