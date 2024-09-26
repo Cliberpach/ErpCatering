@@ -160,36 +160,64 @@
             aria-label="Toggle navigation"
           >
             <span class="icon">
-              <i class="fa-solid fa-cart-shopping"></i>
+              <i class="fa-solid fa-truck-fast"></i>
             </span>
             <span class="text">Logística</span>
           </a>
           <ul id="ddmenu_5" class="collapse dropdown-nav @yield('logistica-show')">
-            <li>
-              @can('logistica.registro_compra')
-                <a class="@yield('registro_compra-active')" href="{{route('logistica.registro_compra.index')}}">Registro de Compras</a>
-              @endcan
-            </li>
+            
             <li>
               @can('logistica.registro_salida')
                 <a class="@yield('registro_salida-active')" href="{{route('logistica.registro_salida.index')}}">Registro de Salidas</a>
               @endcan
             </li>
+           
+          </ul>
+        </li>
+
+        <li class="nav-item nav-item-has-children">
+          <a
+            href="#0"
+            class="@yield('compras-collapsed', 'collapsed')"
+            data-bs-toggle="collapse"
+            data-bs-target="#ddmenu_6"
+            aria-controls="ddmenu_6"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="icon">
+              <i class="fa-solid fa-cart-shopping"></i>
+            </span>
+            <span class="text">Compras</span>
+          </a>
+          <ul id="ddmenu_6" class="collapse dropdown-nav @yield('compras-show')">
             <li>
-              @can('logistica.cotizacion_compra')
-                <a class="@yield('cotizacion_compra-active')" href="{{route('logistica.cotizacion_compra.index')}}" >Cotización Compra</a>
+              @can('compras.registro_compra')
+                <a class="@yield('registro_compra-active')" href="{{route('compras.registro_compra.index')}}">Registro de Compras</a>
+              @endcan
+            </li>
+    
+            <li>
+              @can('compras.cotizacion_compra')
+                <a class="@yield('cotizacion_compra-active')" href="{{route('compras.cotizacion_compra.index')}}" >Cotización Compra</a>
+              @endcan
+            </li>
+            <li>
+              @can('compras.proveedor')
+                <a class="@yield('proveedores-active')" href="{{route('compras.proveedor.index')}}" >Proveedores</a>
               @endcan
             </li>
           </ul>
         </li>
+
         <span class="divider"><hr /></span>
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
             class="@yield('herramientas-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
-            data-bs-target="#ddmenu_6"
-            aria-controls="ddmenu_6"
+            data-bs-target="#ddmenu_7"
+            aria-controls="ddmenu_7"
             aria-expanded="@yield('herramientas-expanded')"
             aria-label="Toggle navigation"
           >
@@ -198,7 +226,7 @@
             </span>
             <span class="text">Herramientas</span>
           </a>
-          <ul id="ddmenu_6" class="collapse dropdown-nav @yield('herramientas-show')">
+          <ul id="ddmenu_7" class="collapse dropdown-nav @yield('herramientas-show')">
             <li>
               @can('herramientas.usuarios')
                 <a class="@yield('usuarios-active')" href="{{route('herramientas.usuario.index')}}">Usuarios</a>
@@ -211,13 +239,14 @@
             </li>
           </ul>
         </li>
+
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
             class="@yield('consultas-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
-            data-bs-target="#ddmenu_7"
-            aria-controls="ddmenu_7"
+            data-bs-target="#ddmenu_8"
+            aria-controls="ddmenu_8"
             aria-expanded="@yield('consultas-expanded')"
             aria-label="Toggle navigation"
           >
@@ -226,7 +255,7 @@
             </span>
             <span class="text">Consultas</span>
           </a>
-          <ul id="ddmenu_7" class="collapse dropdown-nav @yield('consultas-show')">
+          <ul id="ddmenu_8" class="collapse dropdown-nav @yield('consultas-show')">
             <li>
               @can('consultas.personal')
                 <a class="@yield('personal-active')" href="{{route('consultas.personal.index')}}">Personal</a>

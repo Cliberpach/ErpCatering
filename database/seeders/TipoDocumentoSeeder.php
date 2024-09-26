@@ -13,12 +13,19 @@ class TipoDocumentoSeeder extends Seeder
      */
     public function run(): void
     {
-        $tipo_doc               =   new TipoDocumento();
-        $tipo_doc->descripcion  =   'DNI';
+        $tipo_doc                   =   new TipoDocumento();
+        $tipo_doc->descripcion      =   'DNI';
         $tipo_doc->save();
 
-        $tipo_doc1               =   new TipoDocumento();
-        $tipo_doc1->descripcion  =   'CARNET EXTRANJERÍA';
+        $tipo_doc                   =   new TipoDocumento();
+        $tipo_doc->descripcion      =   'RUC';
+        $tipo_doc->save();
+        
+        $tipo_doc1                  =   new TipoDocumento();
+        $tipo_doc1->descripcion     =   'CARNET EXTRANJERÍA';
         $tipo_doc1->save();
+
+      
+
     }
 }

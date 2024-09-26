@@ -23,24 +23,25 @@ class ColaboradorUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tipo_documento' => 'required|integer|in:1,2',
+            'tipo_documento' => [
+                'required', 
+                'exists:tipos_documento,id,estado,ACTIVO'
+            ],
             'nro_documento' => [
-                'required',
-                'string',
-                'unique:colaboradores,nro_documento,' . $this->route('id'),
-                function($attribute, $value, $fail) {
-                    if ($this->input('tipo_documento') == 1) {
-                        // Si tipo_documento es 1, el nro_documento debe tener exactamente 8 caracteres
-                        if (strlen($value) != 8) {
-                            $fail('El número de documento debe tener exactamente 8 caracteres para el tipo de documento DNI.');
-                        }
-                    } elseif ($this->input('tipo_documento') == 2) {
-                        // Si tipo_documento es 2, el nro_documento debe tener como máximo 20 caracteres
-                        if (strlen($value) > 20) {
-                            $fail('El número de documento no debe superar los 20 caracteres para el tipo de documento CARNET DE EXTRANJERÍA.');
-                        }
+                'required', 
+                'numeric', 
+                function ($attribute, $value, $fail) {
+                    $tipoDocumento = $this->input('tipo_documento');
+
+                    if ($tipoDocumento == 1 && strlen($value) != 8) {
+                        $fail('El número de documento debe tener 8 dígitos si el tipo de documento es DNI.');
+                    }
+
+                    if ($tipoDocumento == 3 && (strlen($value) < 6 || strlen($value) > 20)) {
+                        $fail('El número de documento debe tener entre 6 y 20 dígitos si el tipo de documento es Carnet de Extranjería.');
                     }
                 },
+                'unique:colaboradores,nro_documento,' . $this->route('id') . ',id,estado,ACTIVO'
             ],
             'nombre'        => 'required|max:260|unique:colaboradores,nombre,'.$this->route('id'),
             'cargo'         => 'required|exists:cargos,id',

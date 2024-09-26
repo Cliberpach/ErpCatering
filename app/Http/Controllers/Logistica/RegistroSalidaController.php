@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Logistica;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Kardex\KardexController;
 use App\Http\Requests\Logistica\RegistroSalida\RegistroSalidaStoreRequest;
 use App\Models\Logistica\RegistroSalida;
 use App\Models\Logistica\RegistroSalidaDetalle;
@@ -15,6 +16,8 @@ use DB;
 use Exception;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 class RegistroSalidaController extends Controller
 {
     public function index(){
@@ -289,4 +292,68 @@ class RegistroSalidaController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public function pdf($id){
+
+        $empresa    =   DB::select('select * from empresas as e
+                        where e.id = 1')[0];
+
+
+        $registro_salida =   DB::select('select
+                                rs.*,
+                                ao.descripcion as almacen_origen_nombre,
+                                ad.descripcion as almacen_destino_nombre,
+                                c.nombre as colaborador_nombre
+                                from registros_salida as rs
+                                inner join colaboradores as c on c.id = rs.colaborador_id
+                                inner join almacenes as ao on ao.id = rs.almacen_origen_id
+                                inner join almacenes as ad on ad.id =  rs.almacen_destino_id
+                                where rs.id = ?',[$id])[0];
+
+        $registro_salida_detalle    =   DB::select('select 
+                                p.nombre as producto_nombre,
+                                c.descripcion as categoria_nombre,
+                                m.descripcion as marca_nombre,
+                                rsd.cantidad,
+                                tgd.descripcion as unidad_medida_nombre
+                                from registros_salida_detalle as rsd    
+                                inner join productos as p on p.id = rsd.producto_id
+                                inner join categorias as c on c.id = p.categoria_id
+                                inner join marcas as m on m.id = p.marca_id
+                                inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
+                                where rsd.registro_salida_id = ?',[$id]);
+
+        Carbon::setLocale('es');
+        $fecha_impresion = Carbon::now();
+        $fecha_impresion = $fecha_impresion->translatedFormat('l, d \d\e F \d\e\l Y');
+        $fecha_impresion = strtoupper($fecha_impresion);
+
+
+        // Configurar las opciones de DOMPDF si es necesario
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+
+        // Instanciar el objeto DOMPDF
+        $dompdf = new Dompdf($options);
+
+        // Definir el contenido del PDF (HTML)
+        $html = view('logistica.registro_salida.pdf.pdf',
+        compact('empresa','registro_salida','fecha_impresion','registro_salida_detalle'))
+            ->render();
+
+        // Cargar el HTML en DOMPDF
+        $dompdf->loadHtml($html);
+
+        // Opcional: Configurar el tamaño de papel y la orientación
+        $dompdf->setPaper('A4', 'portrait'); // O 'landscape'
+
+        // Renderizar el PDF
+        $dompdf->render();
+
+        // Visualizar el PDF en una nueva ventana en lugar de descargarlo
+        return $dompdf->stream('archivo.pdf', ['Attachment' => false]);
+    }
+
+
+
 }

@@ -13,8 +13,10 @@ class ProveedorSeeder extends Seeder
      */
     public function run(): void
     {
-        $proveedor          =   new Proveedor();
-        $proveedor->nombre  =   'PROVEEDORES VARIOS';
+        $proveedor                      =   new Proveedor();
+        $proveedor->tipo_documento_id   =   1;
+        $proveedor->nro_documento       =   99999999;
+        $proveedor->nombre              =   'PROVEEDORES VARIOS';
         $proveedor->save();
     }
 }

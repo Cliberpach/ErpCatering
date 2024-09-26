@@ -1,26 +1,29 @@
 @extends('layouts.layout')
 @section('title-page')
-    REGISTRAR COLABORADOR
+    EDITAR PROVEEDOR
 @endsection
 
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Datos del Colaborador<i class="fa-solid fa-user"></i></h6>
+      <h6>Datos del Proveedor <i class="fa-solid fa-truck-field"></i></h6>
     </div>
     <div class="card-body">
-        @include('registros.colaboradores.forms.form_create_colaborador')
+        @include('compras.proveedores.forms.form_edit_proveedor')
     </div>
-    <div class="card-footer d-flex justify-content-between align-items-center">
-        <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
-        
-        <div style="display:flex;">
-            <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
-                <i class="fa-solid fa-door-open"></i> VOLVER
-            </button>
-            <button class="btn btn-primary" type="submit" form="formRegistrarColaborador">
-                <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
-            </button>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-12" style="display:flex; justify-content:end;">
+                <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
+                    <i class="fa-solid fa-door-open"></i> VOLVER
+                </button>
+                <button class="btn btn-primary" type="submit" form="formActualizarProveedor">
+                    <i class="fa-solid fa-floppy-disk"></i> ACTUALIZAR
+                </button>
+            </div>
+            <div class="col-12">
+                <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
+            </div>
         </div>
     </div>
 </div>
@@ -36,74 +39,51 @@
 
     function events(){
 
-        document.querySelector('#formRegistrarColaborador').addEventListener('submit',(e)=>{
+        document.querySelector('#formActualizarProveedor').addEventListener('submit',(e)=>{
             e.preventDefault();
-            registrarColaborador();
+            actualizarProveedor();
         })
 
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
-                const rutaIndex         =   '{{route('registros.colaborador.index')}}';
+                const rutaIndex         =   '{{route('compras.proveedor.index')}}';
                 window.location.href    =   rutaIndex;
             }
         })
 
         //======= CONSULTAR API DOCUMENTO DNI ========
         document.querySelector('#btn_consultar_documento').addEventListener('click',()=>{
-            const dni               =   document.querySelector('#nro_documento').value;
+            const nro_documento     =   document.querySelector('#nro_documento').value;
             const tipo_documento    =   document.querySelector('#tipo_documento').value;
             toastr.clear();
 
-            if(tipo_documento != 1){
-                toastr.error('SOLO SE PUEDE CONSULTAR TIPO DE DOCUMENTO DNI');
+            if(tipo_documento != 1 && tipo_documento != 2){
+                toastr.error('SOLO SE PUEDE CONSULTAR TIPO DE DOCUMENTO DNI Y RUC');
                 return;
             }
 
-            if(dni.length != 8){
-                toastr.error('NRO DE DNI DEBE CONTAR CON 8 DÍGITOS');
+            if(!nro_documento){
+                toastr.error('DEBE INGRESAR UN NRO DE DOCUMENTO VÁLIDO');
                 return;
             }
 
-            consultarDocumento(dni);
+            if(tipo_documento == 1){
+                if(nro_documento.length != 8){
+                    toastr.error('NRO DE DNI DEBE CONTAR CON 8 DÍGITOS');
+                    return;
+                }
 
-        })
-
-        //======== PERMITIR SOLO NROS EN HORAS SEMANA =======
-        document.querySelector('#horas_semana').addEventListener('input',(e)=>{
-            const input = e.target;
-            const validNumberPattern = /^[1-9]\d*$/;
-            input.value = input.value.replace(/(?!^)(^|\D+|(?<=\D)\d*|\D*$)/g, '');
-
-            if (!validNumberPattern.test(input.value) && input.value !== '') {
-                input.value = '';
-            }
-        })
-
-        //========= PERMITIR CONTENIDO VALIDO DE DINERO =====
-        document.querySelector('#pago_semana').addEventListener('input',(e)=>{
-            const input = e.target;
-
-            // Reemplaza cualquier carácter que no sea un dígito o un punto decimal
-            let value = input.value.replace(/[^0-9.]/g, '');
-
-            // Asegúrate de que el punto decimal no esté al inicio
-            if (value.startsWith('.')) {
-                value = value.slice(1);
             }
 
-            // Permite solo un punto decimal y limita a dos decimales
-            const parts = value.split('.');
-            if (parts.length > 2) {
-                value = parts[0] + '.' + parts.slice(1).join('');
+            if(tipo_documento == 2){
+                if(nro_documento.length != 11){
+                    toastr.error('NRO DE RUC DEBE CONTAR CON 11 DÍGITOS');
+                    return;
+                }
             }
 
-            if (parts.length === 2) {
-                parts[1] = parts[1].slice(0, 2); // Limita a dos decimales
-                value = parts.join('.');
-            }
+            consultarDocumento(tipo_documento,nro_documento);
 
-            // Actualiza el valor del input
-            input.value = value;
         })
 
         //========== PERMITIR SOLO FORMATO DE CELULAR O TELEFONO ======
@@ -149,7 +129,7 @@
         } ); 
     }
 
-    function registrarColaborador(){
+    function actualizarProveedor(){
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -158,24 +138,19 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA REGISTRAR EL COLABORADOR?",
-        text: "Se creará un nuevo colaborador!",
+        title: "DESEA ACTUALIZAR EL PROVEEDOR?",
+        text: "Se realizarán cambios en la BD!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "SÍ, REGISTRAR!",
+        confirmButtonText: "SÍ, ACTUALIZAR!",
         cancelButtonText: "NO, CANCELAR!",
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacion('msgError');
-            const token                     =   document.querySelector('input[name="_token"]').value;
-            const formRegistrarColaborador  =   document.querySelector('#formRegistrarColaborador');
-            const formData                  =   new FormData(formRegistrarColaborador);
-            const urlRegistrarUsuario       =   @json(route('registros.colaborador.store'));
 
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Registrando nuevo colaborador...',
+                html: 'Actualizando proveedor...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -183,17 +158,25 @@
             });
 
             try {
-                const response  =   await fetch(urlRegistrarUsuario, {
+                limpiarErroresValidacion('msgError');
+                const token                         =   document.querySelector('input[name="_token"]').value;
+                const formActualizarProveedor       =   document.querySelector('#formActualizarProveedor');
+                const formData                      =   new FormData(formActualizarProveedor);
+
+                const id                  =   @json($proveedor->id);
+                let urlUpdateProveedor    =   `{{ route('compras.proveedor.update', ['id' => ':id']) }}`;
+                urlUpdateProveedor        =   urlUpdateProveedor.replace(':id', id);
+
+                const response  =   await fetch(urlUpdateProveedor, {
                                         method: 'POST',
                                         headers: {
-                                            'X-CSRF-TOKEN': token 
+                                            'X-CSRF-TOKEN': token,
+                                            'X-HTTP-Method-Override': 'PUT' 
                                         },
                                         body: formData
                                     });
 
                 const   res =   await response.json();
-                
-                console.log(res);
                 
                 if(response.status === 422){
                     if('errors' in res){
@@ -204,17 +187,16 @@
                 }
                 
                 if(res.success){
-                    const colaborador_index     =   @json(route('registros.colaborador.index'));
+                    const proveedor_index     =   @json(route('compras.proveedor.index'));
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                    window.location.href    =   colaborador_index;
+                    window.location.href    =   proveedor_index;
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
                 }
 
-              
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR COLABORADOR');
+                toastr.error(error,'ERROR EN LA PETICIÓN ACTUALIAR PROVEEDOR');
                 Swal.close();
             }
           
@@ -242,31 +224,33 @@
         const inputNroDoc           =   document.querySelector('#nro_documento');
         const btnConsultarDocumento =   document.querySelector('#btn_consultar_documento');
         
+        inputNroDoc.readOnly            =   true;
+        inputNroDoc.value               =   '';
+        btnConsultarDocumento.disabled  =   true;
+
         //======== DNI =======
         if(tipo_documento == 1){
-            inputNroDoc.value               =   '';
             inputNroDoc.readOnly            =   false;
             inputNroDoc.maxLength           =   8;
             btnConsultarDocumento.disabled  =   false;
         }
 
-        //====== CARNET EXTRANJERÍA =====
-        if(tipo_documento == 3){
-            inputNroDoc.value               =   '';
+        //====== RUC =====
+        if(tipo_documento == 2){
             inputNroDoc.readOnly            =   false;
-            inputNroDoc.maxLength           =   20;
-            btnConsultarDocumento.disabled  =   true;
+            inputNroDoc.maxLength           =   11;
+            btnConsultarDocumento.disabled  =   false;
         }
     }
 
     //======= CONSULTAR DOCUMENTO IDENTIDAD =====
-    async function consultarDocumento(dni){
+    async function consultarDocumento(tipo_documento,nro_documento){
         mostrarAnimacion1();
         try {
-            const token     =   document.querySelector('input[name="_token"]').value;
-            const urlApiDni = `/colaboradores/consultarDni/${encodeURIComponent(dni)}`;
-
-            const response  =   await fetch(urlApiDni, {
+            const token                     =   document.querySelector('input[name="_token"]').value;
+            const urlConsultarDocumento     =   `/proveedores/consultarDocumento?tipo_documento=${encodeURIComponent(tipo_documento)}&nro_documento=${encodeURIComponent(nro_documento)}`;
+            
+            const response  =   await fetch(urlConsultarDocumento, {
                                     method: 'GET',
                                     headers: {
                                         'X-CSRF-TOKEN': token 
@@ -276,16 +260,31 @@
             const   res =   await response.json();
 
             if(res.success){
-                setDatosDni(res.data.data);
+                if(tipo_documento == 1){
+                    setDatosDni(res.data.data);
+                }
+                if(tipo_documento == 2){
+                    //console.log(res);
+                    setDatosRuc(res.data.data);
+                }
+
                 toastr.info(res.message);
             }else{
-                toastr.error(res.message,'ERROR EN EL SERVIDOR AL CONSULTAR DNI');
+                toastr.error(res.message,'ERROR EN EL SERVIDOR AL CONSULTAR DOCUMENTO');
             }
         } catch (error) {
-            toastr.error(error,'ERROR EN LA PETICIÓN CONSULTAR DNI');
+            toastr.error(error,'ERROR EN LA PETICIÓN CONSULTAR DOCUMENTO');
         }finally{
             ocultarAnimacion1();
         }
+    }
+
+    function setDatosRuc(data){
+        const nombre_o_razon_social     =   `${data.nombre_o_razon_social}`;
+        const direccion_completa                 =   data.direccion_completa;
+
+        document.querySelector('#nombre').value     =   nombre_o_razon_social;
+        document.querySelector('#direccion').value  =   direccion_completa;
     }
 
     function setDatosDni(data){

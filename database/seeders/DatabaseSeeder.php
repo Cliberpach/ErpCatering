@@ -25,9 +25,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call(EmpresaSeeder::class);
         $this->call(AlmacenSeeder::class);
-        $this->call(ProveedorSeeder::class);
         $this->call(TablaGeneralSeeder::class);
         $this->call(TipoDocumentoSeeder::class);
+        $this->call(ProveedorSeeder::class);
         $this->call(CargoSeed::class);
         $this->call(ColaboradorSeeder::class);
         $this->call(PermisoSeeder::class);

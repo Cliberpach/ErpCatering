@@ -13,7 +13,17 @@ return new class extends Migration
     {
         Schema::create('proveedores', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
+
+            $table->unsignedBigInteger('tipo_documento_id');
+            $table->foreign('tipo_documento_id')->references('id')->on('tipos_documento');
+            
+            $table->string('nro_documento',20)->unique();
+            $table->string('nombre',200);
+            $table->string('direccion',150)->nullable();
+            $table->string('telefono',20)->nullable();
+            $table->string('correo',150)->nullable();
+
+            $table->enum('estado', ['ACTIVO', 'ANULADO'])->default('ACTIVO');
             $table->timestamps();
         });
     }

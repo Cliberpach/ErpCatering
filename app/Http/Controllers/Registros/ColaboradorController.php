@@ -43,7 +43,8 @@ class ColaboradorController extends Controller
     }
 
     public function create(){
-        $tipos_documento    =   TipoDocumento::where('estado','ACTIVO')->get();
+        $tipos_documento    =   TipoDocumento::where('estado','ACTIVO')
+                                ->where('id','<>',2)->get();
         $cargos             =   Cargo::where('estado','ACTIVO')->get();
        
         return view('registros.colaboradores.create',compact('tipos_documento','cargos'));
@@ -133,16 +134,19 @@ class ColaboradorController extends Controller
             }
 
             //======== VALIDAR DNI ÚNICO =========
-            $existe =   DB::select('select c.id from colaboradores as c
-                    where c.nro_documento = ?',[$dni]);
+            $existe =   DB::select('select 
+                        c.id 
+                        from colaboradores as c
+                        where c.nro_documento = ? 
+                        and c.estado = "ACTIVO"',
+                        [$dni]);
 
             if(count($existe) > 0){
                 throw new Exception('El dni ya existe en la tabla colaboradores');    
             }
 
             //======== CONSULTANDO DNI EN API RENIEC ========
-            $utilController     =   new UtilController();
-            $res_consulta_api   =   $utilController->apiDni($dni);
+            $res_consulta_api   =   UtilController::apiDni($dni);
             $res                =   $res_consulta_api->getData();
 
             //======= EN CASO LA CONSULTA FUE EXITOSA =====

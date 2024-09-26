@@ -68,15 +68,8 @@
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        // const baseUrlEdit   =   `{{ route('logistica.cotizacion_compra.edit', ['id' => ':id']) }}`;
-                        // urlEdit             =   baseUrlEdit.replace(':id', data.id); 
-
-                        const baseUrlShow   =   `{{ route('logistica.registro_compra.show', ['id' => ':id']) }}`;
-                        urlShow             =   baseUrlShow.replace(':id', data.id); 
-
-                        // const urlDelete = `{{ route('logistica.cotizacion_compra.destroy', ':id') }}`.replace(':id', data.id);
-                        // const urlPdf    = `{{ route('logistica.cotizacion_compra.pdf', ':id') }}`.replace(':id', data.id);
-
+                        
+                        const urlPdf    = `{{ route('logistica.registro_salida.pdf', ':id') }}`.replace(':id', data.id);
 
                         return `
                             <div class="btn-group dropstart">
@@ -85,6 +78,11 @@
                             </button>
                             <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
                                 
+                                <li>
+                                    <a class="dropdown-item" href="${urlPdf}" target="_blank">
+                                        <i class="fa-solid fa-file-pdf"></i> PDF
+                                    </a>
+                                </li>
                                  <li>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShow(${data.id});">
                                         <i class="fa-solid fa-eye"></i> Ver
@@ -128,81 +126,5 @@
     function goToRegistrarSalida(){
         window.location.href = @json(route('logistica.registro_salida.create'));
     }
-
-
-    function eliminarCotizacionCompra(id){
-        toastr.clear();
-        let row             =   getRowById(dtSalidas,id);
-        let message         =   '';
-
-        message =   `Desea eliminar la cotización de compra N°${id}`;
-
-        const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-            confirmButton: "btn btn-success",
-            cancelButton: "btn btn-danger"
-        },
-        buttonsStyling: false
-        });
-        swalWithBootstrapButtons.fire({
-        title: message,
-        text: "Operación no reversible!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar!",
-        cancelButtonText: "No, cancelar!",
-        reverseButtons: true
-        }).then(async (result) => {
-        if (result.isConfirmed) {
-            
-            Swal.fire({
-                title: 'Cargando...',
-                html: 'Eliminando cotización de compra...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading(); 
-                }
-            });
-
-            try {
-                let urlEliminarCotizacionCompra         =   `{{ route('logistica.cotizacion_compra.destroy', ['id' => ':id']) }}`;
-                urlEliminarCotizacionCompra             =   urlEliminarCotizacionCompra.replace(':id', id);
-                const token                             =   document.querySelector('input[name="_token"]').value;
-
-                const response  =   await fetch(urlEliminarCotizacionCompra, {
-                                        method: 'DELETE',
-                                        headers: {
-                                            'X-CSRF-TOKEN': token 
-                                        }
-                                    });
-
-                const   res =   await response.json();
-
-                if(res.success){
-                    dtSalidas.draw();
-                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR COTIZACIÓN DE COMPRA');
-                }
-
-            } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR COTIZACIÓN DE COMPRA');
-            }finally{
-                Swal.close();
-            }
-
-        } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-        ) {
-            swalWithBootstrapButtons.fire({
-            title: "Operación cancelada",
-            text: "No se realizaron acciones",
-            icon: "error"
-            });
-        }
-        });
-    }
-
 
 </script>

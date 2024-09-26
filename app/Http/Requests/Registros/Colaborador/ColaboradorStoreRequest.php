@@ -23,24 +23,25 @@ class ColaboradorStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tipo_documento' => 'required|integer|in:1,2',
-            'nro_documento' => [
-                'required',
-                'string',
-                'unique:colaboradores,nro_documento',
-                function($attribute, $value, $fail) {
-                    if ($this->input('tipo_documento') == 1) {
-                        // Si tipo_documento es 1, el nro_documento debe tener exactamente 8 caracteres
-                        if (strlen($value) != 8) {
-                            $fail('El número de documento debe tener exactamente 8 caracteres para el tipo de documento DNI.');
-                        }
-                    } elseif ($this->input('tipo_documento') == 2) {
-                        // Si tipo_documento es 2, el nro_documento debe tener como máximo 20 caracteres
-                        if (strlen($value) > 20) {
-                            $fail('El número de documento no debe superar los 20 caracteres para el tipo de documento CARNET DE EXTRANJERÍA.');
-                        }
+            'tipo_documento' => [
+                'required', 
+                'exists:tipos_documento,id,estado,ACTIVO'
+            ],
+           'nro_documento' => [
+                'required', 
+                'numeric', 
+                function ($attribute, $value, $fail) {
+                    $tipoDocumento = $this->input('tipo_documento');
+
+                    if ($tipoDocumento == 1 && strlen($value) != 8) {
+                        $fail('El número de documento debe tener 8 dígitos si el tipo de documento es DNI.');
+                    }
+
+                    if ($tipoDocumento == 3 && (strlen($value) < 6 || strlen($value) > 20)) {
+                        $fail('El número de documento debe tener entre 6 y 20 dígitos si el tipo de documento es Carnet de Extranjería.');
                     }
                 },
+                'unique:colaboradores,nro_documento,NULL,id,estado,ACTIVO'
             ],
             'nombre'        => 'required|max:260|unique:colaboradores,nombre',
             'cargo'         => 'required|exists:cargos,id',
@@ -59,8 +60,8 @@ class ColaboradorStoreRequest extends FormRequest
             'tipo_documento.in'         => 'El tipo de documento debe ser 1 o 2.',
 
             'nro_documento.required'    => 'El número de documento es obligatorio.',
-            'nro_documento.string'      => 'El número de documento debe ser una cadena de texto.',
-            'nro_documento.unique'      => 'El número de documento ya existe.', 
+            'nro_documento.numeric'     => 'El número de documento debe ser numérico.',
+            'nro_documento.unique'      => 'El número de documento ya está registrado.',
 
             'nombre.required'           => 'El nombre es obligatorio.',
             'nombre.max'                => 'El nombre no debe superar los 260 caracteres.',
