@@ -4,6 +4,7 @@ use App\Http\Controllers\Compras\ProveedorController;
 use App\Http\Controllers\Consultas\CMaquinariaController;
 use App\Http\Controllers\Consultas\CPersonalController;
 use App\Http\Controllers\Consultas\CProductoController;
+use App\Http\Controllers\Herramientas\EmpresaController;
 use App\Http\Controllers\Herramientas\RolController;
 use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
 use App\Http\Controllers\Jornales\RegistroLaborController;
@@ -27,7 +28,7 @@ use App\Models\Logistica\CotizacionCompra;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/acceso_denegado', function () {
@@ -43,32 +44,6 @@ Route::middleware([
         return view('layouts.layout');
     })->name('dashboard');
 });
-
-Route::group(['prefix' => 'usuarios', 'middleware' => ['auth']], function () {
-
-    Route::get('/index', [UsuarioController::class, 'index'])->name('herramientas.usuario.index');
-    Route::get('/create', [UsuarioController::class, 'create'])->name('herramientas.usuario.create');
-    Route::post('/store', [UsuarioController::class, 'store'])->name('herramientas.usuario.store');
-    Route::put('/update/{id}', [UsuarioController::class, 'update'])->name('herramientas.usuario.update');
-    Route::get('/getUsuarios', [UsuarioController::class, 'getUsuarios'])->name('herramientas.usuario.getUsuarios');
-    Route::get('/edit/{id}', [UsuarioController::class, 'edit'])->name('herramientas.usuario.edit');
-    Route::delete('/destroy/{id}', [UsuarioController::class, 'destroy'])->name('herramientas.usuario.destroy');
-    Route::get('/getSupervisores', [UsuarioController::class, 'getSupervisores'])->name('herramientas.usuario.getSupervisores');
-
-});
-
-Route::group(['prefix' => 'roles', 'middleware' => ['auth']], function () {
-
-    Route::get('/index', [RolController::class, 'index'])->name('herramientas.rol.index');
-    Route::get('/create', [RolController::class, 'create'])->name('herramientas.rol.create');
-    Route::post('/store', [RolController::class, 'store'])->name('herramientas.rol.store');
-    Route::put('/update/{id}', [RolController::class, 'update'])->name('herramientas.rol.update');
-    Route::get('/getRoles', [RolController::class, 'getRoles'])->name('herramientas.rol.getRoles');
-    Route::get('/edit/{id}', [RolController::class, 'edit'])->name('herramientas.rol.edit');
-    Route::delete('/destroy/{id}', [RolController::class, 'destroy'])->name('herramientas.rol.destroy');
-
-});
-
 
 //============ INICIO REGISTROS =================
 
@@ -238,6 +213,21 @@ Route::group(['prefix' => 'trabajo_equipos', 'middleware' => ['auth','checkCusto
 
 
 //============ INICIO LOGÍSTICA =======
+Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCustomPermission:logistica.registro_salida']], function () {
+
+    Route::get('/index', [RegistroSalidaController::class, 'index'])->name('logistica.registro_salida.index');
+    Route::get('/create', [RegistroSalidaController::class, 'create'])->name('logistica.registro_salida.create');
+    Route::get('/getSalidas', [RegistroSalidaController::class, 'getSalidas'])->name('logistica.registro_salida.getSalidas');
+    Route::get('/validarCantidad/{almacen_id}/{producto_id}/{cantidad}', [RegistroSalidaController::class, 'validarCantidad'])->name('logistica.registro_salida.validarCantidad');
+    Route::post('/store', [RegistroSalidaController::class, 'store'])->name('logistica.registro_salida.store');
+    Route::get('/show/{salida_id}', [RegistroSalidaController::class, 'show'])->name('logistica.registro_salida.show');
+    Route::get('/pdf/{id}', [RegistroSalidaController::class, 'pdf'])->name('logistica.registro_salida.pdf');
+
+});
+//============= FIN LOGÍSTICA ===========
+
+
+//======== INICIO COMPRAS =======
 Route::group(['prefix' => 'cotizacion_compra', 'middleware' => ['auth','checkCustomPermission:compras.cotizacion_compra']], function () {
 
     Route::get('/index', [CotizacionCompraController::class, 'index'])->name('compras.cotizacion_compra.index');
@@ -274,22 +264,48 @@ Route::group(['prefix' => 'proveedores', 'middleware' => ['auth','checkCustomPer
     Route::get('/getProveedores', [ProveedorController::class, 'getProveedores'])->name('compras.proveedor.getProveedores');
     Route::get('/consultarDocumento', [ProveedorController::class, 'consultarDocumento'])->name('compras.proveedor.consultarDocumento');
     Route::get('/getListProveedores', [ProveedorController::class, 'getListProveedores'])->name('compras.proveedor.getListProveedores');
+});
+//====== FIN COMPRAS =========
+
+
+//======== INICIO HERRAMIENTAS ===========//
+Route::group(['prefix' => 'usuarios', 'middleware' => ['auth']], function () {
+
+    Route::get('/index', [UsuarioController::class, 'index'])->name('herramientas.usuario.index');
+    Route::get('/create', [UsuarioController::class, 'create'])->name('herramientas.usuario.create');
+    Route::post('/store', [UsuarioController::class, 'store'])->name('herramientas.usuario.store');
+    Route::put('/update/{id}', [UsuarioController::class, 'update'])->name('herramientas.usuario.update');
+    Route::get('/getUsuarios', [UsuarioController::class, 'getUsuarios'])->name('herramientas.usuario.getUsuarios');
+    Route::get('/edit/{id}', [UsuarioController::class, 'edit'])->name('herramientas.usuario.edit');
+    Route::delete('/destroy/{id}', [UsuarioController::class, 'destroy'])->name('herramientas.usuario.destroy');
+    Route::get('/getSupervisores', [UsuarioController::class, 'getSupervisores'])->name('herramientas.usuario.getSupervisores');
 
 });
 
-Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCustomPermission:logistica.registro_salida']], function () {
+Route::group(['prefix' => 'roles', 'middleware' => ['auth']], function () {
 
-    Route::get('/index', [RegistroSalidaController::class, 'index'])->name('logistica.registro_salida.index');
-    Route::get('/create', [RegistroSalidaController::class, 'create'])->name('logistica.registro_salida.create');
-    Route::get('/getSalidas', [RegistroSalidaController::class, 'getSalidas'])->name('logistica.registro_salida.getSalidas');
-    Route::get('/validarCantidad/{almacen_id}/{producto_id}/{cantidad}', [RegistroSalidaController::class, 'validarCantidad'])->name('logistica.registro_salida.validarCantidad');
-    Route::post('/store', [RegistroSalidaController::class, 'store'])->name('logistica.registro_salida.store');
-    Route::get('/show/{salida_id}', [RegistroSalidaController::class, 'show'])->name('logistica.registro_salida.show');
-    Route::get('/pdf/{id}', [RegistroSalidaController::class, 'pdf'])->name('logistica.registro_salida.pdf');
+    Route::get('/index', [RolController::class, 'index'])->name('herramientas.rol.index');
+    Route::get('/create', [RolController::class, 'create'])->name('herramientas.rol.create');
+    Route::post('/store', [RolController::class, 'store'])->name('herramientas.rol.store');
+    Route::put('/update/{id}', [RolController::class, 'update'])->name('herramientas.rol.update');
+    Route::get('/getRoles', [RolController::class, 'getRoles'])->name('herramientas.rol.getRoles');
+    Route::get('/edit/{id}', [RolController::class, 'edit'])->name('herramientas.rol.edit');
+    Route::delete('/destroy/{id}', [RolController::class, 'destroy'])->name('herramientas.rol.destroy');
 
 });
 
-//============= FIN LOGÍSTICA ===========
+Route::group(['prefix' => 'empresa', 'middleware' => ['auth']], function () {
+
+    Route::get('/index', [EmpresaController::class, 'index'])->name('herramientas.empresa.index');
+    Route::get('/consultarDocumento', [EmpresaController::class, 'consultarDocumento'])->name('herramientas.empresa.consultarDocumento');
+    Route::put('/{id}', [EmpresaController::class, 'update'])->name('herramientas.empresa.update');
+    // Route::put('/update/{id}', [RolController::class, 'update'])->name('herramientas.rol.update');
+    // Route::get('/getRoles', [RolController::class, 'getRoles'])->name('herramientas.rol.getRoles');
+    // Route::get('/edit/{id}', [RolController::class, 'edit'])->name('herramientas.rol.edit');
+    // Route::delete('/destroy/{id}', [RolController::class, 'destroy'])->name('herramientas.rol.destroy');
+
+});
+//======= FIN HERRAMIENTAS ==========
 
 
 //========== INICIO CONSULTAS ===========

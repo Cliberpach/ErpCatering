@@ -179,11 +179,11 @@ class RegistroLaborController extends Controller
                     File::makeDirectory($destinationPath, 0755, true);
                 }
             
-                $file = $request->file('img_asistencia_entrada');
+                $file           =   $request->file('img_asistencia_entrada');
 
                 $extension      =   $file->getClientOriginalExtension();
             
-                $fileName       =  $registro_labor->id.'_'.$registro_labor->proyecto_id.'_'.$request->get('colaborador_id'). '.' . $extension;
+                $fileName       =   $registro_labor->id.'_'.$registro_labor->proyecto_id.'_'.$request->get('colaborador_id'). '.' . $extension;
             
                 $file->move($destinationPath, $fileName);
 

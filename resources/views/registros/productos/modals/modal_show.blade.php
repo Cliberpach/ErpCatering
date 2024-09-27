@@ -17,29 +17,32 @@
                             
                             <!-- Mostrar los datos -->
                             <div class="row mb-3">
-                                <div class="col-6">
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                                     <strong class="text-primary">Categoría:</strong>
                                     <span class="text-muted" id="spanCategoria"></span>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                                     <strong class="text-primary">Marca:</strong>
                                     <span class="text-muted" id="spanMarca"></span>
                                 </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-6">
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
                                     <strong class="text-primary">Producto:</strong>
                                     <span class="text-muted" id="spanProducto"></span>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
                                     <strong class="text-primary">Precio:</strong>
                                     <span class="text-muted" id="spanPrecio"></span>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
                                     <strong class="text-primary">Unidad de Medida:</strong>
                                     <span class="text-muted" id="spanUnidad"></span>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
+                                    <strong class="text-primary">CÓDIGO INTERNO:</strong>
+                                    <span class="text-muted" id="spanCodigoInterno"></span>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
+                                    <img class="img-fluid" src="#" alt="CÓDIGO BARRAS" id="imgCodigoBarras">
                                 </div>
                             </div>
                         </div>
@@ -146,11 +149,14 @@
     }
 
     function pintarProducto(producto){
-        document.querySelector('#spanCategoria').textContent    =   producto.categoria_nombre;
-        document.querySelector('#spanMarca').textContent        =   producto.marca_nombre;
-        document.querySelector('#spanProducto').textContent     =   producto.producto_nombre;
-        document.querySelector('#spanPrecio').textContent       =   producto.producto_precio;
-        document.querySelector('#spanUnidad').textContent       =   producto.unidad_medida_nombre;
+        document.querySelector('#spanCategoria').textContent        =   producto.categoria_nombre;
+        document.querySelector('#spanMarca').textContent            =   producto.marca_nombre;
+        document.querySelector('#spanProducto').textContent         =   producto.producto_nombre;
+        document.querySelector('#spanPrecio').textContent           =   producto.producto_precio;
+        document.querySelector('#spanUnidad').textContent           =   producto.unidad_medida_nombre;
+        document.querySelector('#spanCodigoInterno').textContent    =   producto.sku;
+        document.querySelector('#imgCodigoBarras').src              =   @json(asset(''))+producto.ruta_codigo_barras;
+
     }
 
     function pintarTableStocks(stocks){

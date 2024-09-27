@@ -14,17 +14,13 @@ class EmpresaSeeder extends Seeder
     public function run(): void
     {
         $empresa                =   new Empresa();
-        $empresa->nombre        =   'TU_EMPRESA';
         $empresa->ruc           =   '12345678901';
+        $empresa->razon_social  =   'TU_EMPRESA';
         $empresa->direccion     =   'TU DIRECCION #123';
-        $empresa->departamento  =   'LA LIBERTAD';
-        $empresa->provincia     =   'TRUJILLO';
-        $empresa->distrito      =   'TRUJILLO';
         $empresa->telefono      =   '945124574';
         $empresa->correo        =   'tucorreo@gmail.com';
-        $empresa->img_ruta      =   'img/empresa/img_default.png';
-        $empresa->img_nombre    =   'img_default.png';
-        $empresa->igv           =   18;
+        $empresa->img_ruta      =   'img/empresa/img_empresa.png';
+        $empresa->img_nombre    =   'img_empresa.png';
         $empresa->save();
 
     }

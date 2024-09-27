@@ -24,6 +24,10 @@ return new class extends Migration
             $table->foreign('unidad_medida_id')->references('id')->on('tablas_generales_detalles');
 
             $table->string('nombre',200);
+
+            $table->string('sku', 20)->unique()->nullable();
+            $table->longText('ruta_codigo_barras')->nullable();
+            
             $table->decimal('precio', 20, 2)->unsigned();
             //$table->decimal('stock', 20, 2)->unsigned();
             $table->decimal('stock_minimo', 20, 2)->unsigned();

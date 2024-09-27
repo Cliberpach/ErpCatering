@@ -1,9 +1,25 @@
 <aside class="sidebar-nav-wrapper">
-    <div class="navbar-logo">
-      <a href="index.html">
-        <img src="assets/images/logo/logo.svg" alt="logo" />
-      </a>
+
+  <div class="navbar-logo" style="margin-bottom: 0; margin-top: 0; display: flex; flex-direction: column; align-items: center; text-align: center;">
+    <a href="javascript:void(0);">
+        <img 
+            style="height: 80px; width: 80px; object-fit: cover; border-radius: 50%;" 
+            src="{{ asset($empresa->img_ruta) }}" 
+            id="img_nav_empresa" 
+            class="img-fluid" 
+            alt="logo" />
+    </a>
+    <div class="col-12" style="width: 100%; overflow: auto; max-height: 150px;">
+        <p style="font-size: 14px; font-weight: bold; margin-top: 5px; margin-bottom: 0;" id="nombre_nav_empresa">
+            {{ $empresa->razon_social }}
+        </p>
     </div>
+</div>
+
+
+
+
+
     <nav class="sidebar-nav">
       <ul>
 
@@ -235,6 +251,11 @@
             <li>
               @can('herramientas.roles')
                 <a class="@yield('roles-active')" href="{{route('herramientas.rol.index')}}">Roles</a>
+              @endcan
+            </li>
+            <li>
+              @can('herramientas.empresa')
+                <a class="@yield('empresa-active')" href="{{route('herramientas.empresa.index')}}">Empresa</a>
               @endcan
             </li>
           </ul>

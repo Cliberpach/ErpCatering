@@ -76,16 +76,6 @@
                 <span class="precio_error msgError"  style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
-                <label for="stock" style="font-weight: bold;" class="required_field mb-2">Stock</label>
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">
-                        <i class="fa-solid fa-layer-group"></i>                 
-                    </span>
-                    <input value="{{$producto->stock}}" required id="stock" maxlength="20"  name="stock" type="text" class="form-control inputDecimalPositivo" placeholder="Stock" aria-label="Username" aria-describedby="basic-addon1">
-                </div>                  
-                <span class="stock_error msgError"  style="color:red;"></span>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
                 <label for="stock_minimo" style="font-weight: bold;" class="required_field mb-2">Stock Mínimo</label>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">
