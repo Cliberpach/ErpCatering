@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('categorias', function (Blueprint $table) {
             $table->id();
-            $table->string('descripcion');
+            $table->string('descripcion',150);
             $table->enum('estado', ['ACTIVO', 'ANULADO'])->default('ACTIVO');
             $table->timestamps();
         });

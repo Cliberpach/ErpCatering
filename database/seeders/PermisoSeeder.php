@@ -32,6 +32,7 @@ class PermisoSeeder extends Seeder
             'compras.cotizacion_compra',
             'compras.registro_compra',
             'compras.proveedor',
+            'plan_proyecto.tarea',
             'herramientas.usuarios',
             'herramientas.roles',
             'herramientas.tabla_general',

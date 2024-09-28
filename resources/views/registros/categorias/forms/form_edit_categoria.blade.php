@@ -7,7 +7,7 @@
                 <span class="input-group-text" id="basic-addon1">
                     <i class="fa-solid fa-tags"></i>
                 </span>
-                <input required id="descripcion_edit" name="descripcion_edit" type="text" class="form-control" placeholder="Categoría" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                <input maxlength="150" required id="descripcion_edit" name="descripcion_edit" type="text" class="form-control" placeholder="Categoría" aria-label="Example text with button addon" aria-describedby="button-addon1">
             </div>              
             <span class="descripcion_edit_error msgError_edit"  style="color:red;"></span>
         </div>      

@@ -226,14 +226,38 @@
           </ul>
         </li>
 
+        <li class="nav-item nav-item-has-children">
+          <a
+            href="#0"
+            class="@yield('plan_proyecto-collapsed', 'collapsed')"
+            data-bs-toggle="collapse"
+            data-bs-target="#ddmenu_7"
+            aria-controls="ddmenu_7"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="icon">
+              <i class="fa-solid fa-diagram-project"></i>
+            </span>
+            <span class="text">Plan Proyecto</span>
+          </a>
+          <ul id="ddmenu_7" class="collapse dropdown-nav @yield('plan_proyecto-show')">
+            <li>
+              @can('plan_proyecto.tarea')
+                <a class="@yield('tareas-active')" href="{{route('plan_proyecto.tarea.index')}}">Tareas</a>
+              @endcan
+            </li>
+          </ul>
+        </li>
+
         <span class="divider"><hr /></span>
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
             class="@yield('herramientas-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
-            data-bs-target="#ddmenu_7"
-            aria-controls="ddmenu_7"
+            data-bs-target="#ddmenu_8"
+            aria-controls="ddmenu_8"
             aria-expanded="@yield('herramientas-expanded')"
             aria-label="Toggle navigation"
           >
@@ -242,7 +266,7 @@
             </span>
             <span class="text">Herramientas</span>
           </a>
-          <ul id="ddmenu_7" class="collapse dropdown-nav @yield('herramientas-show')">
+          <ul id="ddmenu_8" class="collapse dropdown-nav @yield('herramientas-show')">
             <li>
               @can('herramientas.usuarios')
                 <a class="@yield('usuarios-active')" href="{{route('herramientas.usuario.index')}}">Usuarios</a>
@@ -266,8 +290,8 @@
             href="#0"
             class="@yield('consultas-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
-            data-bs-target="#ddmenu_8"
-            aria-controls="ddmenu_8"
+            data-bs-target="#ddmenu_9"
+            aria-controls="ddmenu_9"
             aria-expanded="@yield('consultas-expanded')"
             aria-label="Toggle navigation"
           >
@@ -276,7 +300,7 @@
             </span>
             <span class="text">Consultas</span>
           </a>
-          <ul id="ddmenu_8" class="collapse dropdown-nav @yield('consultas-show')">
+          <ul id="ddmenu_9" class="collapse dropdown-nav @yield('consultas-show')">
             <li>
               @can('consultas.personal')
                 <a class="@yield('personal-active')" href="{{route('consultas.personal.index')}}">Personal</a>

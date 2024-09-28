@@ -1,97 +1,107 @@
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE MARCAS
+<i class="fa-solid fa-network-wired" style="color: rgb(25, 62, 207);"></i> LISTADO DE TAREAS
 @endsection
 
-@section('registros-collapsed', '')
-@section('registros-expanded', 'true')
-@section('registros-show', 'show')
-@section('marcas-active', 'active')
+@section('plan_proyecto-collapsed', '')
+@section('plan_proyecto-expanded', 'true')
+@section('plan_proyecto-show', 'show')
+@section('tareas-active', 'active')
 
 
 @section('section-page')
-
-@include('registros.marcas.modals.modal_create_marca')
-@include('registros.marcas.modals.modal_edit_marca')
-@include('registros.marcas.modals.modal_import_marca')
+@include('registros.productos.modals.modal_show')
 
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-        
-        <h6>Marcas <i class="fa-solid fa-user"></i></h6>
-        <button class="btn btn-primary" onclick="openMdlNuevaMarca()">
-            <i class="fa-solid fa-plus"></i> NUEVO
-        </button>
-      
+      <h6>Tareas <i class="fa-solid fa-list-check"></i>
+      </h6>
+      <button class="btn btn-primary" onclick="goToCrearTarea()">
+        <i class="fa-solid fa-plus"></i> NUEVO
+      </button>
     </div>
     <div class="row">
-        <div class="col-12 d-flex justify-content-end">
-            <button class="btn btn-warning" onclick="openMdlImportMarca()">
-                <i class="fa-solid fa-upload"></i> IMPORTAR
-            </button>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <label for="proyecto" style="font-weight: bold;">PROYECTO</label>
+            <select name="proyecto" id="proyecto" class="select2_form">
+                @foreach ($proyectos as $proyecto)
+                    <option value="{{$proyecto->id}}">{{$proyecto->nombre}}</option>
+                @endforeach
+            </select>
         </div>
     </div>
     <div class="table-responsive">
-        @include('registros.marcas.tables.table_list_marcas')
+        @include('plan_proyecto.tareas.tables.table_list_tareas')
     </div>
 </div>
-<!-- end card -->
 @endsection
 
-@if(Session::has('message_success'))
 <script>
-    var message = "{{ Session::get('message_success') }}";
-    toastr.success(message, 'OPERACIÓN COMPLETADA');
-</script>
-@endif
-
-<script>
-    let dtMarcas    =   null;
+    let dtTareas    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableMarcas();
-        events();
+        iniciarDataTableTareas();
+        iniciarDataTableStocks();
+        iniciarSelect2();
     })
 
-    function events(){
-        eventsMdlCreateMarca();
-        eventsMdlEditMarca();
+    function iniciarSelect2(){
+        $( '.select2_form' ).select2( {
+            theme: "bootstrap-5",
+            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+        } );
     }
 
-    function iniciarDataTableMarcas(){
-        const urlGetMarcas = '{{ route('registros.marca.getMarcas') }}';
+    function iniciarDataTableTareas(){
+        const urlGetProductos = '{{ route('registros.producto.getProductos') }}';
 
-        dtMarcas  =   new DataTable('#table_marcas',{
+        dtTareas  =   new DataTable('#table_tareas',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: urlGetMarcas,
+                url: '',
                 type: 'GET',
             },
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },
-                { data: 'fecha_registro', name: 'fecha_registro' },
-                { data: 'fecha_modificacion', name: 'fecha_modificacion' },
+                { data: 'categoria_nombre', name: 'categoria_nombre' },
+                { data: 'marca_nombre', name: 'marca_nombre' },
+                { data: 'precio', name: 'precio' },
+                { data: 'stock', name: 'stock' },
+                { data: 'stock_minimo', name: 'stock_minimo' },
+                { data: 'unidad_medida_nombre', name: 'unidad_medida_nombre' },
                 {
                     data: null, 
                     render: function(data, type, row) {
+                        const baseUrlEdit   =   `{{ route('registros.producto.edit', ['id' => ':id']) }}`;
+                        urlEdit             =   baseUrlEdit.replace(':id', data.id); 
+
                       
+
+                        const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
+
                         return `
                             <div class="btn-group dropstart">
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-grip"></i>
                             </button>
                             <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
+                                 <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowProducto(${data.id})">
+                                        <i class="fa-solid fa-eye"></i> Ver
+                                    </a>
+                                </li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlEditMarca(${data.id})">
+                                    <a class="dropdown-item" href="${urlEdit}">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarMarca(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProducto(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -128,12 +138,23 @@
         });
     }
 
+    function goToCrearTarea(){
+        const proyecto_id   =   $('#proyecto').val();
+        if(!proyecto_id){
+            toastr.error('DEBE SELECCIONAR UN PROYECTO PARA PODER CREAR UNA TAREA');
+            return;
+        }
+        window.location.href = @json(route('plan_proyecto.tarea.create', ':id')).replace(':id', proyecto_id);
+    }
 
-    function eliminarMarca(id){
+
+    function eliminarProducto(id){
         toastr.clear();
-        let row             =   getRowById(dtMarcas,id);
+        let row             =   getRowById(dtTareas,id);
         let message         =   '';
         let tipo_documento  =   '';
+
+        message =   `Desea eliminar el producto: ${row.nombre}`;
 
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -143,8 +164,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: `DESEA ELIMINAR LA MARCA?`,
-        text: `Marca: ${row.nombre}`,
+        title: message,
+        text: "Operación no reversible!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, eliminar!",
@@ -155,7 +176,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando marca...',
+                html: 'Eliminando producto...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -163,11 +184,11 @@
             });
 
             try {
-                let urlDeleteMarca    =   `{{ route('registros.marca.destroy', ['id' => ':id']) }}`;
-                urlDeleteMarca        =   urlDeleteMarca.replace(':id', id);
-                const token           =   document.querySelector('input[name="_token"]').value;
+                let urlDeleteProducto    =   `{{ route('registros.producto.destroy', ['id' => ':id']) }}`;
+                urlDeleteProducto        =   urlDeleteProducto.replace(':id', id);
+                const token              =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlDeleteMarca, {
+                const response  =   await fetch(urlDeleteProducto, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -177,14 +198,14 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtMarcas.draw();
+                    dtTareas.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR MARCA');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PRODUCTO');
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR MARCA');
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR PRODUCTO');
             }finally{
                 Swal.close();
             }

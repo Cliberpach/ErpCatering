@@ -13,16 +13,22 @@
 
 @include('registros.categorias.modals.modal_create_categoria')
 @include('registros.categorias.modals.modal_edit_categoria')
-
+@include('registros.categorias.modals.modal_import_categoria')
 
 <div class="card-style settings-card-1 mb-30">
     @csrf
-    <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Categorías <i class="fa-solid fa-layer-group"></i>
-      </h6>
+    <div class="title mb-3 d-flex justify-content-between align-items-center">
+      <h6>Categorías <i class="fa-solid fa-layer-group"></i></h6>
       <button class="btn btn-primary" onclick="openMdlNuevaCategoria()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
+    </div>
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end">
+            <button class="btn btn-warning" onclick="openMdlImportCategoria()">
+                <i class="fa-solid fa-upload"></i> IMPORTAR
+            </button>
+        </div>
     </div>
     <div class="table-responsive">
         @include('registros.categorias.tables.table_list_categorias')
@@ -43,6 +49,7 @@
 
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarDataTableCategorias();
+        iniciarDataTableImportCategorias();
         events();
     })
 

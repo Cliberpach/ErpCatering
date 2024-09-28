@@ -11,6 +11,7 @@ use App\Http\Controllers\Jornales\RegistroLaborController;
 use App\Http\Controllers\Compras\CotizacionCompraController;
 use App\Http\Controllers\Compras\RegistroCompraController;
 use App\Http\Controllers\Logistica\RegistroSalidaController;
+use App\Http\Controllers\PlanProyecto\TareaController;
 use App\Http\Controllers\Registros\AlmacenController;
 use App\Http\Controllers\Registros\CargoController;
 use App\Http\Controllers\Registros\CategoriaController;
@@ -84,6 +85,8 @@ Route::group(['prefix' => 'marcas', 'middleware' => ['auth','checkCustomPermissi
     Route::get('/getMarcas', [MarcaController::class, 'getMarcas'])->name('registros.marca.getMarcas');
     Route::delete('/destroy/{id}', [MarcaController::class, 'destroy'])->name('registros.marca.destroy');
     Route::get('/getListMarcas', [MarcaController::class, 'getListMarcas'])->name('registros.marca.getListMarcas');
+    Route::get('/descargarFormatoExcel', [MarcaController::class, 'descargarFormatoExcel'])->name('registros.marca.descargarFormatoExcel');
+    Route::post('/importarMarcasExcel', [MarcaController::class, 'importarMarcasExcel'])->name('registros.marca.importarMarcasExcel');
 
 });
 
@@ -96,6 +99,8 @@ Route::group(['prefix' => 'categorias', 'middleware' => ['auth','checkCustomPerm
     Route::get('/getCategorias', [CategoriaController::class, 'getCategorias'])->name('registros.categoria.getCategorias');
     Route::delete('/destroy/{id}', [CategoriaController::class, 'destroy'])->name('registros.categoria.destroy');
     Route::get('/getListCategorias', [CategoriaController::class, 'getListCategorias'])->name('registros.categoria.getListCategorias');
+    Route::get('/descargarFormatoExcel', [CategoriaController::class, 'descargarFormatoExcel'])->name('registros.categoria.descargarFormatoExcel');
+    Route::post('/importarCategoriasExcel', [CategoriaController::class, 'importarCategoriasExcel'])->name('registros.categoria.importarCategoriasExcel');
 
 });
 
@@ -124,7 +129,6 @@ Route::group(['prefix' => 'maquinarias', 'middleware' => ['auth','checkCustomPer
     Route::delete('/destroy/{id}', [MaquinariaController::class, 'destroy'])->name('registros.maquinaria.destroy');
 
 });
-
 
 Route::group(['prefix' => 'almacenes', 'middleware' => ['auth','checkCustomPermission:registros.almacen']], function () {
 
@@ -267,6 +271,22 @@ Route::group(['prefix' => 'proveedores', 'middleware' => ['auth','checkCustomPer
 });
 //====== FIN COMPRAS =========
 
+
+//============== INICIO PLAN PROYECTO ==========
+
+Route::group(['prefix' => 'plan_proyecto', 'middleware' => ['auth','checkCustomPermission:plan_proyecto.tarea']], function () {
+
+    Route::get('/index', [TareaController::class, 'index'])->name('plan_proyecto.tarea.index');
+    Route::get('/create/{id}', [TareaController::class, 'create'])->name('plan_proyecto.tarea.create');
+    // Route::post('/store', [MaquinariaController::class, 'store'])->name('registros.maquinaria.store');
+    // Route::get('/edit/{id}', [MaquinariaController::class, 'edit'])->name('registros.maquinaria.edit');
+    // Route::put('/update/{id}', [MaquinariaController::class, 'update'])->name('registros.maquinaria.update');
+    // Route::get('/getMaquinarias', [MaquinariaController::class, 'getMaquinarias'])->name('registros.maquinaria.getMaquinarias');
+    // Route::delete('/destroy/{id}', [MaquinariaController::class, 'destroy'])->name('registros.maquinaria.destroy');
+
+});
+
+//=========== FIN PLAN PROYECTO ============
 
 //======== INICIO HERRAMIENTAS ===========//
 Route::group(['prefix' => 'usuarios', 'middleware' => ['auth']], function () {

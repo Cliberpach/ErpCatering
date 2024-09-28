@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers\Registros;
 
+use App\Exports\Formatos\Categoria\CategoriaExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Registros\Categoria\CategoriaImportExcelRequest;
 use App\Http\Requests\Registros\Categoria\CategoriaStoreRequest;
 use App\Http\Requests\Registros\Categoria\CategoriaUpdateRequest;
+use App\Imports\Registros\Categoria\CategoriaImport;
 use App\Models\Registros\Categoria;
 use Illuminate\Http\Request;
 use Exception;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+
 class CategoriaController extends Controller
 {
     public function index(){
@@ -88,6 +93,41 @@ class CategoriaController extends Controller
             $categorias =   Categoria::where('estado','ACTIVO')->get();
             return response()->json(['success'=>true,'lstCategorias'=>$categorias]);
         } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+    public function descargarFormatoExcel(Request $request)
+    {
+        return Excel::download(new CategoriaExport(), 'formato_import_categorias.xlsx');
+    }
+
+    public function importarCategoriasExcel(CategoriaImportExcelRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+
+            $import = new CategoriaImport();
+
+            Excel::import($import, $request->file('categorias_import_excel'));
+
+            $resultado = $import->getResultados();
+
+            if($resultado->con_errores){
+                return response()->json(['success'=>false,'message'=>'ERRORES EN EL EXCEL','resultado'=>$resultado]);
+            }else{
+                $lstCategorias  =   $resultado->listadoCategorias;
+                foreach ($lstCategorias as $categoria_excel) {
+                    $categoria              =   new Categoria();
+                    $categoria->descripcion =   $categoria_excel['nombre']; 
+                    $categoria->save();
+                }
+                DB::commit();
+                return response()->json(['success'=>true,'message'=>'EXCEL IMPORTADO CON ÉXITO','resultado'=>$resultado]);
+            }
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
