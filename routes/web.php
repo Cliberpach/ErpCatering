@@ -278,7 +278,8 @@ Route::group(['prefix' => 'plan_proyecto', 'middleware' => ['auth','checkCustomP
 
     Route::get('/index', [TareaController::class, 'index'])->name('plan_proyecto.tarea.index');
     Route::get('/create/{id}', [TareaController::class, 'create'])->name('plan_proyecto.tarea.create');
-    // Route::post('/store', [MaquinariaController::class, 'store'])->name('registros.maquinaria.store');
+    Route::post('/store', [TareaController::class, 'store'])->name('plan_proyecto.tarea.store');
+    Route::get('/getTareas', [TareaController::class, 'getTareas'])->name('plan_proyecto.tarea.getTareas');
     // Route::get('/edit/{id}', [MaquinariaController::class, 'edit'])->name('registros.maquinaria.edit');
     // Route::put('/update/{id}', [MaquinariaController::class, 'update'])->name('registros.maquinaria.update');
     // Route::get('/getMaquinarias', [MaquinariaController::class, 'getMaquinarias'])->name('registros.maquinaria.getMaquinarias');

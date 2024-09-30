@@ -9,8 +9,8 @@
 @section('tareas-active', 'active')
 
 @section('section-page')
-@include('reutilizables.modals.marcas.mdl_create_marca')
-@include('reutilizables.modals.categorias.mdl_create_categoria')
+@include('plan_proyecto.tareas.modals.modal_create_subtarea')
+@include('plan_proyecto.tareas.modals.modal_edit_subtarea')
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-3">
         <div class="row mb-5">
@@ -34,7 +34,7 @@
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
-            <button class="btn btn-primary" type="submit" form="formRegistrarProducto">
+            <button class="btn btn-primary" type="submit" form="formRegistrarTarea">
                 <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
             </button>
         </div>
@@ -45,19 +45,21 @@
 
 
 <script>
+    let dtSubtareas =   null;
+    
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarSelect2();
+        iniciarDataTableSubtareas();
         events();
     })
 
     function events(){
-        eventsMdlCreateMarca();
-        eventsMdlCreateCategoria();
+        eventsMdlCreateSubtarea();
 
-        // document.querySelector('#formRegistrarProducto').addEventListener('submit',(e)=>{
-        //     e.preventDefault();
-        //     registrarProducto();
-        // })
+        document.querySelector('#formRegistrarTarea').addEventListener('submit',(e)=>{
+            e.preventDefault();
+            registrarTarea();
+        })
 
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
@@ -76,7 +78,39 @@
         } );
     }
 
-    function registrarProducto(){
+    function iniciarDataTableSubtareas(){
+        dtSubtareas  =   new DataTable('#table_subtareas',{
+            language: {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron resultados",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "aria": {
+                    "sortAscending": ": activar para ordenar la columna de manera ascendente",
+                    "sortDescending": ": activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
+    }
+
+    function registrarTarea(){
+
+        if(lstSubtareas.length === 0){
+            toastr.error('DEBES CREAR SUBTAREAS PREVIAMENTE!!!');
+            return;
+        }
+
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -85,8 +119,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA REGISTRAR EL PRODUCTO?",
-        text: "Se creará un nuevo producto!",
+        title: "DESEA REGISTRAR LA TAREA?",
+        text: "Se creará una nueva tarea con subtareas!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "SÍ, REGISTRAR!",
@@ -94,15 +128,18 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
-            limpiarErroresValidacion('msgError');
+
+            limpiarErroresValidacion('msgErrorTarea');
             const token                     =   document.querySelector('input[name="_token"]').value;
-            const formRegistrarProducto     =   document.querySelector('#formRegistrarProducto');
-            const formData                  =   new FormData(formRegistrarProducto);
-            const urlRegistrarProducto      =   @json(route('registros.producto.store'));
+            const formRegistrarTarea        =   document.querySelector('#formRegistrarTarea');
+            const formData                  =   new FormData(formRegistrarTarea);
+            const urlRegistrarTarea         =   @json(route('plan_proyecto.tarea.store'));
+            formData.append('proyecto_id',@json($proyecto->id));
+            formData.append('lstSubtareas',JSON.stringify(lstSubtareas));
 
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Registrando nuevo producto...',
+                html: 'Registrando nueva tarea...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -110,7 +147,7 @@
             });
 
             try {
-                const response  =   await fetch(urlRegistrarProducto, {
+                const response  =   await fetch(urlRegistrarTarea, {
                                         method: 'POST',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -131,9 +168,9 @@
                 }
                 
                 if(res.success){
-                    const producto_index     =   @json(route('registros.producto.index'));
+                    const tarea_index       =   @json(route('plan_proyecto.tarea.index'));
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                    window.location.href    =   producto_index;
+                    window.location.href    =   tarea_index;
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
@@ -141,7 +178,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR PRODUCTO');
+                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR TAREA');
                 Swal.close();
             }
           
@@ -155,6 +192,8 @@
         }
         });
     }
+
+
 
     function pintarErroresValidacion(objErroresValidacion){
         for (let clave in objErroresValidacion) {

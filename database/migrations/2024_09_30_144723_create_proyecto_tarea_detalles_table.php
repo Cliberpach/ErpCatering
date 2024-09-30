@@ -11,22 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('proyecto_tareas', function (Blueprint $table) {
+        Schema::create('proyecto_tarea_detalles', function (Blueprint $table) {
 
             $table->id();
+            $table->unsignedBigInteger('proyecto_tarea_id');
+            $table->foreign('proyecto_tarea_id')->references('id')->on('proyecto_tareas');
 
-            $table->unsignedBigInteger('proyecto_id');
-            $table->foreign('proyecto_id')->references('id')->on('proyectos');
-            
             $table->string('nombre',150); 
             $table->date('fecha_inicio'); 
             $table->date('fecha_fin'); 
-            $table->decimal('avance',16,2)->unsigned();
-            $table->unsignedInteger('dias_faltantes');            
             $table->string('observacion',300)->nullable(); 
-            $table->enum('estado', ['PENDIENTE', 'FINALIZADO', 'ANULADO'])->default('PENDIENTE');
-            $table->timestamps();
 
+            $table->primary(['id', 'proyecto_tarea_id']);
+            $table->timestamps();
         });
     }
 
@@ -35,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('proyecto_tareas');
+        Schema::dropIfExists('proyecto_tarea_detalles');
     }
 };

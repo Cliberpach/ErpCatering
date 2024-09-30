@@ -42,7 +42,6 @@
 
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarDataTableTareas();
-        iniciarDataTableStocks();
         iniciarSelect2();
     })
 
@@ -55,24 +54,22 @@
     }
 
     function iniciarDataTableTareas(){
-        const urlGetProductos = '{{ route('registros.producto.getProductos') }}';
+        const urlGetTareas = '{{ route('plan_proyecto.tarea.getTareas') }}';
 
         dtTareas  =   new DataTable('#table_tareas',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: '',
+                url: urlGetTareas,
                 type: 'GET',
             },
             columns: [
-                { data: 'id', name: 'id' },
+                { data: 'id', name: 'id', visible: false },  
                 { data: 'nombre', name: 'nombre' },
-                { data: 'categoria_nombre', name: 'categoria_nombre' },
-                { data: 'marca_nombre', name: 'marca_nombre' },
-                { data: 'precio', name: 'precio' },
-                { data: 'stock', name: 'stock' },
-                { data: 'stock_minimo', name: 'stock_minimo' },
-                { data: 'unidad_medida_nombre', name: 'unidad_medida_nombre' },
+                { data: 'fecha_inicio', name: 'fecha_inicio' },
+                { data: 'fecha_fin', name: 'fecha_fin' },
+                { data: 'avance', name: 'avance' },
+                { data: 'dias_faltantes', name: 'dias_faltantes' },
                 {
                     data: null, 
                     render: function(data, type, row) {
