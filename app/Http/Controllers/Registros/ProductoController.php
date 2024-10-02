@@ -91,14 +91,17 @@ class ProductoController extends Controller
             $producto->categoria_id     =   $request->get('categoria');
             $producto->unidad_medida_id =   $request->get('unidad_medida');
             $producto->precio           =   $request->get('precio');
-            //$producto->stock          =   $request->get('stock');
+            $producto->codigo_barras    =   $request->get('codigo_barras');
+            $producto->codigo_interno   =   $request->get('codigo_interno');
             $producto->stock_minimo     =   $request->get('stock_minimo');
             $producto->save();
 
-            $res_generar_barcode            =   ProductoController::generarCodigoBarras($producto);
-            $producto->ruta_codigo_barras   =   $res_generar_barcode->path;
-            $producto->sku                  =   $res_generar_barcode->sku;
-            $producto->update();
+            if($request->get('codigo_barras')){
+                $res_generar_barcode            =   ProductoController::generarCodigoBarras($request->get('codigo_barras'));
+                $producto->ruta_codigo_barras   =   $res_generar_barcode->path;
+                $producto->codigo_barras        =   $res_generar_barcode->codigo_barras;
+                $producto->update();
+            }
 
             DB::commit();
             return response()->json(['success'=>true,'message'=>'PRODUCTO REGISTRADO']);
@@ -127,22 +130,22 @@ class ProductoController extends Controller
         try {
             $producto                   =   Producto::find($id);
 
-            if(!$producto->sku || !$producto->ruta_codigo_barras){
-                $res_generar_barcode            =   ProductoController::generarCodigoBarras($producto);
-                $producto->ruta_codigo_barras   =   $res_generar_barcode->path;
-                $producto->sku                  =   $res_generar_barcode->sku;
-            }
-
             $producto->nombre           =   Str::upper($request->get('nombre'));
             $producto->marca_id         =   $request->get('marca');
             $producto->categoria_id     =   $request->get('categoria');
             $producto->unidad_medida_id =   $request->get('unidad_medida');
             $producto->precio           =   $request->get('precio');
-            //$producto->stock          =   $request->get('stock');
+            $producto->codigo_barras    =   $request->get('codigo_barras');
+            $producto->codigo_interno   =   $request->get('codigo_interno');
             $producto->stock_minimo     =   $request->get('stock_minimo');
             $producto->update();
 
-           
+            if($request->get('codigo_barras')){
+                $res_generar_barcode            =   ProductoController::generarCodigoBarras($request->get('codigo_barras'));
+                $producto->ruta_codigo_barras   =   $res_generar_barcode->path;
+                $producto->codigo_barras        =   $res_generar_barcode->codigo_barras;
+                $producto->update();
+            }
 
             DB::commit();
             return response()->json(['success'=>true,'message'=>'PRODUCTO ACTUALIZADO']);
@@ -178,7 +181,7 @@ class ProductoController extends Controller
                             tgd.descripcion as unidad_medida_nombre,
                             p.precio as producto_precio,
                             p.ruta_codigo_barras,
-                            p.sku
+                            p.codigo_interno
                             from productos as p
                             inner join marcas as m on m.id = p.marca_id 
                             inner join categorias as ca on ca.id = p.categoria_id
@@ -247,35 +250,10 @@ class ProductoController extends Controller
         }
     }
 
-    public static function generarCodigoBarras($producto)
+    public static function generarCodigoBarras($codigo_barras)
     {
-        //======= OBTENIENDO CATEGORÍA Y MARCA ======
-        $marca      =   DB::select('select 
-                        m.descripcion 
-                        from marcas as m
-                        where m.id = ? 
-                        and m.estado = "ACTIVO" ',
-                        [$producto->marca_id]);
-
-
-         $categoria =   DB::select('select 
-                        c.descripcion 
-                        from categorias as c
-                        where c.id = ? 
-                        and c.estado = "ACTIVO" ',
-                        [$producto->categoria_id]);
-
-        if (count($marca) === 0) {
-            throw new Exception("NO SE ENCUENTRA LA MARCA EN LA BD");
-        }
-
-        if (count($categoria) === 0) {
-            throw new Exception("NO SE ENCUENTRA LA CATEGORÍA EN LA BD");
-        }
-
+     
         $carpeta_destino    =   public_path('img/codigos_barra/productos');
-        $sku                =   strtoupper(substr($marca[0]->descripcion, 0, 3)) . '_' . strtoupper(substr($categoria[0]->descripcion, 0, 3)) . '_' . $producto->id;
-
 
         if (!File::exists($carpeta_destino)) {
             File::makeDirectory($carpeta_destino, 0755, true);
@@ -283,16 +261,16 @@ class ProductoController extends Controller
 
         // Generar el código de barras
         $generator  =   new BarcodeGeneratorPNG();
-        $barcode    =   $generator->getBarcode($sku, $generator::TYPE_CODE_128);
+        $barcode    =   $generator->getBarcode($codigo_barras, $generator::TYPE_CODE_128);
 
         // Definir la ruta donde se guardará el archivo PNG en la carpeta pública
-        $barcodePath = $carpeta_destino . '/' . $sku . '.png';
+        $barcodePath = $carpeta_destino . '/' . $codigo_barras . '.png';
 
         // Guardar la imagen PNG del código de barras
         file_put_contents($barcodePath, $barcode);
 
         return (object)['barcode'=>$barcode,
-        'sku'=>$sku,
-        'path'=>'img/codigos_barra/productos/'.$sku.'.png']; 
+        'codigo_barras'=>$codigo_barras,
+        'path'=>'img/codigos_barra/productos/'.$codigo_barras.'.png']; 
     }
 }

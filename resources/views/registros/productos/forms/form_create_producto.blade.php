@@ -12,6 +12,26 @@
                 <span class="nombre_error msgError"  style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
+                <label for="codigo_barras" class="mb-2" style="font-weight: bold;">Código de Barras</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">
+                        <i class="fa-solid fa-barcode"></i>                   
+                    </span>
+                    <input  id="codigo_barras" maxlength="260"  name="codigo_barras" type="text" class="form-control" placeholder="Código de Barras" aria-label="Username" aria-describedby="basic-addon1">
+                </div>                  
+                <span class="codigo_barras_error msgError"  style="color:red;"></span>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
+                <label for="codigo_interno" class="mb-2" style="font-weight: bold;">Código Interno</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">
+                        <i class="fa-solid fa-key"></i>                  
+                    </span>
+                    <input  id="codigo_interno" maxlength="260"  name="codigo_interno" type="text" class="form-control" placeholder="Código Interno" aria-label="Username" aria-describedby="basic-addon1">
+                </div>                  
+                <span class="codigo_interno_error msgError"  style="color:red;"></span>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
                 <label class="required_field mb-2" for="categoria" style="font-weight: bold;">CATEGORÍA</label>
                 <i class="fa-solid fa-plus btn btn-primary" style="border-radius: 90%;padding-right:8px;padding-left:8px;" onclick="openMdlNuevaCategoria();"></i>
                 <select required name="categoria" required class="form-select select2_form" id="categoria" data-placeholder="Seleccionar">

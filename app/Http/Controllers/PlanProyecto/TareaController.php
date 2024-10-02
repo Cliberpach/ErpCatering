@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PlanProyecto;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PlanProyecto\Tarea\TareaStoreRequest;
+use App\Http\Requests\PlanProyecto\Tarea\TareaUpdateRequest;
 use App\Models\PlanProyecto\Tarea;
 use App\Models\PlanProyecto\TareaDetalle;
 use App\Models\Registros\Proyecto;
@@ -21,8 +22,9 @@ class TareaController extends Controller
     }
 
     public function getTareas(Request $request){
+        $proyecto_id    =   $request->get('proyecto_id',null);
 
-        $almacenes = DB::table('proyecto_tareas as pt')
+        $almacenes  = DB::table('proyecto_tareas as pt')
                     ->select(
                         'pt.id', 
                         'pt.proyecto_id', 
@@ -33,10 +35,13 @@ class TareaController extends Controller
                         'pt.dias_faltantes', 
                         'pt.observacion', 
                     )
-                    ->where('pt.estado','<>','ANULADO')
-                    ->get();
+                    ->where('pt.estado','<>','ANULADO');
 
-        return DataTables::of($almacenes)
+        if($proyecto_id){
+            $almacenes->where('pt.proyecto_id',$proyecto_id);
+        }
+
+        return DataTables::of($almacenes->get())
                 ->make(true);
     }
 
@@ -55,7 +60,7 @@ class TareaController extends Controller
 
             $tarea                  =   new Tarea();
             $tarea->proyecto_id     =   $request->get('proyecto_id');
-            $tarea->nombre          = mb_strtoupper($request->get('tarea_nombre'));
+            $tarea->nombre          =   mb_strtoupper($request->get('tarea_nombre'));
 
             $tarea->fecha_inicio    =   $request->get('tarea_fecha_inicio');
             $tarea->fecha_fin       =   $request->get('tarea_fecha_fin');
@@ -66,7 +71,7 @@ class TareaController extends Controller
 
             $tarea->avance          =   0.0;
             $tarea->dias_faltantes  =   $dias_faltantes;
-            $tarea->observacion     =   $request->get('observacion');
+            $tarea->observacion     =   $request->get('tarea_observacion');
             $tarea->save();
 
             //====== GRABANDO SUBTAREAS ======
@@ -137,6 +142,98 @@ class TareaController extends Controller
             if (!empty($subtarea->observacion) && strlen($subtarea->observacion) > 300) {
                 throw new Exception("La observación no puede tener más de 300 caracteres.");
             }
+        }
+    }
+
+    public function edit($id){
+        $proyecto_tarea     =   DB::select('select * from proyecto_tareas as pt
+                                where pt.id = ?',[$id])[0];
+
+        $subtareas          =   DB::select('select * from proyecto_tarea_detalles as ptd
+                                where ptd.proyecto_tarea_id = ?',[$id]);
+
+        $proyecto   =   Proyecto::find($proyecto_tarea->proyecto_id);
+
+        return view('plan_proyecto.tareas.edit',
+        compact('proyecto_tarea','proyecto','subtareas'));
+    }
+
+    public function update($id,TareaUpdateRequest $request){
+        DB::beginTransaction();
+        try {
+
+            $lstSubtareas           =   json_decode($request->get('lstSubtareas'));
+            TareaController::validacionSubtareas($lstSubtareas);
+
+            $tarea                  =   Tarea::find($id);
+            $tarea->proyecto_id     =   $request->get('proyecto_id');
+            $tarea->nombre          =   mb_strtoupper($request->get('tarea_nombre'));
+
+            $tarea->fecha_inicio    =   $request->get('tarea_fecha_inicio');
+            $tarea->fecha_fin       =   $request->get('tarea_fecha_fin');
+            $fecha_inicio           =   Carbon::parse($tarea->fecha_inicio);
+            $fecha_fin              =   Carbon::parse($tarea->fecha_fin);
+
+            $dias_faltantes         =   $fecha_inicio->diffInDays($fecha_fin, false);
+
+            $tarea->avance          =   0.0;
+            $tarea->dias_faltantes  =   $dias_faltantes;
+            $tarea->observacion     =   $request->get('tarea_observacion');
+            $tarea->update();
+
+            //======= ELIMINANDO TAREAS ======
+            DB::table('proyecto_tarea_detalles')
+            ->where('proyecto_tarea_id', $tarea->id)
+            ->delete();
+
+
+            //====== GRABANDO SUBTAREAS ======
+            foreach ($lstSubtareas as $subtarea) {
+                $tarea_detalle                       =   new TareaDetalle();
+                $tarea_detalle->proyecto_tarea_id    =   $tarea->id;
+                $tarea_detalle->nombre               =   mb_strtoupper($subtarea->nombre);
+                $tarea_detalle->fecha_inicio         =   $subtarea->fecha_inicio;
+                $tarea_detalle->fecha_fin            =   $subtarea->fecha_fin;
+                $tarea_detalle->observacion          =   $subtarea->observacion;
+                $tarea_detalle->save();
+            }
+            
+            DB::commit();
+
+            return response()->json(['success'=>true,'message'=>'TAREA ACTUALIZADA CON ÉXITO']);
+
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+
+    public function show($id){
+        try {
+            $tarea  =   DB::select('select
+                        pt.nombre,
+                        pt.fecha_inicio,
+                        pt.fecha_fin,
+                        pt.avance,
+                        pt.dias_faltantes,
+                        pt.observacion,
+                        pr.nombre as proyecto_nombre
+                        from proyecto_tareas as pt
+                        left join proyectos as pr on pr.id = pt.proyecto_id
+                        where pt.id = ?',[$id]);
+
+            $subtareas  =   DB::select('select *
+                            from proyecto_tarea_detalles as ptd
+                            where ptd.proyecto_tarea_id = ?
+                            order by ptd.id ASC',[$id]);
+
+            if(count($tarea) === 0){
+                throw new Exception("NO SE ENCONTRÓ LA TAREA EN LA BD");
+            }
+
+            return response()->json(['success'=>true,'tarea'=>$tarea[0],'subtareas'=>$subtareas]);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
     

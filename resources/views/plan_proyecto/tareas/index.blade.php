@@ -10,8 +10,7 @@
 
 
 @section('section-page')
-@include('registros.productos.modals.modal_show')
-
+@include('plan_proyecto.tareas.modals.modal_show_tarea')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -24,7 +23,7 @@
     <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <label for="proyecto" style="font-weight: bold;">PROYECTO</label>
-            <select name="proyecto" id="proyecto" class="select2_form">
+            <select name="proyecto" id="proyecto" class="select2_form" onchange="dtTareas.ajax.reload();">
                 @foreach ($proyectos as $proyecto)
                     <option value="{{$proyecto->id}}">{{$proyecto->nombre}}</option>
                 @endforeach
@@ -62,6 +61,9 @@
             ajax: {
                 url: urlGetTareas,
                 type: 'GET',
+                data: function (d) {
+                    d.proyecto_id   =   $('#proyecto').val();
+                }
             },
             columns: [
                 { data: 'id', name: 'id', visible: false },  
@@ -73,7 +75,7 @@
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('registros.producto.edit', ['id' => ':id']) }}`;
+                        const baseUrlEdit   =   `{{ route('plan_proyecto.tarea.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
                       
@@ -87,7 +89,7 @@
                             </button>
                             <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
                                  <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowProducto(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowTarea(${data.id})">
                                         <i class="fa-solid fa-eye"></i> Ver
                                     </a>
                                 </li>

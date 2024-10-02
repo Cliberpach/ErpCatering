@@ -11,6 +11,7 @@
 
 @section('section-page')
 @include('registros.proyectos.modals.modal_asignar_supervisor')
+@include('registros.proyectos.modals.modal_show')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -41,6 +42,7 @@
         iniciarDataTableProyectos();
         iniciarSelect2();
         eventsMdlAsignarSupervisor();
+        eventsMdlShowProyecto();
     })
 
     function iniciarDataTableProyectos(){
@@ -82,6 +84,11 @@
                                 <i class="fa-solid fa-grip"></i>
                             </button>
                             <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
+                                 <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowProyecto(${data.id})">
+                                        <i class="fa-solid fa-eye"></i> Ver
+                                    </a>
+                                </li>
                                 <li>
                                     <a class="dropdown-item" href="${urlEdit}">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar

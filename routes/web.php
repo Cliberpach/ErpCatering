@@ -161,6 +161,8 @@ Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermi
     Route::get('/asignarMaquinaria/{id}', [ProyectoController::class, 'asignarMaquinariaCreate'])->name('registros.proyecto.asignarMaquinariaCreate');
     Route::post('/asignarMaquinaria', [ProyectoController::class, 'asignarMaquinariaStore'])->name('registros.proyecto.asignarMaquinariaStore');
 
+    Route::get('/show/{id}', [ProyectoController::class, 'show'])->name('registros.proyecto.show');
+
 });
 
 
@@ -280,8 +282,9 @@ Route::group(['prefix' => 'plan_proyecto', 'middleware' => ['auth','checkCustomP
     Route::get('/create/{id}', [TareaController::class, 'create'])->name('plan_proyecto.tarea.create');
     Route::post('/store', [TareaController::class, 'store'])->name('plan_proyecto.tarea.store');
     Route::get('/getTareas', [TareaController::class, 'getTareas'])->name('plan_proyecto.tarea.getTareas');
-    // Route::get('/edit/{id}', [MaquinariaController::class, 'edit'])->name('registros.maquinaria.edit');
-    // Route::put('/update/{id}', [MaquinariaController::class, 'update'])->name('registros.maquinaria.update');
+    Route::get('/show/{tarea_id}', [TareaController::class, 'show'])->name('plan_proyecto.tarea.show');
+    Route::get('/edit/{id}', [TareaController::class, 'edit'])->name('plan_proyecto.tarea.edit');
+    Route::put('/update/{id}', [TareaController::class, 'update'])->name('plan_proyecto.tarea.update');
     // Route::get('/getMaquinarias', [MaquinariaController::class, 'getMaquinarias'])->name('registros.maquinaria.getMaquinarias');
     // Route::delete('/destroy/{id}', [MaquinariaController::class, 'destroy'])->name('registros.maquinaria.destroy');
 

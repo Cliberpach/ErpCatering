@@ -70,8 +70,6 @@
     </div>
 </div>
 
-
-
 <script>
 
     let dtStocks    =   null;
@@ -154,7 +152,7 @@
         document.querySelector('#spanProducto').textContent         =   producto.producto_nombre;
         document.querySelector('#spanPrecio').textContent           =   producto.producto_precio;
         document.querySelector('#spanUnidad').textContent           =   producto.unidad_medida_nombre;
-        document.querySelector('#spanCodigoInterno').textContent    =   producto.sku;
+        document.querySelector('#spanCodigoInterno').textContent    =   producto.codigo_interno;
         document.querySelector('#imgCodigoBarras').src              =   @json(asset(''))+producto.ruta_codigo_barras;
 
     }

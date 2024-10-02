@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 @section('title-page')
-    REGISTRAR TAREA
+    EDITAR TAREA
 @endsection
 
 @section('plan_proyecto-collapsed', '')
@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="card-body">
-        @include('plan_proyecto.tareas.forms.form_create_tarea')
+        @include('plan_proyecto.tareas.forms.form_edit_tarea')
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
@@ -34,8 +34,8 @@
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
-            <button class="btn btn-primary" type="submit" form="formRegistrarTarea">
-                <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
+            <button class="btn btn-primary" type="submit" form="formActualizarTarea">
+                <i class="fa-solid fa-floppy-disk"></i> ACTUALIZAR
             </button>
         </div>
     </div>
@@ -50,6 +50,7 @@
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarSelect2();
         iniciarDataTableSubtareas();
+        cargarSubtareasPrevias();
         events();
     })
 
@@ -58,9 +59,9 @@
         eventsMdlCreateSubtarea();
         eventsMdlEditSubtarea();
 
-        document.querySelector('#formRegistrarTarea').addEventListener('submit',(e)=>{
+        document.querySelector('#formActualizarTarea').addEventListener('submit',(e)=>{
             e.preventDefault();
-            registrarTarea();
+            actualizarTarea();
         })
 
         document.addEventListener('click',(e)=>{
@@ -106,7 +107,25 @@
         });
     }
 
-    function registrarTarea(){
+    function cargarSubtareasPrevias(){
+        const lstSubtareasPrevias  =   @json($subtareas);
+        lstSubtareasPrevias.forEach((s)=>{
+            const subtarea          =   {nombre:null,fecha_inicio:null,fecha_fin:null,observacion:null};
+            subtarea.nombre         =   s.nombre;
+            subtarea.fecha_inicio   =   s.fecha_inicio;
+            subtarea.fecha_fin      =   s.fecha_fin;
+            subtarea.observacion    =   s.observacion;
+            lstSubtareas.push(subtarea);
+        })
+
+        destruirDataTable(dtSubtareas);
+        limpiarTabla('table_subtareas');
+        pintarTableSubtareas(lstSubtareas);
+        iniciarDataTableSubtareas();
+        
+    }
+
+    function actualizarTarea(){
 
         if(lstSubtareas.length === 0){
             toastr.error('DEBES CREAR SUBTAREAS PREVIAMENTE!!!');
@@ -121,27 +140,19 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA REGISTRAR LA TAREA?",
-        text: "Se creará una nueva tarea con subtareas!",
+        title: "DESEA ACTUALIZAR LA TAREA?",
+        text: "Se actualizarán los datos de la tarea!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "SÍ, REGISTRAR!",
+        confirmButtonText: "SÍ, ACTUALIZAR!",
         cancelButtonText: "NO, CANCELAR!",
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
 
-            limpiarErroresValidacion('msgErrorTarea');
-            const token                     =   document.querySelector('input[name="_token"]').value;
-            const formRegistrarTarea        =   document.querySelector('#formRegistrarTarea');
-            const formData                  =   new FormData(formRegistrarTarea);
-            const urlRegistrarTarea         =   @json(route('plan_proyecto.tarea.store'));
-            formData.append('proyecto_id',@json($proyecto->id));
-            formData.append('lstSubtareas',JSON.stringify(lstSubtareas));
-
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Registrando nueva tarea...',
+                html: 'Actualizando tarea...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -149,10 +160,23 @@
             });
 
             try {
-                const response  =   await fetch(urlRegistrarTarea, {
+
+                limpiarErroresValidacion('msgErrorTarea');
+                const proyecto_tarea_id         =   @json($proyecto_tarea->id);
+                const token                     =   document.querySelector('input[name="_token"]').value;
+                const formActualizarTarea       =   document.querySelector('#formActualizarTarea');
+                const formData                  =   new FormData(formActualizarTarea);
+                let urlUpdateTarea              =   `{{ route('plan_proyecto.tarea.update', ['id' => ':id']) }}`;
+                urlUpdateTarea                  =   urlUpdateTarea.replace(':id', proyecto_tarea_id);   
+
+                formData.append('proyecto_id',@json($proyecto->id));
+                formData.append('lstSubtareas',JSON.stringify(lstSubtareas));
+                
+                 const response  =   await fetch(urlUpdateTarea, {
                                         method: 'POST',
                                         headers: {
-                                            'X-CSRF-TOKEN': token 
+                                            'X-CSRF-TOKEN': token,
+                                            'X-HTTP-Method-Override': 'PUT' 
                                         },
                                         body: formData
                                     });
@@ -180,7 +204,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR TAREA');
+                toastr.error(error,'ERROR EN LA PETICIÓN ACTUALIZAR TAREA');
                 Swal.close();
             }
           
@@ -194,7 +218,6 @@
         }
         });
     }
-
 
 
     function pintarErroresValidacion(objErroresValidacion){

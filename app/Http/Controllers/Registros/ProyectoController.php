@@ -12,6 +12,7 @@ use App\Models\Registros\ProyectoMaquinaria;
 use App\Models\Registros\ProyectoPersonal;
 use Illuminate\Http\Request;
 use Exception;
+use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -89,6 +90,57 @@ class ProyectoController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public function show($id){
+        try {
+            $proyecto   =   DB::select('select 
+                            pr.id,
+                            pr.nombre,
+                            pr.costo,
+                            pr.avance_costo,
+                            pr.diferencia,
+                            c.nombre as supervisor_nombre,
+                            c.id as supervisor_id
+                            from proyectos as pr
+                            left join colaboradores as c on c.id = pr.supervisor_id
+                            where pr.id = ?',[$id]);
+
+            if(count($proyecto) === 0){
+                throw new Exception("NO SE ENONCTRÓ EL PROYECTO EN LA BD!!!");
+            }
+
+            $proyecto   =   $proyecto[0];
+
+            $personal   =   DB::select('select 
+                            c.nombre,
+                            td.descripcion as tipo_documento_descripcion,
+                            c.nro_documento
+                            from proyecto_personal as pp
+                            left join colaboradores as c on c.id = pp.colaborador_id
+                            left join tipos_documento as td on td.id = c.tipo_documento_id
+                            where pp.proyecto_id = ?',[$id]);
+
+            $maquinaria =   DB::select('select 
+                            m.nombre,
+                            m.costo_gasto,
+                            tgd.descripcion as tipo_gasto_descripcion,
+                            m.observacion
+                            from proyecto_maquinaria as pm
+                            left join maquinarias as m on m.id = pm.maquinaria_id
+                            left join tablas_generales_detalles as tgd on tgd.id = m.tipo_gasto_id
+                            where pm.proyecto_id = ? 
+                            and tgd.tabla_general_id = 2',
+                            [$id]);
+
+            return response()->json(['success'=>true,
+                                        'proyecto'=>$proyecto,
+                                        'personal'=>$personal,
+                                        'maquinaria'=>$maquinaria]);
+        } catch (Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }        
+    }
+
 
     public function destroy($id){
         DB::beginTransaction();

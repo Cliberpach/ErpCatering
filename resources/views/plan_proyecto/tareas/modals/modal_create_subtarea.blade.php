@@ -23,6 +23,10 @@
 
   function eventsMdlCreateSubtarea(){
 
+    $('#mdlCreateSubtarea').on('hidden.bs.modal', function (e) {
+      limpiarMdlSubtarea();
+    });
+
     document.querySelector('#formCreateSubtarea').addEventListener('submit',(e)=>{
       e.preventDefault();
 
@@ -44,12 +48,6 @@
         toastr.info('SUBTAREA AGREGADA!!');
       }
 
-    })
-
-    document.addEventListener('click',(e)=>{
-      if(e.target.classList.contains('btn-edit-subtarea')){
-        alert('editando subtarea');
-      }
     })
 
   }
@@ -139,8 +137,8 @@
                   <td>${ls.observacion}</td>
                   <td>
                     <div>
-                      <i class="fa-solid fa-pen-to-square btn btn-warning btn-edit-subtarea"></i> 
-                      <i class="fa-solid fa-trash-can btn btn-danger btn-delete-subtarea"></i> 
+                      <i class="fa-solid fa-pen-to-square btn btn-warning btn-edit-subtarea" data-id="${index}"></i> 
+                      <i class="fa-solid fa-trash-can btn btn-danger btn-delete-subtarea" data-id="${index}"></i> 
                     </div>
                   </td>
                 </tr>`;
@@ -154,5 +152,17 @@
     pErrors.forEach((element)=>{
       element.textContent = '';    
     })
+  }
+
+  function limpiarMdlSubtarea(){
+    const subtarea_nombre       =   document.querySelector('#subtarea_nombre');
+    const subtarea_fecha_inicio =   document.querySelector('#subtarea_fecha_inicio');
+    const subtarea_fecha_fin    =   document.querySelector('#subtarea_fecha_fin');
+    const subtarea_observacion  =   document.querySelector('#subtarea_observacion');
+
+    subtarea_nombre.value       = '';
+    subtarea_fecha_inicio.value = '';
+    subtarea_fecha_fin.value    = '';
+    subtarea_observacion.value  = '';
   }
 </script>

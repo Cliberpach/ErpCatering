@@ -38,6 +38,9 @@ class ProductoStoreRequest extends FormRequest
             'unidad_medida' => 'required|exists:tablas_generales_detalles,id',
             'precio'        => 'required|numeric', 
             'stock_minimo'  => 'required|numeric', 
+            
+            'codigo_barras' => 'nullable|string|max:20',
+            'codigo_interno'=> 'nullable|string|max:20',
         ];
     }
 
@@ -63,6 +66,12 @@ class ProductoStoreRequest extends FormRequest
                 
         'stock_minimo.required'     => 'El campo Stock Mínimo es obligatorio.',
         'stock_minimo.numeric'      => 'El campo Stock Mínimo debe ser un número.',
+ 
+        'codigo_barras.string'  => 'El código de barras debe ser una cadena de texto.',
+        'codigo_barras.max'     => 'El código de barras no puede exceder los 20 caracteres.',
+
+        'codigo_interno.string' => 'El código interno debe ser una cadena de texto.',
+        'codigo_interno.max'    => 'El código interno no puede exceder los 20 caracteres.',
     ];
 }
 

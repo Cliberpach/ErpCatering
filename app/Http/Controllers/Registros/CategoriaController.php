@@ -119,7 +119,7 @@ class CategoriaController extends Controller
                 $lstCategorias  =   $resultado->listadoCategorias;
                 foreach ($lstCategorias as $categoria_excel) {
                     $categoria              =   new Categoria();
-                    $categoria->descripcion =   $categoria_excel['nombre']; 
+                    $categoria->descripcion =   mb_strtoupper($categoria_excel['nombre'], 'UTF-8');
                     $categoria->save();
                 }
                 DB::commit();

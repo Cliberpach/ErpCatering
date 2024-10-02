@@ -6,7 +6,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            @include('plan_proyecto.tareas.forms.form_create_subtarea')
+            @include('plan_proyecto.tareas.forms.form_edit_subtarea')
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -18,29 +18,80 @@
 
 <script>
 
-  const subtarea_edit      =   {nro:null,nombre:null,fecha_inicio:null,fecha_fin:null,observacion:null};
+  const subtarea_index_edit      =   {index:null};
 
   function eventsMdlEditSubtarea(){
 
+    $('#mdlEditSubtarea').on('hidden.bs.modal', function (e) {
+      limpiarMdlEditSubtarea();
+    });
+
+    document.addEventListener('click',(e)=>{
+      if(e.target.classList.contains('btn-edit-subtarea')){
+        const subtarea_index = e.target.getAttribute('data-id');
+
+        if(!subtarea_index){
+          toastr.error('ERROR AL OBTENER EL ÍNDICE DE LA SUBTAREA!!!');
+          return;
+        }
+        
+        //=========== OBTENIENDO SUBTAREA DEL LISTADO SUBTAREAS ======
+        const subtarea = lstSubtareas[subtarea_index];
+
+        //====== SETTEANDO EN EL MODAL =====
+        setSubtareaEdit(subtarea,subtarea_index);
+
+        openMdlEditSubtarea();
+      }
+
+      if(e.target.classList.contains('btn-delete-subtarea')){
+        toastr.clear();
+        const subtarea_index = e.target.getAttribute('data-id');
+
+        if(!subtarea_index){
+          toastr.error('ERROR AL OBTENER EL ÍNDICE DE LA SUBTAREA!!!');
+          return;
+        }
+        
+        //=========== ELIMINANDO SUBTAREA DEL LISTADO SUBTAREAS ======
+        lstSubtareas.splice(subtarea_index,1);
+
+        destruirDataTable(dtSubtareas);
+        limpiarTabla('table_subtareas');
+        pintarTableSubtareas(lstSubtareas);
+        iniciarDataTableSubtareas();
+
+        toastr.success('SUBTAREA ELIMINADA!!!');
+        
+      }
+    })
+
     document.querySelector('#formEditSubtarea').addEventListener('submit',(e)=>{
       e.preventDefault();
+      toastr.clear();
 
       limpiarMsgErrorsSubtareaEdit();
 
       //====== OBTENIENDO DATA =======  
       const subtarea    =   getDataFormEditSubtarea();
+
       //========= VALIDANDO ========
       const validacion  =   validarFormEditSubtarea(subtarea);
       
       if(validacion){
-        //======= GUARDANDO SUBTAREA ====== 
-        lstSubtareas.push({...subtarea});
+
+        console.log(subtarea);
+
+        //======= ACTUALIZANDO SUBTAREA ====== 
+        lstSubtareas[subtarea_index_edit.index] = {...subtarea};
+
         destruirDataTable(dtSubtareas);
         limpiarTabla('table_subtareas');
         pintarTableSubtareas(lstSubtareas);
         iniciarDataTableSubtareas();
         $('#mdlEditSubtarea').modal('hide');
-        toastr.info('SUBTAREA AGREGADA!!');
+        toastr.success('SUBTAREA ACTUALIZADA!!');
+
       }
 
     })
@@ -51,17 +102,31 @@
     $('#mdlEditSubtarea').modal('show');
   }
 
+  function setSubtareaEdit(subtarea,index){
+    const subtarea_nombre_edit        = document.querySelector('#subtarea_nombre_edit');
+    const subtarea_fecha_inicio_edit  = document.querySelector('#subtarea_fecha_inicio_edit');
+    const subtarea_fecha_fin_edit     = document.querySelector('#subtarea_fecha_fin_edit');
+
+    subtarea_nombre_edit.value        = subtarea.nombre;
+    subtarea_fecha_inicio_edit.value  = subtarea.fecha_inicio;
+    subtarea_fecha_fin_edit.value     = subtarea.fecha_fin;
+    subtarea_observacion_edit.value   = subtarea.observacion;
+
+    subtarea_index_edit.index = index;
+
+  }
+
   function getDataFormEditSubtarea(){
     const subtarea      =   {nombre:null,fecha_inicio:null,fecha_fin:null,observacion:null};
-    const nombre        =   document.querySelector('#subtarea_nombre').value;
-    const fecha_inicio  =   document.querySelector('#subtarea_fecha_inicio').value;
-    const fecha_fin     =   document.querySelector('#subtarea_fecha_fin').value;
+    const nombre        =   document.querySelector('#subtarea_nombre_edit').value;
+    const fecha_inicio  =   document.querySelector('#subtarea_fecha_inicio_edit').value;
+    const fecha_fin     =   document.querySelector('#subtarea_fecha_fin_edit').value;
     const observacion   =   document.querySelector('#subtarea_observacion_edit').value;
 
-    subtarea.nombre       =   nombre;
-    subtarea.fecha_inicio =   fecha_inicio;
-    subtarea.fecha_fin    =   fecha_fin;
-    subtarea.observacion  =   observacion;
+    subtarea.nombre        =   nombre;
+    subtarea.fecha_inicio  =   fecha_inicio;
+    subtarea.fecha_fin     =   fecha_fin;
+    subtarea.observacion   =   observacion;
 
     return subtarea;
   }
@@ -82,8 +147,8 @@
       validacion  = false;
     }
     //======== NOMBRE REPETIDO =======
-    const indiceSubtarea  = lstSubtareas.findIndex((ls)=>{
-      return ls.nombre  == subtarea.nombre;
+    const indiceSubtarea  = lstSubtareas.findIndex((ls,index)=>{
+      return ls.nombre  == subtarea.nombre && index !=  subtarea_index_edit.index ;
     })
     if(indiceSubtarea !== -1){
       document.querySelector('.subtarea_nombre_edit_error').textContent  = 'El nombre de la subtarea está repetido!!!.';
@@ -124,5 +189,19 @@
     pErrors.forEach((element)=>{
       element.textContent = '';    
     })
+  }
+
+  function limpiarMdlEditSubtarea(){
+    const subtarea_nombre_edit       =   document.querySelector('#subtarea_nombre_edit');
+    const subtarea_fecha_inicio_edit =   document.querySelector('#subtarea_fecha_inicio_edit');
+    const subtarea_fecha_fin_edit    =   document.querySelector('#subtarea_fecha_fin_edit');
+    const subtarea_observacion_edit  =   document.querySelector('#subtarea_observacion_edit');
+
+    subtarea_nombre_edit.value       = '';
+    subtarea_fecha_inicio_edit.value = '';
+    subtarea_fecha_fin_edit.value    = '';
+    subtarea_observacion_edit.value  = '';
+    
+    subtarea_index_edit.index = null;
   }
 </script>

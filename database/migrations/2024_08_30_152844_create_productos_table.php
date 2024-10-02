@@ -25,7 +25,8 @@ return new class extends Migration
 
             $table->string('nombre',200);
 
-            $table->string('sku', 20)->unique()->nullable();
+            $table->unsignedInteger('codigo_barras')->nullable();
+            $table->string('codigo_interno')->nullable();
             $table->longText('ruta_codigo_barras')->nullable();
             
             $table->decimal('precio', 20, 2)->unsigned();

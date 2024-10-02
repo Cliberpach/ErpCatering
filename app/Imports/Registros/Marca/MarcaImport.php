@@ -35,8 +35,9 @@ class MarcaImport implements ToCollection
             $error      =   '';
 
             if (empty($nombre) || strlen(str_replace(' ', '', $nombre)) === 0 ) {
-                $con_errores    =   true;
-                $error          =   "La fila " . ($key + 1) . " está vacía.";
+                // $con_errores    =   true;
+                // $error          =   "La fila " . ($key + 1) . " está vacía.";
+                continue;
             } elseif (in_array($nombre, $nombresProcesados)) {
                 $con_errores = true;
                 $error = "El nombre '$nombre' está repetido en el archivo Excel.";
@@ -56,6 +57,10 @@ class MarcaImport implements ToCollection
                 'nombre' => $nombre,
                 'error' => $error,
             ];
+        }
+
+        if(count($listadoMarcas) === 0){
+            throw new Exception("EL EXCEL ESTÁ VACÍO!!!");
         }
 
         $this->resultado    =   (object)['con_errores'=>$con_errores,'listadoMarcas'=>$listadoMarcas];   
