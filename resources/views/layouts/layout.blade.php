@@ -29,18 +29,18 @@
                     <i class="lni lni-chevron-left me-2"></i>
                   </button>
                 </div>
-                <div class="header-search d-none d-md-flex">
+                {{-- <div class="header-search d-none d-md-flex">
                   <form action="#">
                     <input type="text" placeholder="Search..." />
                     <button><i class="lni lni-search-alt"></i></button>
                   </form>
-                </div>
+                </div> --}}
               </div>
             </div>
             <div class="col-lg-7 col-md-7 col-6">
               <div class="header-right">
                 <!-- notification start -->
-                <div class="notification-box ml-15 d-none d-md-flex">
+                {{-- <div class="notification-box ml-15 d-none d-md-flex">
                   <button class="dropdown-toggle" type="button" id="notification" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,10 +95,10 @@
                       </a>
                     </li>
                   </ul>
-                </div>
+                </div> --}}
                 <!-- notification end -->
                 <!-- message start -->
-                <div class="header-message-box ml-15 d-none d-md-flex">
+                {{-- <div class="header-message-box ml-15 d-none d-md-flex">
                   <button class="dropdown-toggle" type="button" id="message" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -149,7 +149,7 @@
                       </a>
                     </li>
                   </ul>
-                </div>
+                </div> --}}
                 <!-- message end -->
                 <!-- profile start -->
                   @include('layouts.layout_profile')

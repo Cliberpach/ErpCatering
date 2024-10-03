@@ -10,7 +10,10 @@
 
 
 @section('section-page')
+
 @include('plan_proyecto.tareas.modals.modal_show_tarea')
+@include('plan_proyecto.tareas.modals.modal_avance_tarea')
+
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -42,6 +45,7 @@
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarDataTableTareas();
         iniciarSelect2();
+        eventsMdlAvanceTarea();
     })
 
     function iniciarSelect2(){
@@ -88,6 +92,11 @@
                                 <i class="fa-solid fa-grip"></i>
                             </button>
                             <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAvance(${data.id})">
+                                        <i class="fa-solid fa-bars-progress"></i> Avance
+                                    </a>
+                                </li>
                                  <li>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowTarea(${data.id})">
                                         <i class="fa-solid fa-eye"></i> Ver

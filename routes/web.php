@@ -285,7 +285,7 @@ Route::group(['prefix' => 'plan_proyecto', 'middleware' => ['auth','checkCustomP
     Route::get('/show/{tarea_id}', [TareaController::class, 'show'])->name('plan_proyecto.tarea.show');
     Route::get('/edit/{id}', [TareaController::class, 'edit'])->name('plan_proyecto.tarea.edit');
     Route::put('/update/{id}', [TareaController::class, 'update'])->name('plan_proyecto.tarea.update');
-    // Route::get('/getMaquinarias', [MaquinariaController::class, 'getMaquinarias'])->name('registros.maquinaria.getMaquinarias');
+    Route::put('/avance/{id}', [TareaController::class, 'avance'])->name('plan_proyecto.tarea.avance');
     // Route::delete('/destroy/{id}', [MaquinariaController::class, 'destroy'])->name('registros.maquinaria.destroy');
 
 });

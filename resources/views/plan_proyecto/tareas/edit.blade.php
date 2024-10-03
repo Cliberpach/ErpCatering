@@ -172,7 +172,7 @@
                 formData.append('proyecto_id',@json($proyecto->id));
                 formData.append('lstSubtareas',JSON.stringify(lstSubtareas));
                 
-                 const response  =   await fetch(urlUpdateTarea, {
+                const response  =   await fetch(urlUpdateTarea, {
                                         method: 'POST',
                                         headers: {
                                             'X-CSRF-TOKEN': token,

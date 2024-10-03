@@ -236,5 +236,55 @@ class TareaController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+
+    public function avance($id,Request $request){
+        DB::beginTransaction();
+        try {
+            $lstSubtareasAvance     =   json_decode($request->get('lstSubtareasAvance'));
+
+            foreach ($lstSubtareasAvance as $subtarea) {
+
+                DB::update('UPDATE proyecto_tarea_detalles 
+                SET estado = ?
+                WHERE proyecto_tarea_id = ? and id = ?', 
+                [$subtarea->estado,$id, $subtarea->id]);
+
+            }
+
+
+
+            //========= CALCULANDO NUEVO PORCENTAJE DE LA TAREA ========
+            $tarea  =   Tarea::find($id);
+
+            $subtareas_actualizadas_pendientes  =   DB::select('select count(*) as cant_subtareas_pendientes  
+                                                    from proyecto_tarea_detalles as ptd
+                                                    where ptd.proyecto_tarea_id = ? 
+                                                    and ptd.estado = "PENDIENTE"',[$id])[0];
+                                        
+            $subtareas_actualizadas_finalizadas =   DB::select('select count(*) as cant_subtareas_finalizadas 
+                                                    from proyecto_tarea_detalles as ptd
+                                                    where ptd.proyecto_tarea_id = ? 
+                                                    and ptd.estado = "FINALIZADO"',[$id])[0];
+
+            $subtareas_total                    =   DB::select('select count(*) as cant_subtareas_total
+                                                    from proyecto_tarea_detalles as ptd
+                                                    where ptd.proyecto_tarea_id = ? 
+                                                    and ptd.estado != "ANULADO"',[$id])[0];
+
+            $tarea->avance  =   $subtareas_actualizadas_finalizadas->cant_subtareas_finalizadas / $subtareas_total->cant_subtareas_total;
+            $tarea->update();
+
+            DB::commit();
+
+            return response()->json(['success'=>true,'message'=>'AVANCE DE LA TAREA REGISTRADO CON ÉXITO']);
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+
+    }
     
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('fecha_inicio'); 
             $table->date('fecha_fin'); 
             $table->string('observacion',300)->nullable(); 
+            $table->enum('estado', ['PENDIENTE', 'FINALIZADO', 'ANULADO'])->default('PENDIENTE');
 
             $table->primary(['id', 'proyecto_tarea_id']);
             $table->timestamps();
