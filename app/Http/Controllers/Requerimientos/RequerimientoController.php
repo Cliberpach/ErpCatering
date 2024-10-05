@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Logistica;
+namespace App\Http\Controllers\Requerimientos;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Logistica\Requerimiento\RequerimientoStoreRequest;
-use App\Models\Logistica\Requerimiento;
-use App\Models\Logistica\RequerimientoDetalle;
+use App\Http\Requests\Requerimientos\Requerimiento\RequerimientoStoreRequest;
+use App\Models\Requerimientos\Requerimiento;
+use App\Models\Requerimientos\RequerimientoDetalle;
 use App\Models\Registros\Categoria;
 use App\Models\Registros\Marca;
 use Exception;
@@ -18,19 +18,23 @@ use Yajra\DataTables\Facades\DataTables;
 class RequerimientoController extends Controller
 {
     public function index(){
-        return view('logistica.requerimientos.index');
+       
+        return view('requerimientos.requerimientos.index');
     }
 
     public function getRequerimientos(Request $request){
+        
         $requerimientos =   DB::table('requerimientos as r')
                                 ->join('colaboradores as c', 'c.id', '=', 'r.supervisor_id')
                                 ->join('proyectos as pr', 'pr.id', '=', 'r.proyecto_id')
                                 ->leftJoin('productos as p', 'p.id', '=', 'r.primer_producto_id')
+                                ->leftJoin('proveedores as pro', 'pro.id', '=', 'r.proveedor_id')
                                 ->select(
                                     DB::raw('CONCAT("RQ-", r.id) as simbolo'), 
                                     'r.id',
                                     'pr.nombre as proyecto_nombre', 
                                     'c.nombre as supervisor_nombre',
+                                    'pro.nombre as proveedor_nombre',
                                     'r.created_at as fecha_registro',
                                     'r.fecha_atencion as fecha_atencion',
                                     'p.nombre as primer_producto_nombre',
@@ -85,7 +89,7 @@ class RequerimientoController extends Controller
         }
         $colaborador    =   $colaborador[0];
 
-        return view('logistica.requerimientos.create',
+        return view('requerimientos.requerimientos.create',
         compact('categorias','marcas','proveedores','tipos_documento','proyecto','colaborador'));
 
     }
@@ -93,6 +97,7 @@ class RequerimientoController extends Controller
     public function store(RequerimientoStoreRequest $request){
         DB::beginTransaction();
         try {
+            
             $lstRequerimientos  =   json_decode($request->get('lstRequerimientos'));
 
             RequerimientoController::validacionCompleja($request->get('supervisor_id'),$request->get('proyecto_id'),$lstRequerimientos);
@@ -101,6 +106,9 @@ class RequerimientoController extends Controller
             $requerimiento->proyecto_id             =   $request->get('proyecto_id');
             $requerimiento->supervisor_id           =   $request->get('supervisor_id');
             $requerimiento->primer_producto_id      =   $lstRequerimientos[0]->producto_id;
+            $requerimiento->fecha_atencion          =   $request->get('fecha_atencion');
+            $requerimiento->fecha_atencion          =   $request->get('fecha_atencion');
+            $requerimiento->proveedor_id            =   $request->get('proveedor');
             $requerimiento->save();
 
             
@@ -201,7 +209,7 @@ class RequerimientoController extends Controller
 
         $colaborador    =   $colaborador[0];
 
-        return view('logistica.requerimientos.edit',
+        return view('requerimientos.requerimientos.edit',
         compact('categorias','marcas','proveedores','tipos_documento',
         'proyecto','colaborador','requerimiento','requerimiento_detalle'));
 
@@ -252,6 +260,7 @@ class RequerimientoController extends Controller
                                 r.id,
                                 p.nombre as proyecto_nombre,
                                 c.nombre as supervisor_nombre,
+                                pro.nombre as proveedor_nombre,
                                 r.orden_compra_id,
                                 r.factura_atencion,
                                 r.fecha_atencion,
@@ -260,6 +269,7 @@ class RequerimientoController extends Controller
                                 from requerimientos as r
                                 inner join colaboradores    as c on c.id = r.supervisor_id
                                 inner join proyectos      as p on p.id = r.proyecto_id
+                                left join proveedores as pro on pro.id = r.proveedor_id
                                 where r.id = ?',[$id])[0];
 
             $requerimiento_detalle  =   DB::select('select 

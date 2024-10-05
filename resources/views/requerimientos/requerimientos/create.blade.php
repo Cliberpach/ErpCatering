@@ -1,25 +1,26 @@
 @extends('layouts.layout')
 @section('title-page')
-    EDITAR REQUERIMIENTO
+    REGISTRAR REQUERIMIENTO
 @endsection
 
-@section('logistica-collapsed', '')
-@section('logistica-expanded', 'true')
-@section('logistica-show', 'show')
+@section('requerimientos-collapsed', '')
+@section('requerimientos-expanded', 'true')
+@section('requerimientos-show', 'show')
 @section('requerimientos-active', 'active')
 
 @section('section-page')
 
-@include('logistica.requerimientos.modals.modal_productos')
-@include('logistica.requerimientos.modals.modal_edit_item')
+@include('requerimientos.requerimientos.modals.modal_productos')
+@include('requerimientos.requerimientos.modals.modal_edit_item')
+@include('reutilizables.modals.proveedores.mdl_create_proveedor')
 
 
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Datos del Requerimiento <i class="fa-solid fa-toolbox"></i></h6>
+      <h6>Datos del Requerimiento <i class="fa-solid fa-bell-concierge"></i></h6>
     </div>
     <div class="card-body">
-        @include('logistica.requerimientos.forms.form_edit_requerimiento')
+        @include('requerimientos.requerimientos.forms.form_create_requerimiento')
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
@@ -28,8 +29,8 @@
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
-            <button class="btn btn-primary" type="submit" form="formActualizarRequerimiento">
-                <i class="fa-solid fa-floppy-disk"></i> ACTUALIZAR
+            <button class="btn btn-primary" type="submit" form="formRegistrarRequerimiento">
+                <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
             </button>
         </div>
     </div>
@@ -39,13 +40,11 @@
 
 
 <script>
-    let dtProductos                     =   null;
-    let dtRequerimientoDetalle          =   null;
-    const lstRequerimientos     =   [];
+    let dtProductos                 =   null;
+    let dtRequerimientoDetalle      =   null;
+    const lstRequerimientos         =   [];
 
     document.addEventListener('DOMContentLoaded',()=>{
-        cargarDetallePrevio();
-        pintarTableRequerimientoDetalle(lstRequerimientos);
         iniciarSelect2();
         iniciarDataTableProductos();
         iniciarDataTableRequerimientoDetalle();
@@ -54,18 +53,19 @@
 
     function events(){
         eventsMdlEditItem();
+        eventsMdlCreateProveedor();
 
-        document.querySelector('#formActualizarRequerimiento').addEventListener('submit',(e)=>{
+        document.querySelector('#formRegistrarRequerimiento').addEventListener('submit',(e)=>{
             e.preventDefault();
-            const validacion    =   validacionActualizarRequerimiento();
+            const validacion    =   validacionRegistrarRequerimiento();
             if(validacion){
-                actualizarRequerimiento();
+                registrarRequerimiento();
             }
         })
 
         document.addEventListener('click',(e)=>{
             if (e.target.closest('.btnVolver')) {
-                const rutaIndex         =   '{{route('logistica.requerimientos.index')}}';
+                const rutaIndex         =   '{{route('requerimientos.requerimientos.index')}}';
                 window.location.href    =   rutaIndex;
             }
 
@@ -145,7 +145,6 @@
         });
     }
 
-
     function iniciarDataTableRequerimientoDetalle(){
         dtRequerimientoDetalle  =   new DataTable('#table_requerimiento_detalle',{
             language: {
@@ -172,14 +171,6 @@
         });
     }
 
-    function cargarDetallePrevio() {
-        const requerimiento_detalle =   @json($requerimiento_detalle);
-        console.log(requerimiento_detalle);
-        requerimiento_detalle.forEach((rd)=>{
-            lstRequerimientos.push(rd);
-        })
-    }
-
     function validacionAgregarProducto(){
         
         if(!producto_elegido.producto_id){
@@ -200,9 +191,9 @@
         return true;
     }
 
-    function validacionActualizarRequerimiento(){
+    function validacionRegistrarRequerimiento(){
         if(lstRequerimientos.length === 0){
-            toastr.error('EL DETALLE DE LA COMPRA ESTÁ VACÍO!!!');
+            toastr.error('EL DETALLE DEL REQUERIMIENTO ESTÁ VACÍO!!!');
             return false;
         }
         return true;
@@ -250,6 +241,7 @@
         tbody.innerHTML =   filas;
     }
 
+    
     function destruirDataTableProductos(){
         if(dtProductos){
             dtProductos.destroy();
@@ -281,7 +273,7 @@
     }
 
 
-    function actualizarRequerimiento(){
+    function registrarRequerimiento(){
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -290,31 +282,33 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA ACTUALIZAR EL REQUERIMIENTO?",
-        text: "SE REALIZARÁN MODIFICACIONES!",
+        title: "DESEA REGISTRAR EL REQUERIMIENTO?",
+        text: "Nuevo Requerimiento!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "SÍ, ACTUALIZAR!",
+        confirmButtonText: "SÍ, REGISTRAR!",
         cancelButtonText: "NO, CANCELAR!",
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
 
             limpiarErroresValidacion('msgError');
-            const token                          =   document.querySelector('input[name="_token"]').value;
-            const formActualizarRequerimiento    =   document.querySelector('#formActualizarRequerimiento');
-            const formData                       =   new FormData();
-            const id                             =   @json($requerimiento->id);
-            let urlActualizarRequerimiento       =   `{{ route('logistica.requerimientos.update', ['id' => ':id']) }}`;
-            urlActualizarRequerimiento           =   urlActualizarRequerimiento.replace(':id', id);
-
+            const token                             =   document.querySelector('input[name="_token"]').value;
+            const formRegistrarRequerimiento        =   document.querySelector('#formRegistrarRequerimiento');
+            
+            const formData                          =   new FormData();
             formData.append('supervisor_id',@json($colaborador->id));
             formData.append('proyecto_id',@json($proyecto->id));
+            formData.append('fecha_atencion',document.querySelector('#fecha_atencion').value);
+            formData.append('proveedor',document.querySelector('#proveedor').value);
+
+            const urlRegistrarRequerimiento         =   @json(route('requerimientos.requerimientos.store'));
+
             formData.append('lstRequerimientos',JSON.stringify(lstRequerimientos))
 
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Actualizando requerimiento...',
+                html: 'Registrando nuevo requerimiento...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -322,11 +316,10 @@
             });
 
             try {
-                const response  =   await fetch(urlActualizarRequerimiento, {
+                const response  =   await fetch(urlRegistrarRequerimiento, {
                                         method: 'POST',
                                         headers: {
-                                            'X-CSRF-TOKEN': token,
-                                            'X-HTTP-Method-Override': 'PUT' 
+                                            'X-CSRF-TOKEN': token 
                                         },
                                         body: formData
                                     });
@@ -344,9 +337,9 @@
                 }
                 
                 if(res.success){
-                    const requerimiento_index     =   @json(route('logistica.requerimientos.index'));
+                    const requerimiento_index       =   @json(route('requerimientos.requerimientos.index'));
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                    window.location.href    =   requerimiento_index;
+                    window.location.href            =   requerimiento_index;
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
@@ -354,7 +347,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ACTUALIZAR REQUERIMIENTO');
+                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR REQUERIMIENTO');
                 Swal.close();
             }
           

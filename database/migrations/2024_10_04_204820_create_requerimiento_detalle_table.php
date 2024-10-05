@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('requerimiento_detalle', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('requermiento_id');
-            $table->foreign('requermiento_id')->references('id')->on('requerimientos');
+            $table->unsignedBigInteger('requerimiento_id');
+            $table->foreign('requerimiento_id')->references('id')->on('requerimientos');
 
             $table->unsignedBigInteger('producto_id');
             $table->foreign('producto_id')->references('id')->on('productos');
 
             $table->decimal('cantidad', 16, 2)->unsigned();
 
-            $table->primary(['requermiento_id', 'producto_id']);
+            $table->primary(['requerimiento_id', 'producto_id']);
 
             $table->timestamps();
         });

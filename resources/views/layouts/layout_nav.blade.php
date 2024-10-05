@@ -107,6 +107,7 @@
           </ul>
         </li>
 
+        @role('SUPERVISOR')
         <li class="nav-item nav-item-has-children">
             <a
               href="#0"
@@ -135,7 +136,9 @@
               </li> --}}
             </ul>
         </li>
+        @endrole
 
+        @role('SUPERVISOR')
         <li class="nav-item nav-item-has-children">
             <a
               href="#0"
@@ -157,21 +160,46 @@
                   <a class="@yield('registro_tarea-active')" href="{{route('trabajo_equipos.registro_tarea.index')}}">Registro de Tarea</a>
                 @endcan
               </li>
-              {{-- <li>
-                @can('trabajo_equipo.consulta_tarea')
-                  <a href="blank-page.html">Consulta de Tarea</a>
-                @endcan
-              </li> --}}
             </ul>
         </li>
-     
+        @endrole
+        
+        @role('SUPERVISOR')
+        <li class="nav-item nav-item-has-children">
+          <a
+            href="#0"
+            class="@yield('requerimientos-collapsed', 'collapsed')"
+            data-bs-toggle="collapse"
+            data-bs-target="#ddmenu_5"
+            aria-controls="ddmenu_5"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="icon">
+              <i class="fa-solid fa-bell-concierge"></i>
+            </span>
+            <span class="text">Requerimientos</span>
+          </a>
+          <ul id="ddmenu_5" class="collapse dropdown-nav @yield('requerimientos-show')">
+            
+            <li>
+              @can('requerimientos.requerimientos')
+                <a class="@yield('requerimientos-active')" href="{{route('requerimientos.requerimientos.index')}}">Requerimientos</a>
+              @endcan
+            </li>
+           
+          </ul>
+        </li>
+        @endrole
+
+        @role('LOGISTICA')
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
             class="@yield('logistica-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
-            data-bs-target="#ddmenu_5"
-            aria-controls="ddmenu_5"
+            data-bs-target="#ddmenu_6"
+            aria-controls="ddmenu_6"
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
@@ -180,29 +208,32 @@
             </span>
             <span class="text">Logística</span>
           </a>
-          <ul id="ddmenu_5" class="collapse dropdown-nav @yield('logistica-show')">
+          <ul id="ddmenu_6" class="collapse dropdown-nav @yield('logistica-show')">
             
             <li>
               @can('logistica.registro_salida')
                 <a class="@yield('registro_salida-active')" href="{{route('logistica.registro_salida.index')}}">Registro de Salidas</a>
               @endcan
             </li>
+
             <li>
-              @can('logistica.requerimientos')
-                <a class="@yield('requerimientos-active')" href="{{route('logistica.requerimientos.index')}}">Requerimientos</a>
+              @can('logistica.lista_requerimientos')
+                <a class="@yield('lista_requerimientos-active')" href="{{route('logistica.lista_requerimientos.index')}}">Lista Requerimientos</a>
               @endcan
             </li>
-           
+            
           </ul>
         </li>
+        @endrole
 
+        @role('LOGISTICA')
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
             class="@yield('compras-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
-            data-bs-target="#ddmenu_6"
-            aria-controls="ddmenu_6"
+            data-bs-target="#ddmenu_7"
+            aria-controls="ddmenu_7"
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
@@ -211,7 +242,7 @@
             </span>
             <span class="text">Compras</span>
           </a>
-          <ul id="ddmenu_6" class="collapse dropdown-nav @yield('compras-show')">
+          <ul id="ddmenu_7" class="collapse dropdown-nav @yield('compras-show')">
             <li>
               @can('compras.registro_compra')
                 <a class="@yield('registro_compra-active')" href="{{route('compras.registro_compra.index')}}">Registro de Compras</a>
@@ -230,14 +261,16 @@
             </li>
           </ul>
         </li>
+        @endrole
 
+        @role('SUPERVISOR')
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
             class="@yield('plan_proyecto-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
-            data-bs-target="#ddmenu_7"
-            aria-controls="ddmenu_7"
+            data-bs-target="#ddmenu_8"
+            aria-controls="ddmenu_8"
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
@@ -246,7 +279,7 @@
             </span>
             <span class="text">Plan Proyecto</span>
           </a>
-          <ul id="ddmenu_7" class="collapse dropdown-nav @yield('plan_proyecto-show')">
+          <ul id="ddmenu_8" class="collapse dropdown-nav @yield('plan_proyecto-show')">
             <li>
               @can('plan_proyecto.tarea')
                 <a class="@yield('tareas-active')" href="{{route('plan_proyecto.tarea.index')}}">Tareas</a>
@@ -254,6 +287,7 @@
             </li>
           </ul>
         </li>
+        @endrole
 
         <span class="divider"><hr /></span>
         <li class="nav-item nav-item-has-children">
@@ -261,8 +295,8 @@
             href="#0"
             class="@yield('herramientas-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
-            data-bs-target="#ddmenu_8"
-            aria-controls="ddmenu_8"
+            data-bs-target="#ddmenu_9"
+            aria-controls="ddmenu_9"
             aria-expanded="@yield('herramientas-expanded')"
             aria-label="Toggle navigation"
           >
@@ -271,7 +305,7 @@
             </span>
             <span class="text">Herramientas</span>
           </a>
-          <ul id="ddmenu_8" class="collapse dropdown-nav @yield('herramientas-show')">
+          <ul id="ddmenu_9" class="collapse dropdown-nav @yield('herramientas-show')">
             <li>
               @can('herramientas.usuarios')
                 <a class="@yield('usuarios-active')" href="{{route('herramientas.usuario.index')}}">Usuarios</a>
@@ -295,8 +329,8 @@
             href="#0"
             class="@yield('consultas-collapsed', 'collapsed')"
             data-bs-toggle="collapse"
-            data-bs-target="#ddmenu_9"
-            aria-controls="ddmenu_9"
+            data-bs-target="#ddmenu_10"
+            aria-controls="ddmenu_10"
             aria-expanded="@yield('consultas-expanded')"
             aria-label="Toggle navigation"
           >
@@ -305,7 +339,7 @@
             </span>
             <span class="text">Consultas</span>
           </a>
-          <ul id="ddmenu_9" class="collapse dropdown-nav @yield('consultas-show')">
+          <ul id="ddmenu_10" class="collapse dropdown-nav @yield('consultas-show')">
             <li>
               @can('consultas.personal')
                 <a class="@yield('personal-active')" href="{{route('consultas.personal.index')}}">Personal</a>

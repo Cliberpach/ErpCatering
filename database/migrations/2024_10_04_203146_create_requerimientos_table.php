@@ -20,15 +20,20 @@ return new class extends Migration
             $table->unsignedBigInteger('supervisor_id');
             $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
+            $table->unsignedBigInteger('proveedor_id')->nullable();
+            $table->foreign('proveedor_id')->references('id')->on('proveedores');
+
+            $table->unsignedBigInteger('cotizacion_compra_id')->nullable();
+
             $table->unsignedBigInteger('orden_compra_id')->nullable();
             $table->string('factura_atencion')->nullable();
 
-            $table->date('fecha_atencion')->nullable(); 
+            $table->date('fecha_atencion'); 
 
             $table->unsignedBigInteger('primer_producto_id');
             $table->foreign('primer_producto_id')->references('id')->on('productos');
 
-            $table->enum('estado', ['PENDIENTE', 'ANULADO', 'ATENDIDO'])->default('PENDIENTE');
+            $table->enum('estado', ['PENDIENTE', 'COTIZADO', 'CON ORDEN COMPRA','FACTURADO','ANULADO'])->default('PENDIENTE');
 
             $table->timestamps();
         });

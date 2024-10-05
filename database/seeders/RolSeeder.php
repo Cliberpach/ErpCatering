@@ -25,8 +25,30 @@ class RolSeeder extends Seeder
         $user->assignRole($adminRole);
 
         //========= ROL SUPERVISOR ======
-        $supervisorRole =   Role::create(['name' => 'SUPERVISOR']);
-        $supervisorRole->givePermissionTo($permissions);
+        $prefixes = ['registros', 'jornal', 'trabajo_equipo', 'requerimientos', 'plan_proyecto', 'consultas'];
+        $permissions_supervisor = Permission::all()->filter(function ($permission) use ($prefixes) {
+            foreach ($prefixes as $prefix) {
+                if (str_starts_with($permission->name, $prefix)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        $supervisorRole = Role::create(['name' => 'SUPERVISOR']);
+        $supervisorRole->givePermissionTo($permissions_supervisor);
 
+        
+        //======== ROL LOGÍSTICA =======
+        $prefixes = ['registros', 'logistica', 'compras'];
+        $permissions = Permission::all()->filter(function ($permission) use ($prefixes) {
+            foreach ($prefixes as $prefix) {
+                if (str_starts_with($permission->name, $prefix)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        $logisticaRole = Role::create(['name' => 'LOGISTICA']);
+        $logisticaRole->givePermissionTo($permissions);
     }
 }

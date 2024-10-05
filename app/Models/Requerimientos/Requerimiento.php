@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Models\Logistica;
+namespace App\Models\Requerimientos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RequerimientoDetalle extends Model
+class Requerimiento extends Model
 {
     use HasFactory;
-    protected $table = 'requerimiento_detalle';
+    protected $table = 'requerimientos';
 
     protected $guarded = [''];
 }

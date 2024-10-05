@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Logistica\Requerimiento;
+namespace App\Http\Requests\Requerimientos\Requerimiento;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
@@ -26,6 +26,7 @@ class RequerimientoStoreRequest extends FormRequest
         return [
             'supervisor_id' => ['required', 'exists:colaboradores,id'], 
             'proyecto_id'   => ['required', 'exists:proyectos,id'], 
+            'fecha_atencion' => ['required', 'date', 'after_or_equal:today']
         ];
     }
 
@@ -34,8 +35,13 @@ class RequerimientoStoreRequest extends FormRequest
         return [
             'supervisor_id.required' => 'El campo supervisor es obligatorio.',
             'supervisor_id.exists'   => 'El supervisor no existe.',
+
             'proyecto_id.required'   => 'El campo proyecto es obligatorio.',
             'proyecto_id.exists'     => 'El proyecto no existe.',
+
+            'fecha_atencion.required'       => 'La fecha de atención es obligatoria.',
+            'fecha_atencion.date'           => 'La fecha de atención debe ser una fecha válida.',
+            'fecha_atencion.after_or_equal' => 'La fecha de atención debe ser hoy o una fecha futura.',
         ];
     }
 

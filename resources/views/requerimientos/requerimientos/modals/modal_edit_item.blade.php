@@ -7,7 +7,7 @@
         </div>
         <div class="modal-body">
 
-           @include('logistica.requerimientos.forms.form_edit_item')
+           @include('requerimientos.requerimientos.forms.form_edit_item')
 
         </div>
         <div class="modal-footer">

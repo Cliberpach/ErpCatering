@@ -26,13 +26,19 @@ class CotizacionCompraController extends Controller
     public function getCotizacionesCompra(Request $request){
 
         $cotizaciones_compra    =   DB::table('cotizacion_compra as cc')
+                                    ->leftJoin('requerimientos as r','r.cotizacion_compra_id','=','cc.id')
                                     ->join('colaboradores as c', 'c.id', '=', 'cc.colaborador_id')
+                                    ->leftJoin('colaboradores as cs','cs.id','=','cc.supervisor_id')
                                     ->select(
                                         DB::raw('CONCAT("CO-", cc.id) as simbolo'), 
                                         'cc.id', 
                                         'c.nombre as colaborador_nombre',
                                         'cc.estado',
                                         'cc.created_at as fecha_registro',
+                                        'r.id',
+                                        DB::raw('CONCAT("RQ-", r.id) as simbolo_requerimiento'),
+                                        'cs.nombre as supervisor_nombre'
+
                                     )
                                     ->where('cc.estado','<>','ANULADO')
                                     ->get();
@@ -81,6 +87,9 @@ class CotizacionCompraController extends Controller
             
             $cotizacion_compra                  =   new CotizacionCompra();
             $cotizacion_compra->colaborador_id  =   Auth::user()->colaborador_id;
+            if($request->has('supervisor_id')){
+                $cotizacion_compra->supervisor_id   =   $request->get('supervisor_id');
+            }
             $cotizacion_compra->save();
 
             foreach ($lstCotizacionCompraDetalle as $item) {
@@ -99,7 +108,7 @@ class CotizacionCompraController extends Controller
             }
 
             DB::commit();
-            return response()->json(['success'=>true,'message'=>"COTIZACIÓN DE COMPRA REGISTRADA"]);
+            return response()->json(['success'=>true,'message'=>"COTIZACIÓN DE COMPRA REGISTRADA",'cid'=>$cotizacion_compra->id]);
 
 
         } catch (\Throwable $th) {

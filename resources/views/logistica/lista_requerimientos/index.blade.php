@@ -7,14 +7,14 @@
 @section('logistica-collapsed', '')
 @section('logistica-expanded', 'true')
 @section('logistica-show', 'show')
-@section('requerimientos-active', 'active')
+@section('lista_requerimientos-active', 'active')
 
 @section('section-page')
-@include('logistica.requerimientos.modals.modal_show')
+@include('requerimientos.requerimientos.modals.modal_show')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-        <h6>Registro de Requerimientos <i class="fa-solid fa-bell-concierge"></i></h6>
+        <h6>Lista de Requerimientos <i class="fa-solid fa-bell-concierge"></i></h6>
         
         @role('SUPERVISOR')
             <button class="btn btn-primary" onclick="goToRegistrarRequerimiento()">
@@ -23,7 +23,7 @@
         @endrole
     </div>
     <div class="table-responsive">
-        @include('logistica.requerimientos.tables.table_list_requerimientos')
+        @include('requerimientos.requerimientos.tables.table_list_requerimientos')
     </div>
 </div>
 <!-- end card -->
@@ -45,7 +45,7 @@
     }
 
     function iniciarDataTableRequerimientos(){
-        const urlGetRequerimientos = '{{ route('logistica.requerimientos.getRequerimientos') }}';
+        const urlGetRequerimientos = '{{ route('logistica.lista_requerimientos.getRequerimientos') }}';
 
         dtRequerimientos  =   new DataTable('#table_list_requerimientos',{
             serverSide: true,
@@ -67,6 +67,7 @@
                 },
                 { data: 'proyecto_nombre', name: 'proyecto_nombre' },
                 { data: 'supervisor_nombre', name: 'supervisor_nombre' },
+                { data: 'proveedor_nombre', name: 'proveedor_nombre' },
                 { data: 'fecha_registro', name: 'fecha_registro' },
                 { data: 'fecha_atencion', name: 'fecha_atencion' },
                 { data: 'primer_producto_nombre', name: 'primer_producto_nombre' },
@@ -74,10 +75,10 @@
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('logistica.requerimientos.edit', ['id' => ':id']) }}`;
+                        const baseUrlEdit   =   `{{ route('requerimientos.requerimientos.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
-                        const urlDelete = `{{ route('logistica.requerimientos.destroy', ':id') }}`.replace(':id', data.id);
+                        const urlDelete = `{{ route('requerimientos.requerimientos.destroy', ':id') }}`.replace(':id', data.id);
                         
                         let acciones    =   `
                                             <div class="btn-group dropstart">
@@ -92,18 +93,12 @@
                                                 </li>
                                         `;
 
-                        if(data.supervisor_id == @json(Auth::user()->colaborador_id)){
-                            acciones    +=  `<li>
-                                                    <a class="dropdown-item" href="${urlEdit}">
-                                                        <i class="fa-solid fa-file-pen"></i> Editar
+                        if(data.estado === 'PENDIENTE'){
+                             acciones    +=  ` <li>
+                                                    <a class="dropdown-item" href="javascript:void(0);" onclick="generarCotizacion(${data.id})">
+                                                        <i class="fa-solid fa-clipboard-list"></i> Cotizar
                                                     </a>
-                                            </li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li>
-                                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarRequerimiento(${data.id})">
-                                                        <i class="fa-solid fa-trash"></i> Eliminar
-                                                    </a>
-                                            </li>`;
+                                                </li>`;
                         }
 
                         acciones    +=  `</ul></div>`;
@@ -141,7 +136,7 @@
 
 
     function goToRegistrarRequerimiento(){
-        window.location.href = @json(route('logistica.requerimientos.create'));
+        window.location.href = @json(route('requerimientos.requerimientos.create'));
     }
 
 
@@ -181,7 +176,7 @@
             });
 
             try {
-                let urlEliminarRequerimiento         =   `{{ route('logistica.requerimientos.destroy', ['id' => ':id']) }}`;
+                let urlEliminarRequerimiento         =   `{{ route('requerimientos.requerimientos.destroy', ['id' => ':id']) }}`;
                 urlEliminarRequerimiento             =   urlEliminarRequerimiento.replace(':id', id);
                 const token                             =   document.querySelector('input[name="_token"]').value;
 
@@ -218,6 +213,81 @@
             });
         }
         });
+    }
+
+    function generarCotizacion(requerimiento_id){
+        const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+        title: "Desea generar una nueva cotización de compra?",
+        text: "Se le redireccionará al listado de cotizaciones de compra!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, generar!",
+        cancelButtonText: "No, cancelar!",
+        reverseButtons: true
+        }).then(async (result) => {
+
+        if (result.isConfirmed) {
+           
+            Swal.fire({
+                title: 'Cargando...',
+                html: 'Generando cotización de compra...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading(); 
+                }
+            });
+
+            try {
+                let urlGenerarCotizacion     =   `{{ route('logistica.lista_requerimientos.generarCotizacion') }}`;
+                const token                  =   document.querySelector('input[name="_token"]').value;
+                const formData               =   new FormData();
+
+                formData.append('requerimiento_id',requerimiento_id);
+
+                const response  =   await fetch(urlGenerarCotizacion, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': token 
+                                        },
+                                        body:formData
+                                    });
+
+                const   res =   await response.json();
+
+                if(res.success){
+                    const cotizacion_compra_index = '{{ route('compras.cotizacion_compra.index') }}';
+                    window.location.href = cotizacion_compra_index; 
+                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
+                }else{
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL GENERAR COTIZACIÓN DE COMPRA');
+                }
+
+            } catch (error) {
+                toastr.error(error,'ERROR EN LA PETICIÓN GENERAR COTIZACIÓN DE COMPRA');
+            }finally{
+                Swal.close();
+            }
+
+
+
+        } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            swalWithBootstrapButtons.fire({
+            title: "Cancelled",
+            text: "Your imaginary file is safe :)",
+            icon: "error"
+            });
+        }
+        }); 
     }
 
 </script>

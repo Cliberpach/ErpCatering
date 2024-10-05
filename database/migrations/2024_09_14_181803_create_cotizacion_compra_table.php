@@ -13,8 +13,13 @@ return new class extends Migration
     {
         Schema::create('cotizacion_compra', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger('colaborador_id');
             $table->foreign('colaborador_id')->references('id')->on('colaboradores');
+
+            $table->unsignedBigInteger('supervisor_id')->nullable();
+            $table->foreign('supervisor_id')->references('id')->on('colaboradores');
+
             $table->enum('estado', ['PENDIENTE', 'ANULADO', 'COMPRADO'])->default('PENDIENTE');
             $table->timestamps();
         });

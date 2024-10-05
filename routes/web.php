@@ -17,7 +17,8 @@ use App\Http\Controllers\Registros\CargoController;
 use App\Http\Controllers\Registros\CategoriaController;
 use App\Http\Controllers\Registros\ColaboradorController;
 use App\Http\Controllers\Herramientas\UsuarioController;
-use App\Http\Controllers\Logistica\RequerimientoController;
+use App\Http\Controllers\Logistica\ListaRequerimientoController;
+use App\Http\Controllers\Requerimientos\RequerimientoController;
 use App\Http\Controllers\Registros\MaquinariaController;
 use App\Http\Controllers\Registros\MarcaController;
 use App\Http\Controllers\Registros\ProductoController;
@@ -219,6 +220,24 @@ Route::group(['prefix' => 'trabajo_equipos', 'middleware' => ['auth','checkCusto
 //============= FIN TRABAJO EQUIPOS ===========
 
 
+//========== INICIO REQUERIMIENTOS ==========
+
+Route::group(['prefix' => 'requerimientos', 'middleware' => ['auth','checkCustomPermission:requerimientos.requerimientos']], function () {
+
+    Route::get('/index', [RequerimientoController::class, 'index'])->name('requerimientos.requerimientos.index');
+    Route::get('/create', [RequerimientoController::class, 'create'])->name('requerimientos.requerimientos.create')->middleware('checkRole:SUPERVISOR');
+    Route::get('/getRequerimientos', [RequerimientoController::class, 'getRequerimientos'])->name('requerimientos.requerimientos.getRequerimientos');
+    Route::put('/update/{id}', [RequerimientoController::class, 'update'])->name('requerimientos.requerimientos.update');
+    Route::post('/store', [RequerimientoController::class, 'store'])->name('requerimientos.requerimientos.store')->middleware('checkRole:SUPERVISOR');
+    Route::get('/edit/{id}', [RequerimientoController::class, 'edit'])->name('requerimientos.requerimientos.edit')->middleware('checkRole:SUPERVISOR');
+    Route::delete('/destroy/{id}', [RequerimientoController::class, 'destroy'])->name('requerimientos.requerimientos.destroy');
+    Route::get('/show/{id}', [RequerimientoController::class, 'show'])->name('requerimientos.requerimientos.show');
+
+});
+
+//========= FIN REQUERIMIENTOS ==========
+
+
 //============ INICIO LOGÍSTICA =======
 Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCustomPermission:logistica.registro_salida']], function () {
 
@@ -232,18 +251,22 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
 
 });
 
-Route::group(['prefix' => 'requerimientos', 'middleware' => ['auth','checkCustomPermission:logistica.registro_salida']], function () {
+Route::group(['prefix' => 'lista_requerimientos', 'middleware' => ['auth','checkCustomPermission:logistica.lista_requerimientos']], function () {
 
-    Route::get('/index', [RequerimientoController::class, 'index'])->name('logistica.requerimientos.index');
-    Route::get('/create', [RequerimientoController::class, 'create'])->name('logistica.requerimientos.create')->middleware('checkRole:SUPERVISOR');
-    Route::get('/getRequerimientos', [RequerimientoController::class, 'getRequerimientos'])->name('logistica.requerimientos.getRequerimientos');
-    Route::put('/update/{id}', [RequerimientoController::class, 'update'])->name('logistica.requerimientos.update');
-    Route::post('/store', [RequerimientoController::class, 'store'])->name('logistica.requerimientos.store')->middleware('checkRole:SUPERVISOR');
-    Route::get('/edit/{id}', [RequerimientoController::class, 'edit'])->name('logistica.requerimientos.edit')->middleware('checkRole:SUPERVISOR');
-    Route::delete('/destroy/{id}', [RequerimientoController::class, 'destroy'])->name('logistica.requerimientos.destroy');
-    Route::get('/show/{id}', [RequerimientoController::class, 'show'])->name('logistica.requerimientos.show');
+    Route::get('/index', [ListaRequerimientoController::class, 'index'])->name('logistica.lista_requerimientos.index');
+    Route::post('/generarCotizacion', [ListaRequerimientoController::class, 'generarCotizacion'])->name('logistica.lista_requerimientos.generarCotizacion');
+    Route::get('/getRequerimientos', [ListaRequerimientoController::class, 'getRequerimientos'])->name('logistica.lista_requerimientos.getRequerimientos');
+
+    // Route::get('/create', [RequerimientoController::class, 'create'])->name('requerimientos.requerimientos.create')->middleware('checkRole:SUPERVISOR');
+    // Route::get('/getRequerimientos', [RequerimientoController::class, 'getRequerimientos'])->name('requerimientos.requerimientos.getRequerimientos');
+    // Route::put('/update/{id}', [RequerimientoController::class, 'update'])->name('requerimientos.requerimientos.update');
+    // Route::post('/store', [RequerimientoController::class, 'store'])->name('requerimientos.requerimientos.store')->middleware('checkRole:SUPERVISOR');
+    // Route::get('/edit/{id}', [RequerimientoController::class, 'edit'])->name('requerimientos.requerimientos.edit')->middleware('checkRole:SUPERVISOR');
+    // Route::delete('/destroy/{id}', [RequerimientoController::class, 'destroy'])->name('requerimientos.requerimientos.destroy');
+    // Route::get('/show/{id}', [RequerimientoController::class, 'show'])->name('requerimientos.requerimientos.show');
 
 });
+
 //============= FIN LOGÍSTICA ===========
 
 

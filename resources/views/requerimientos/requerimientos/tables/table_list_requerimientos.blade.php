@@ -5,6 +5,7 @@
         <th scope="col">#</th>
         <th scope="col">PROYECTO</th>
         <th scope="col">SUPERVISOR</th>
+        <th scope="col">PROVEEDOR</th>
         <th scope="col">FECHA REGISTRO</th>
         <th scope="col">FECHA ATENCIÓN</th>
         <th scope="col">PRODUCTO</th>

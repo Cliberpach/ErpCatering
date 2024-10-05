@@ -32,7 +32,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="table-responsive">
-                        @include('logistica.requerimientos.tables.table_productos')
+                        @include('requerimientos.requerimientos.tables.table_productos')
                     </div>
                 </div>
             </div>

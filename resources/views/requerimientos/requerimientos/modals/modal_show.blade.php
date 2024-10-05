@@ -25,6 +25,10 @@
                                     <strong class="text-primary">SUPERVISOR:</strong>
                                     <span class="text-muted" id="spanSupervisor"></span>
                                 </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                                    <strong class="text-primary">PROVEEDOR SUGERIDO:</strong>
+                                    <span class="text-muted" id="spanProveedor"></span>
+                                </div>
                                 <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
                                     <strong class="text-primary">ORDEN COMPRA:</strong>
                                     <span class="text-muted" id="spanOrdenCompra"></span>
@@ -56,7 +60,7 @@
                         <div class="border rounded bg-white shadow-sm">
                             <h6 class="text-primary mb-3 border-bottom p-2">DETALLE</h6>
                             <div class="table-responsive">
-                                @include('logistica.requerimientos.tables.table_requerimiento_show')
+                                @include('requerimientos.requerimientos.tables.table_requerimiento_show')
                             </div>
                         </div>
                     </div>
@@ -88,7 +92,7 @@
     async function getShowRequerimiento(requerimiento_id){
         toastr.clear();
         const token                 =   document.querySelector('input[name="_token"]').value;
-        const urlShowRequerimiento  =   `{{ route('logistica.requerimientos.show', ':id') }}`.replace(':id', requerimiento_id);
+        const urlShowRequerimiento  =   `{{ route('requerimientos.requerimientos.show', ':id') }}`.replace(':id', requerimiento_id);
 
         try {
             mostrarAnimacion1();
@@ -149,6 +153,7 @@
     function pintarRequerimiento(requerimiento){
         document.querySelector('#spanProyecto').textContent         =   requerimiento.proyecto_nombre;
         document.querySelector('#spanSupervisor').textContent       =   requerimiento.supervisor_nombre;
+        document.querySelector('#spanProveedor').textContent        =   requerimiento.proveedor_nombre;    
         document.querySelector('#spanOrdenCompra').textContent      =   requerimiento.orden_compra_id?requerimiento.orden_compra_id:'-';
         document.querySelector('#spanFacturaAtencion').textContent  =   requerimiento.factura_atencion?requerimiento.factura_atencion:'-';
         document.querySelector('#spanFechaAtencion').textContent    =   requerimiento.fecha_atencion?requerimiento.fecha_atencion:'-';

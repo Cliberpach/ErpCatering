@@ -52,7 +52,9 @@
                 url: urlGetCotizacionesCompra,
                 type: 'GET',
             },
+            order: [[0, 'desc']], 
             columns: [
+                { data: 'id', name: 'id', visible: false },
                 {
                     data: 'simbolo',
                     name: 'simbolo',
@@ -60,6 +62,8 @@
                         $(td).css('font-weight', 'bold');
                     }
                 },
+                { data: 'simbolo_requerimiento', name: 'simbolo_requerimiento' },
+                { data: 'supervisor_nombre', name: 'supervisor_nombre' },
                 { data: 'colaborador_nombre', name: 'colaborador_nombre' },
                 { data: 'fecha_registro', name: 'fecha_registro' },
                 { data: 'estado', name: 'estado' },

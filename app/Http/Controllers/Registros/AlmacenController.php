@@ -17,7 +17,7 @@ use App\Models\Registros\Almacen;
 class AlmacenController extends Controller
 {
     public function index(){
-        $proyectos  =   Proyecto::where('estado','ACTIVO')->get();
+        $proyectos  =   Proyecto::where('estado','<>','ANULADO')->get();
        
         return view('registros.almacenes.index',compact('proyectos'));
     }
