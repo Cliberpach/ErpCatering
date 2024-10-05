@@ -10,14 +10,15 @@ use App\Models\Logistica\RegistroSalidaDetalle;
 use App\Models\Registros\Almacen;
 use App\Models\Registros\Categoria;
 use App\Models\Registros\Marca;
-use Auth;
 use Carbon\Carbon;
-use DB;
 use Exception;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 class RegistroSalidaController extends Controller
 {
     public function index(){

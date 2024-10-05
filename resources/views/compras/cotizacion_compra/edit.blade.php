@@ -188,11 +188,11 @@
         }
 
         const inputCantidad =   document.querySelector('#cantidad'); 
-        if(!inputCantidad){
+        if(!inputCantidad.value){
             toastr.error('DEBE INGRESAR UNA CANTIDAD!!');
             return false;
         }
-        if(inputCantidad == 0){
+        if(inputCantidad.value == 0){
             toastr.error('LA CANTIDAD DEBE SER MAYOR A 0!!');
             return false;
         }

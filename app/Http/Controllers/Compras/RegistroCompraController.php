@@ -14,14 +14,14 @@ use App\Models\Registros\AlmacenProducto;
 use App\Models\Registros\Categoria;
 use App\Models\Registros\Marca;
 use App\Models\Registros\Proveedor;
-use Auth;
 use Carbon\Carbon;
-use DB;
 use Exception;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RegistroCompraController extends Controller
 {

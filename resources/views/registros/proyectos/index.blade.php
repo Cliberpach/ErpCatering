@@ -46,7 +46,7 @@
     })
 
     function iniciarDataTableProyectos(){
-        const urlGetProyectos = '{{ route('registros.proyecto.getProyectos') }}';
+        const urlGetProyectos = '{{ route("registros.proyecto.getProyectos") }}';
 
         dtProyectos  =   new DataTable('#table_proyectos',{
             serverSide: true,
@@ -62,7 +62,28 @@
                 { data: 'costo', name: 'costo' },
                 { data: 'avance_costo', name: 'avance_costo' },
                 { data: 'diferencia', name: 'diferencia' },
-                { data: 'estado', name: 'estado' },
+                { data: 'avance', name: 'avance' },
+                {
+                    data: null, 
+                    render: function(data, type, row) {
+                        let etiquetaEstado   =   ``;
+
+                        if(data.estado === 'PENDIENTE'){
+                            etiquetaEstado  =   `<span class="badge text-bg-danger">${data.estado}</span>`;
+                        }
+                        if(data.estado === 'FINALIZADO'){
+                            etiquetaEstado  =   `<span class="badge text-bg-primary">${data.estado}</span>`;
+                        }
+                        if(data.estado === 'EN PROCESO'){
+                            etiquetaEstado  =   `<span class="badge text-bg-warning">${data.estado}</span>`;
+                        }
+
+                        return etiquetaEstado;
+                    },
+                    name: 'estado', 
+                    orderable: false, 
+                    searchable: false 
+                },
                 {
                     data: null, 
                     render: function(data, type, row) {
@@ -154,8 +175,8 @@
     }
 
     function goToCrearProyecto(){
-        window.location.href = @json(route('registros.proyecto.create'));
-    }
+        window.location.href = "{{ route('registros.proyecto.create') }}";
+}
 
     function iniciarSelect2(){
         $( '.select2_form' ).select2( {

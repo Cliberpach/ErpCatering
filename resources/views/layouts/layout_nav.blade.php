@@ -187,6 +187,11 @@
                 <a class="@yield('registro_salida-active')" href="{{route('logistica.registro_salida.index')}}">Registro de Salidas</a>
               @endcan
             </li>
+            <li>
+              @can('logistica.requerimientos')
+                <a class="@yield('requerimientos-active')" href="{{route('logistica.requerimientos.index')}}">Requerimientos</a>
+              @endcan
+            </li>
            
           </ul>
         </li>

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Registros;
 use App\Http\Requests\Registros\Producto\ProductoStoreRequest;
 use App\Http\Requests\Registros\Producto\ProductoUpdateRequest;
 use App\Models\Registros\Producto;
-use File;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Registros\Marca;
@@ -15,6 +14,7 @@ use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
 

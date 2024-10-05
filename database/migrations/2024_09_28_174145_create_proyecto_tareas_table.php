@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('avance',16,2)->unsigned();
             $table->unsignedInteger('dias_faltantes');            
             $table->string('observacion',300)->nullable(); 
-            $table->enum('estado', ['PENDIENTE', 'FINALIZADO', 'ANULADO'])->default('PENDIENTE');
+            $table->enum('estado', ['PENDIENTE', 'EN PROCESO','FINALIZADO','ANULADO'])->default('PENDIENTE');
             $table->timestamps();
 
         });

@@ -32,12 +32,17 @@ class ProyectoController extends Controller
 
     public function getProyectos(Request $request){
 
-        $proyectos = Proyecto::where('proyectos.estado', 'ACTIVO')
+        $proyectos = Proyecto::where('proyectos.estado','<>', 'ANULADO')
                     ->leftJoin('colaboradores', 'proyectos.supervisor_id', '=', 'colaboradores.id')
-                    ->select('proyectos.*', 'colaboradores.nombre as supervisor_nombre') 
+                    ->select('proyectos.id', 
+                    'proyectos.nombre', 
+                    'colaboradores.nombre as supervisor_nombre',
+                    'proyectos.costo',
+                    'proyectos.avance_costo',
+                    'proyectos.diferencia',
+                    DB::raw('CONCAT(proyectos.avance, "%") AS avance'),                   
+                    'proyectos.estado') 
                     ->get();
-
-
 
         return DataTables::of($proyectos)
                 ->make(true);
@@ -58,7 +63,7 @@ class ProyectoController extends Controller
             DB::commit();
             return response()->json(['success'=>true,'message'=>'PROYECTO REGISTRADO']);
 
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }

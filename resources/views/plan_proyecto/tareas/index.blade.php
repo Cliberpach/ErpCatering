@@ -79,6 +79,27 @@
                 {
                     data: null, 
                     render: function(data, type, row) {
+                        let etiquetaEstado   =   ``;
+
+                        if(data.estado === 'PENDIENTE'){
+                            etiquetaEstado  =   `<span class="badge text-bg-danger">${data.estado}</span>`;
+                        }
+                        if(data.estado === 'FINALIZADO'){
+                            etiquetaEstado  =   `<span class="badge text-bg-primary">${data.estado}</span>`;
+                        }
+                        if(data.estado === 'EN PROCESO'){
+                            etiquetaEstado  =   `<span class="badge text-bg-warning">${data.estado}</span>`;
+                        }
+
+                        return etiquetaEstado;
+                    },
+                    name: 'estado', 
+                    orderable: false, 
+                    searchable: false 
+                },
+                {
+                    data: null, 
+                    render: function(data, type, row) {
                         const baseUrlEdit   =   `{{ route('plan_proyecto.tarea.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 

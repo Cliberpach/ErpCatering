@@ -220,9 +220,9 @@
                   }
               }
           });
-      }
+    }
   
-      function pintarTarea(tarea){
+    function pintarTarea(tarea){
         const spanNombreAvance          = document.querySelector('#spanNombreAvance');
         const spanFechaInicioAvance     = document.querySelector('#spanFechaInicioAvance');
         const spanFechaFinAvance        = document.querySelector('#spanFechaFinAvance');
@@ -239,9 +239,10 @@
         spanDiasFaltantesAvance.textContent   = tarea.dias_faltantes;
         spanObservacionAvance.textContent     = tarea.observacion?tarea.observacion:'';
         spanProyectoNombreAvance.textContent  = tarea.proyecto_nombre;
-      }
+    }
 
-      function registrarAvance(){
+    function registrarAvance(){
+        toastr.clear();
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",

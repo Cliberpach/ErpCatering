@@ -7,7 +7,6 @@ use App\Models\Compras\CotizacionCompra;
 use App\Models\Compras\CotizacionCompraDetalle;
 use App\Models\Registros\Categoria;
 use App\Models\Registros\Marca;
-use Auth;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -16,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\Auth;
 
 class CotizacionCompraController extends Controller
 {

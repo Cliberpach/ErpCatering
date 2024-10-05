@@ -17,31 +17,32 @@ use Yajra\DataTables\Facades\DataTables;
 class TareaController extends Controller
 {
     public function index(){
-        $proyectos  =   Proyecto::where('estado','ACTIVO')->get();
+        $proyectos  =   Proyecto::where('estado','<>','ANULADO')->get();
         return view('plan_proyecto.tareas.index',compact('proyectos'));
     }
 
     public function getTareas(Request $request){
         $proyecto_id    =   $request->get('proyecto_id',null);
 
-        $almacenes  = DB::table('proyecto_tareas as pt')
+        $tareas  = DB::table('proyecto_tareas as pt')
                     ->select(
                         'pt.id', 
                         'pt.proyecto_id', 
                         'pt.nombre', 
                         'pt.fecha_inicio', 
                         'pt.fecha_fin', 
-                        DB::raw('CONCAT(pt.avance * 100, "%") AS avance'),                   
+                        DB::raw('CONCAT(pt.avance, "%") AS avance'),                   
                         'pt.dias_faltantes', 
                         'pt.observacion', 
+                        'pt.estado'
                     )
                     ->where('pt.estado','<>','ANULADO');
 
         if($proyecto_id){
-            $almacenes->where('pt.proyecto_id',$proyecto_id);
+            $tareas->where('pt.proyecto_id',$proyecto_id);
         }
 
-        return DataTables::of($almacenes->get())
+        return DataTables::of($tareas->get())
                 ->make(true);
     }
 
@@ -241,6 +242,7 @@ class TareaController extends Controller
     public function avance($id,Request $request){
         DB::beginTransaction();
         try {
+
             $lstSubtareasAvance     =   json_decode($request->get('lstSubtareasAvance'));
 
             foreach ($lstSubtareasAvance as $subtarea) {
@@ -252,9 +254,7 @@ class TareaController extends Controller
 
             }
 
-
-
-            //========= CALCULANDO NUEVO PORCENTAJE DE LA TAREA ========
+            //========= CALCULANDO NUEVO PORCENTAJE Y ESTADO DE LA TAREA ========
             $tarea  =   Tarea::find($id);
 
             $subtareas_actualizadas_pendientes  =   DB::select('select count(*) as cant_subtareas_pendientes  
@@ -272,11 +272,66 @@ class TareaController extends Controller
                                                     where ptd.proyecto_tarea_id = ? 
                                                     and ptd.estado != "ANULADO"',[$id])[0];
 
-            $tarea->avance  =   $subtareas_actualizadas_finalizadas->cant_subtareas_finalizadas / $subtareas_total->cant_subtareas_total;
+            if($subtareas_total->cant_subtareas_total == $subtareas_actualizadas_finalizadas->cant_subtareas_finalizadas){
+                $tarea->estado  =   'FINALIZADO';
+            }else{
+                if($subtareas_actualizadas_finalizadas->cant_subtareas_finalizadas > 0){
+                    $tarea->estado  =   'EN PROCESO';
+                }
+                if($subtareas_actualizadas_finalizadas->cant_subtareas_finalizadas === 0){
+                    $tarea->estado  =   'PENDIENTE';
+                }
+            }
+            
+
+            $tarea->avance  =   100*($subtareas_actualizadas_finalizadas->cant_subtareas_finalizadas / $subtareas_total->cant_subtareas_total);
             $tarea->update();
 
-            DB::commit();
 
+            //======= CALCULANDO NUEVO PORCENTAJE Y ESTADO DEL PROYECTO =======
+            $proyecto   =   Proyecto::find($tarea->proyecto_id);
+
+            if(!$proyecto){
+                throw new Exception("NO SE ENCONTRÓ EL PROYECTO EN LA BD");  
+            }
+
+            //======= OTBIENDO LAS TAREAS DEL PROYECTO =====
+            $tareas_proyecto_pendientes    =   DB::select('select count(*) as cant 
+                                                from proyecto_tareas as pt
+                                                where pt.proyecto_id = ? 
+                                                and pt.estado = "PENDIENTE"',[$proyecto->id])[0];
+
+            $tareas_proyecto_finalizadas    =   DB::select('select count(*) as cant
+                                                from proyecto_tareas as pt
+                                                where pt.proyecto_id = ? 
+                                                and pt.estado = "FINALIZADO"',[$proyecto->id])[0];
+
+            $tareas_proyecto_proceso        =   DB::select('select count(*)  as cant
+                                                from proyecto_tareas as pt
+                                                where pt.proyecto_id = ? 
+                                                and pt.estado = "EN PROCESO"',[$proyecto->id])[0];
+
+            $tareas_proyecto_total          =   DB::select('select count(*) as cant
+                                                from proyecto_tareas as pt
+                                                where pt.proyecto_id = ? 
+                                                and pt.estado <> "ANULADO"',[$proyecto->id])[0];
+            
+            if($tareas_proyecto_total->cant === $tareas_proyecto_finalizadas->cant){
+                $proyecto->estado   =   'FINALIZADO';
+            }else{
+                if($tareas_proyecto_finalizadas->cant > 0){
+                    $proyecto->estado   =   'EN PROCESO';
+                }
+                if($tareas_proyecto_finalizadas->cant === 0){
+                    $proyecto->estado   =   'PENDIENTE';
+                }
+            }
+
+            $proyecto->avance   =   100*($tareas_proyecto_finalizadas->cant/$tareas_proyecto_total->cant);
+            $proyecto->update();
+
+
+            DB::commit();
             return response()->json(['success'=>true,'message'=>'AVANCE DE LA TAREA REGISTRADO CON ÉXITO']);
 
 

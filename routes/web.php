@@ -17,6 +17,7 @@ use App\Http\Controllers\Registros\CargoController;
 use App\Http\Controllers\Registros\CategoriaController;
 use App\Http\Controllers\Registros\ColaboradorController;
 use App\Http\Controllers\Herramientas\UsuarioController;
+use App\Http\Controllers\Logistica\RequerimientoController;
 use App\Http\Controllers\Registros\MaquinariaController;
 use App\Http\Controllers\Registros\MarcaController;
 use App\Http\Controllers\Registros\ProductoController;
@@ -228,6 +229,19 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
     Route::post('/store', [RegistroSalidaController::class, 'store'])->name('logistica.registro_salida.store');
     Route::get('/show/{salida_id}', [RegistroSalidaController::class, 'show'])->name('logistica.registro_salida.show');
     Route::get('/pdf/{id}', [RegistroSalidaController::class, 'pdf'])->name('logistica.registro_salida.pdf');
+
+});
+
+Route::group(['prefix' => 'requerimientos', 'middleware' => ['auth','checkCustomPermission:logistica.registro_salida']], function () {
+
+    Route::get('/index', [RequerimientoController::class, 'index'])->name('logistica.requerimientos.index');
+    Route::get('/create', [RequerimientoController::class, 'create'])->name('logistica.requerimientos.create')->middleware('checkRole:SUPERVISOR');
+    Route::get('/getRequerimientos', [RequerimientoController::class, 'getRequerimientos'])->name('logistica.requerimientos.getRequerimientos');
+    Route::put('/update/{id}', [RequerimientoController::class, 'update'])->name('logistica.requerimientos.update');
+    Route::post('/store', [RequerimientoController::class, 'store'])->name('logistica.requerimientos.store')->middleware('checkRole:SUPERVISOR');
+    Route::get('/edit/{id}', [RequerimientoController::class, 'edit'])->name('logistica.requerimientos.edit')->middleware('checkRole:SUPERVISOR');
+    Route::delete('/destroy/{id}', [RequerimientoController::class, 'destroy'])->name('logistica.requerimientos.destroy');
+    Route::get('/show/{id}', [RequerimientoController::class, 'show'])->name('logistica.requerimientos.show');
 
 });
 //============= FIN LOGÍSTICA ===========

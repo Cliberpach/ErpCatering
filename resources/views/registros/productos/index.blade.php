@@ -77,7 +77,7 @@
                                 <i class="fa-solid fa-grip"></i>
                             </button>
                             <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
-                                 <li>
+                                <li>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowProducto(${data.id})">
                                         <i class="fa-solid fa-eye"></i> Ver
                                     </a>

@@ -29,6 +29,7 @@ class PermisoSeeder extends Seeder
             'trabajo_equipo.registro_tarea',
             //'trabajo_equipo.consulta_tarea',
             'logistica.registro_salida',
+            'logistica.requerimientos',
             'compras.cotizacion_compra',
             'compras.registro_compra',
             'compras.proveedor',
