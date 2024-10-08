@@ -1,27 +1,26 @@
-
 @extends('layouts.layout')
 @section('title-page')
-    COTIZACIONES DE COMPRA
+    LISTADO DE MODALIDADES DE PAGO
 @endsection
 
-@section('compras-collapsed', '')
-@section('compras-expanded', 'true')
-@section('compras-show', 'show')
-@section('cotizacion_compra-active', 'active')
+@section('registros-collapsed', '')
+@section('registros-expanded', 'true')
+@section('registros-show', 'show')
+@section('modalidad_pago-active', 'active')
+
 
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Registro de Cotizaciones Compra <i class="fa-solid fa-cart-shopping"></i>
+      <h6>Maquinarias <i class="fa-solid fa-toolbox"></i>
       </h6>
-        
-            <button class="btn btn-primary" onclick="goToRegistrarCotizacionCompra()">
-                <i class="fa-solid fa-plus"></i> NUEVO
-            </button>
+      <button class="btn btn-primary" onclick="goToCrearModalidadPago()">
+        <i class="fa-solid fa-plus"></i> NUEVO
+      </button>
     </div>
     <div class="table-responsive">
-        @include('compras.cotizacion_compra.tables.table_cotizacion_compra')
+        @include('registros.modalidad_pago.tables.table_list_modalidades_pago')
     </div>
 </div>
 <!-- end card -->
@@ -35,72 +34,51 @@
 @endif
 
 <script>
-    let dtCotizacionesCompra    =   null;
+    let dtModalidadesPago    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableCotizacionCompra();
+        iniciarDataTableModalidadesPago();
     })
 
-    function iniciarDataTableCotizacionCompra(){
-        const urlGetCotizacionesCompra = '{{ route('compras.cotizacion_compra.getCotizacionesCompra') }}';
+    function iniciarDataTableModalidadesPago(){
+        const urlGetModalidadesPago = '{{ route('registros.modalidad_pago.getModalidadesPago') }}';
 
-        dtCotizacionesCompra  =   new DataTable('#table_cotizacion_compra',{
+        dtModalidadesPago  =   new DataTable('#table_list_modalidades_pago',{
             serverSide: true,
             processing: true,
-            responsive:true,
             ajax: {
-                url: urlGetCotizacionesCompra,
+                url: urlGetModalidadesPago,
                 type: 'GET',
             },
-            order: [[0, 'desc']], 
             columns: [
-                { data: 'id', name: 'id', visible: false },
-                {
-                    data: 'simbolo',
-                    name: 'simbolo',
-                    createdCell: function (td, cellData, rowData, row, col) {
-                        $(td).css('font-weight', 'bold');
-                    }
-                },
-                { data: 'simbolo_requerimiento', name: 'simbolo_requerimiento' },
-                { data: 'supervisor_nombre', name: 'supervisor_nombre' },
-                { data: 'colaborador_nombre', name: 'colaborador_nombre' },
-                { data: 'fecha_registro', name: 'fecha_registro' },
-                { data: 'estado', name: 'estado' },
+                { data: 'id', name: 'id' },
+                { data: 'descripcion', name: 'descripcion' },
+                { data: 'tipo', name: 'tipo' },
+                { data: 'nro_dias', name: 'nro_dias' },
+                { data: 'created_at', name: 'created_at' },
+                { data: 'updated_at', name: 'updated_at' },
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('compras.cotizacion_compra.edit', ['id' => ':id']) }}`;
+                        const baseUrlEdit   =   `{{ route('registros.modalidad_pago.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
-                        const urlDelete         = `{{ route('compras.cotizacion_compra.destroy', ':id') }}`.replace(':id', data.id);
-                        const urlPdf            = `{{ route('compras.cotizacion_compra.pdf', ':id') }}`.replace(':id', data.id);
-                        const urlOrdenCompra    =   `{{route('compras.cotizacion_compra.goToOrdenCompra',':id')}}`.replace(':id', data.id);
+                        const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
 
                         return `
                             <div class="btn-group dropstart">
                             <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-grip"></i>
                             </button>
-                            <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                            <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
                                 <li>
-                                    <a class="dropdown-item" href="${urlOrdenCompra}">
-                                        <i class="fa-solid fa-cart-shopping"></i> Orden compra
+                                    <a class="dropdown-item" href="${urlEdit}">
+                                        <i class="fa-solid fa-pen-to-square"></i> Editar
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="${urlPdf}" target="_blank">
-                                        <i class="fa-solid fa-file-pdf"></i> PDF
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="${urlEdit}">
-                                        <i class="fa-solid fa-file-pen"></i> Editar
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarCotizacionCompra(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarModalidadPago(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -137,18 +115,17 @@
         });
     }
 
-
-    function goToRegistrarCotizacionCompra(){
-        window.location.href = @json(route('compras.cotizacion_compra.create'));
+    function goToCrearModalidadPago(){
+        window.location.href = @json(route('registros.modalidad_pago.create'));
     }
 
 
-    function eliminarCotizacionCompra(id){
+    function eliminarModalidadPago(id){
         toastr.clear();
-        let row             =   getRowById(dtCotizacionesCompra,id);
+        let row             =   getRowById(dtModalidadesPago,id);
         let message         =   '';
 
-        message =   `Desea eliminar la cotización de compra N°${id}`;
+        message =   `Desea eliminar la modalidad de pago: ${row.tipo} - DÍAS: ${row.nro_dias}`;
 
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -170,7 +147,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando cotización de compra...',
+                html: 'Eliminando modalidad de pago...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -178,11 +155,11 @@
             });
 
             try {
-                let urlEliminarCotizacionCompra         =   `{{ route('compras.cotizacion_compra.destroy', ['id' => ':id']) }}`;
-                urlEliminarCotizacionCompra             =   urlEliminarCotizacionCompra.replace(':id', id);
-                const token                             =   document.querySelector('input[name="_token"]').value;
+                let urlDeleteModalidadPago      =   `{{ route('registros.modalidad_pago.destroy', ['id' => ':id']) }}`;
+                urlDeleteModalidadPago          =   urlDeleteModalidadPago.replace(':id', id);
+                const token                     =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlEliminarCotizacionCompra, {
+                const response  =   await fetch(urlDeleteModalidadPago, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -192,14 +169,14 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtCotizacionesCompra.draw();
+                    dtModalidadesPago.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR COTIZACIÓN DE COMPRA');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR MODALIDAD DE PAGO');
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR COTIZACIÓN DE COMPRA');
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR MODALIDAD DE PAGO');
             }finally{
                 Swal.close();
             }

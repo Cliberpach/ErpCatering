@@ -50,6 +50,11 @@ class ProyectoStoreRequest extends FormRequest
                     }
                 }
             ],
+            'direccion' => [
+                'required',
+                'string',
+                'max:200'
+            ]
         ];
     }
 
@@ -72,6 +77,9 @@ class ProyectoStoreRequest extends FormRequest
             'diferencia.numeric'    => 'El campo diferencia debe ser un número.',
             'diferencia.regex'      => 'El campo diferencia debe ser un número decimal con hasta dos decimales.',
             'diferencia.custom'     => 'La diferencia debe ser la resta entre costo y avance costo.',
+        
+            'direccion.required'   => 'El campo direccion es obligatorio.',
+            'direccion.max'        => 'El campo direccion no puede tener más de 100 caracteres.'
         ];
     }
 

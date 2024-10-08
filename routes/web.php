@@ -9,6 +9,7 @@ use App\Http\Controllers\Herramientas\RolController;
 use App\Http\Controllers\Herramientas\TablaGeneralDetalleController;
 use App\Http\Controllers\Jornales\RegistroLaborController;
 use App\Http\Controllers\Compras\CotizacionCompraController;
+use App\Http\Controllers\Compras\OrdenCompraController;
 use App\Http\Controllers\Compras\RegistroCompraController;
 use App\Http\Controllers\Logistica\RegistroSalidaController;
 use App\Http\Controllers\PlanProyecto\TareaController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Logistica\ListaRequerimientoController;
 use App\Http\Controllers\Requerimientos\RequerimientoController;
 use App\Http\Controllers\Registros\MaquinariaController;
 use App\Http\Controllers\Registros\MarcaController;
+use App\Http\Controllers\Registros\ModalidadPagoController;
 use App\Http\Controllers\Registros\ProductoController;
 use App\Http\Controllers\Registros\ProyectoController;
 use App\Http\Controllers\TrabajoEquipo\RegistroTareaController;
@@ -119,6 +121,19 @@ Route::group(['prefix' => 'productos', 'middleware' => ['auth','checkCustomPermi
     Route::get('/show/{id}', [ProductoController::class, 'show'])->name('registros.producto.show');
 
 });
+
+Route::group(['prefix' => 'modalidad_pago', 'middleware' => ['auth','checkCustomPermission:registros.modalidad_pago']], function () {
+
+    Route::get('/index', [ModalidadPagoController::class, 'index'])->name('registros.modalidad_pago.index');
+    Route::get('/create', [ModalidadPagoController::class, 'create'])->name('registros.modalidad_pago.create');
+    Route::post('/store', [ModalidadPagoController::class, 'store'])->name('registros.modalidad_pago.store');
+    Route::get('getModalidadesPago', [ModalidadPagoController::class, 'getModalidadesPago'])->name('registros.modalidad_pago.getModalidadesPago');
+    Route::put('/update/{id}', [ModalidadPagoController::class, 'update'])->name('registros.modalidad_pago.update');
+    Route::get('/edit/{id}', [ModalidadPagoController::class, 'edit'])->name('registros.modalidad_pago.edit');
+    Route::delete('/destroy/{id}', [ModalidadPagoController::class, 'destroy'])->name('registros.modalidad_pago.destroy');
+
+});
+
 
 Route::group(['prefix' => 'maquinarias', 'middleware' => ['auth','checkCustomPermission:registros.maquinaria']], function () {
 
@@ -256,6 +271,7 @@ Route::group(['prefix' => 'lista_requerimientos', 'middleware' => ['auth','check
     Route::get('/index', [ListaRequerimientoController::class, 'index'])->name('logistica.lista_requerimientos.index');
     Route::post('/generarCotizacion', [ListaRequerimientoController::class, 'generarCotizacion'])->name('logistica.lista_requerimientos.generarCotizacion');
     Route::get('/getRequerimientos', [ListaRequerimientoController::class, 'getRequerimientos'])->name('logistica.lista_requerimientos.getRequerimientos');
+    Route::get('/show/{id}', [ListaRequerimientoController::class, 'show'])->name('logistica.lista_requerimientos.show');
 
     // Route::get('/create', [RequerimientoController::class, 'create'])->name('requerimientos.requerimientos.create')->middleware('checkRole:SUPERVISOR');
     // Route::get('/getRequerimientos', [RequerimientoController::class, 'getRequerimientos'])->name('requerimientos.requerimientos.getRequerimientos');
@@ -281,6 +297,8 @@ Route::group(['prefix' => 'cotizacion_compra', 'middleware' => ['auth','checkCus
     Route::delete('/destroy/{id}', [CotizacionCompraController::class, 'destroy'])->name('compras.cotizacion_compra.destroy');
     Route::get('/getCotizacionesCompra', [CotizacionCompraController::class, 'getCotizacionesCompra'])->name('compras.cotizacion_compra.getCotizacionesCompra');
     Route::get('/pdf/{id}', [CotizacionCompraController::class, 'pdf'])->name('compras.cotizacion_compra.pdf');
+    Route::get('/goToOrdenCompra/{id}', [CotizacionCompraController::class, 'goToOrdenCompra'])->name('compras.cotizacion_compra.goToOrdenCompra');
+    Route::post('/cotizacionToOrden', [CotizacionCompraController::class, 'cotizacionToOrden'])->name('compras.cotizacion_compra.cotizacionToOrden');
 
 });
 
@@ -292,6 +310,17 @@ Route::group(['prefix' => 'registro_compra', 'middleware' => ['auth','checkCusto
     Route::get('/show/{id}', [RegistroCompraController::class, 'show'])->name('compras.registro_compra.show');
     Route::get('/getCompras', [RegistroCompraController::class, 'getCompras'])->name('compras.registro_compra.getCompras');
     Route::get('/pdf/{id}', [RegistroCompraController::class, 'pdf'])->name('compras.registro_compra.pdf');
+
+});
+
+Route::group(['prefix' => 'orden_compra', 'middleware' => ['auth','checkCustomPermission:compras.orden_compra']], function () {
+
+    Route::get('/index', [OrdenCompraController::class, 'index'])->name('compras.orden_compra.index');
+    // Route::post('/store', [RegistroCompraController::class, 'store'])->name('compras.registro_compra.store');
+    Route::get('/create', [OrdenCompraController::class, 'create'])->name('compras.orden_compra.create');
+    // Route::get('/show/{id}', [RegistroCompraController::class, 'show'])->name('compras.registro_compra.show');
+    Route::get('/getOrdenesCompra', [OrdenCompraController::class, 'getOrdenesCompra'])->name('compras.orden_compra.getOrdenesCompra');
+    // Route::get('/pdf/{id}', [RegistroCompraController::class, 'pdf'])->name('compras.registro_compra.pdf');
 
 });
 

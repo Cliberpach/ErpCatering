@@ -91,7 +91,7 @@
     async function getShowRequerimiento(requerimiento_id){
         toastr.clear();
         const token                 =   document.querySelector('input[name="_token"]').value;
-        const urlShowRequerimiento  =   `{{ route('requerimientos.requerimientos.show', ':id') }}`.replace(':id', requerimiento_id);
+        const urlShowRequerimiento  =   `{{ route('logistica.lista_requerimientos.show', ':id') }}`.replace(':id', requerimiento_id);
 
         try {
             mostrarAnimacion1();

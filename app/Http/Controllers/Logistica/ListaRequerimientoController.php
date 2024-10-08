@@ -94,4 +94,48 @@ class ListaRequerimientoController extends Controller
         }
        
     }
+
+    public function show($id){
+
+        try {
+
+            $requerimiento =   DB::select('select
+                                r.id,
+                                p.nombre as proyecto_nombre,
+                                c.nombre as supervisor_nombre,
+                                pro.nombre as proveedor_nombre,
+                                r.orden_compra_id,
+                                r.factura_atencion,
+                                r.fecha_atencion,
+                                r.estado,
+                                r.created_at as fecha_registro
+                                from requerimientos as r
+                                inner join colaboradores    as c on c.id = r.supervisor_id
+                                inner join proyectos      as p on p.id = r.proyecto_id
+                                left join proveedores as pro on pro.id = r.proveedor_id
+                                where r.id = ?',[$id])[0];
+
+            $requerimiento_detalle  =   DB::select('select 
+                                        rd.producto_id,
+                                        rd.cantidad,
+                                        p.nombre as producto_nombre,
+                                        c.descripcion as categoria_nombre,
+                                        m.descripcion as marca_nombre,
+                                        tgd.descripcion as producto_unidad_medida
+                                        from requerimiento_detalle as rd
+                                        inner join productos as p on p.id = rd.producto_id
+                                        inner join marcas as m on m.id = p.marca_id 
+                                        inner join categorias as c on c.id = p.categoria_id
+                                        inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
+                                        where rd.requerimiento_id = ?',[$id]);
+
+            return response()->json(['success'=>true,
+            'requerimiento_detalle' => $requerimiento_detalle,
+            'requerimiento'=>$requerimiento]);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+        
+       
+    }
 }

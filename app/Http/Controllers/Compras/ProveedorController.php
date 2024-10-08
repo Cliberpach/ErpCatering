@@ -7,7 +7,7 @@ use App\Http\Controllers\Utils\UtilController;
 use App\Http\Requests\Compras\Proveedor\ProveedorStoreRequest;
 use App\Http\Requests\Compras\Proveedor\ProveedorUpdateRequest;
 use App\Models\Compras\Proveedor;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;

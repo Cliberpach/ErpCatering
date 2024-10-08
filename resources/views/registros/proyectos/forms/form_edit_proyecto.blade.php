@@ -41,6 +41,15 @@
                 </div>                  
                 <span class="diferencia_error msgError"  style="color:red;"></span>
             </div>
-           
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2 mb-3">
+                <label for="direccion" class="required_field mb-2" style="font-weight: bold;">Dirección</label>
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1">
+                        <i class="fa-solid fa-map-location-dot"></i>                 
+                    </span>
+                    <input value="{{$proyecto->direccion}}" required id="direccion" maxlength="200"  name="direccion" type="text" class="form-control" placeholder="Dirección" aria-label="Username" aria-describedby="basic-addon1">
+                </div>                 
+                <span class="direccion_error msgError"  style="color:red;"></span>
+            </div>   
     </div>
 </form> 

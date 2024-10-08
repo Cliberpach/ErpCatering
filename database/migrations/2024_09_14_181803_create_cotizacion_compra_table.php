@@ -20,7 +20,10 @@ return new class extends Migration
             $table->unsignedBigInteger('supervisor_id')->nullable();
             $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
-            $table->enum('estado', ['PENDIENTE', 'ANULADO', 'COMPRADO'])->default('PENDIENTE');
+            $table->unsignedBigInteger('orden_compra_id')->nullable(); 
+            $table->foreign('orden_compra_id')->references('id')->on('ordenes_compra'); 
+
+            $table->enum('estado', ['PENDIENTE', 'ANULADO', 'FACTURADO','CON ORDEN COMPRA'])->default('PENDIENTE');
             $table->timestamps();
         });
     }

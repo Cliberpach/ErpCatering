@@ -24,6 +24,9 @@ return new class extends Migration
             $table->decimal('diferencia', 20, 2);
 
             $table->decimal('avance',16,2)->unsigned()->default(0);
+            
+            $table->string('direccion',200);
+
             $table->enum('estado', ['PENDIENTE', 'EN PROCESO','FINALIZADO','ANULADO'])->default('PENDIENTE');
             $table->timestamps();
         });

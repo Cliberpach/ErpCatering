@@ -58,6 +58,7 @@ class ProyectoController extends Controller
             $proyecto->costo            =   $request->get('costo');
             $proyecto->avance_costo     =   $request->get('avance_costo');
             $proyecto->diferencia       =   $request->get('diferencia');
+            $proyecto->direccion        =   mb_strtoupper($request->get('direccion'), 'UTF-8');
             $proyecto->save();
 
             DB::commit();
@@ -85,6 +86,7 @@ class ProyectoController extends Controller
             $proyecto->costo            =   $request->get('costo');
             $proyecto->avance_costo     =   $request->get('avance_costo');
             $proyecto->diferencia       =   $request->get('diferencia');
+            $proyecto->direccion        =   mb_strtoupper($request->get('direccion'), 'UTF-8');
             $proyecto->update();
 
             DB::commit();
@@ -104,6 +106,7 @@ class ProyectoController extends Controller
                             pr.costo,
                             pr.avance_costo,
                             pr.diferencia,
+                            pr.direccion,
                             c.nombre as supervisor_nombre,
                             c.id as supervisor_id
                             from proyectos as pr

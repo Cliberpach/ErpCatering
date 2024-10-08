@@ -37,6 +37,10 @@
                                     <strong class="text-primary">SUPERVISOR:</strong>
                                     <span class="text-muted" id="spanSupervisor"></span>
                                 </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
+                                    <strong class="text-primary">DIRECCIÓN:</strong>
+                                    <span class="text-muted" id="spanDireccion"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -197,6 +201,7 @@
         document.querySelector('#spanAvanceCosto').textContent   =   proyecto.avance_costo;
         document.querySelector('#spanDiferencia').textContent    =   proyecto.diferencia;
         document.querySelector('#spanSupervisor').textContent    =   proyecto.supervisor_nombre?proyecto.supervisor_nombre:'SIN SUPERVISOR';
+        document.querySelector('#spanDireccion').textContent     =   proyecto.direccion;
 
 
     }

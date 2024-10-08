@@ -10,7 +10,7 @@
 @section('lista_requerimientos-active', 'active')
 
 @section('section-page')
-@include('requerimientos.requerimientos.modals.modal_show')
+@include('logistica.lista_requerimientos.modals.modal_show')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">

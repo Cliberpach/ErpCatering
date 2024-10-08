@@ -23,7 +23,7 @@
     <nav class="sidebar-nav">
       <ul>
 
-        @can('panel_control.dashboard')
+        @canany([])
           <li class="nav-item nav-item-has-children">
             <a
               href="#0"
@@ -46,8 +46,10 @@
               </li>
             </ul>
           </li>
-        @endcan
+        @endcanany
 
+
+        @canany(['registros.colaborador','registros.cargo','registros.maquinaria','registros.proyecto','registros.almacen','registros.categoria','registros.marca','registros.producto'])
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
@@ -70,7 +72,7 @@
               @endcan
             </li>
             <li>
-              @can('registros.colaborador')
+              @can('registros.cargo')
                 <a class="@yield('cargos-active')" href="{{route('registros.cargo.index')}}">Cargos</a>
               @endcan
             </li>
@@ -104,10 +106,17 @@
                 <a class="@yield('productos-active')" href="{{route('registros.producto.index')}}">Producto</a>
               @endcan
             </li>
+            <li>
+              @can('registros.modalidad_pago')
+                <a class="@yield('modalidad_pago-active')" href="{{route('registros.modalidad_pago.index')}}">Modalidad Pago</a>
+              @endcan
+            </li>
           </ul>
         </li>
+        @endcanany
 
-        @role('SUPERVISOR')
+
+        @canany(['jornal.registro_labor'])
         <li class="nav-item nav-item-has-children">
             <a
               href="#0"
@@ -136,9 +145,10 @@
               </li> --}}
             </ul>
         </li>
-        @endrole
+        @endcanany
 
-        @role('SUPERVISOR')
+
+        @canany(['trabajo_equipo.registro_tarea'])
         <li class="nav-item nav-item-has-children">
             <a
               href="#0"
@@ -162,9 +172,10 @@
               </li>
             </ul>
         </li>
-        @endrole
+        @endcanany
         
-        @role('SUPERVISOR')
+
+        @canany(['requerimientos.requerimientos'])
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
@@ -190,9 +201,10 @@
            
           </ul>
         </li>
-        @endrole
+        @endcanany
 
-        @role('LOGISTICA')
+
+        @canany(['logistica.registro_salida', 'logistica.lista_requerimientos'])
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
@@ -224,9 +236,10 @@
             
           </ul>
         </li>
-        @endrole
+        @endcanany
 
-        @role('LOGISTICA')
+
+        @canany(['compras.registro_compra', 'compras.cotizacion_compra','compras.proveedor'])
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
@@ -254,6 +267,13 @@
                 <a class="@yield('cotizacion_compra-active')" href="{{route('compras.cotizacion_compra.index')}}" >Cotización Compra</a>
               @endcan
             </li>
+
+            <li>
+              @can('compras.orden_compra')
+                <a class="@yield('orden_compra-active')" href="{{route('compras.orden_compra.index')}}" >Orden Compra</a>
+              @endcan
+            </li>
+
             <li>
               @can('compras.proveedor')
                 <a class="@yield('proveedores-active')" href="{{route('compras.proveedor.index')}}" >Proveedores</a>
@@ -261,9 +281,10 @@
             </li>
           </ul>
         </li>
-        @endrole
+        @endcanany
 
-        @role('SUPERVISOR')
+
+        @canany(['plan_proyecto.tarea'])
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
@@ -287,9 +308,12 @@
             </li>
           </ul>
         </li>
-        @endrole
-
+        @endcanany
+        
         <span class="divider"><hr /></span>
+
+
+        @canany(['herramientas.usuarios','herramientas.roles','herramientas.empresa'])
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
@@ -323,7 +347,9 @@
             </li>
           </ul>
         </li>
+        @endcanany
 
+        @canany(['consultas.personal','consultas.maquinaria','consultas.producto'])
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
@@ -357,6 +383,8 @@
             </li>
           </ul>
         </li>
+        @endcanany
+
       </ul>
     </nav>
     {{-- <div class="promo-box">

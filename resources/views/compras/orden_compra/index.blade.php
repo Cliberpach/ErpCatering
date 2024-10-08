@@ -1,27 +1,27 @@
 
 @extends('layouts.layout')
 @section('title-page')
-    COTIZACIONES DE COMPRA
+    ÓRDENES DE COMPRA
 @endsection
 
 @section('compras-collapsed', '')
 @section('compras-expanded', 'true')
 @section('compras-show', 'show')
-@section('cotizacion_compra-active', 'active')
+@section('orden_compra-active', 'active')
 
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Registro de Cotizaciones Compra <i class="fa-solid fa-cart-shopping"></i>
+      <h6>Registro de Órdenes Compra <i class="fa-solid fa-cart-shopping"></i>
       </h6>
         
-            <button class="btn btn-primary" onclick="goToRegistrarCotizacionCompra()">
+            {{-- <button class="btn btn-primary" onclick="goToRegistrarCotizacionCompra()">
                 <i class="fa-solid fa-plus"></i> NUEVO
-            </button>
+            </button> --}}
     </div>
     <div class="table-responsive">
-        @include('compras.cotizacion_compra.tables.table_cotizacion_compra')
+        @include('compras.orden_compra.tables.table_list_orden_compra')
     </div>
 </div>
 <!-- end card -->
@@ -35,21 +35,21 @@
 @endif
 
 <script>
-    let dtCotizacionesCompra    =   null;
+    let dtOrdenesCompra    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableCotizacionCompra();
+        iniciarDataTableOrdenCompra();
     })
 
-    function iniciarDataTableCotizacionCompra(){
-        const urlGetCotizacionesCompra = '{{ route('compras.cotizacion_compra.getCotizacionesCompra') }}';
+    function iniciarDataTableOrdenCompra(){
+        const urlGetOrdenCompra = '{{ route('compras.orden_compra.getOrdenesCompra') }}';
 
-        dtCotizacionesCompra  =   new DataTable('#table_cotizacion_compra',{
+        dtOrdenesCompra  =   new DataTable('#table_list_orden_compra',{
             serverSide: true,
             processing: true,
             responsive:true,
             ajax: {
-                url: urlGetCotizacionesCompra,
+                url: urlGetOrdenCompra,
                 type: 'GET',
             },
             order: [[0, 'desc']], 
@@ -62,11 +62,16 @@
                         $(td).css('font-weight', 'bold');
                     }
                 },
-                { data: 'simbolo_requerimiento', name: 'simbolo_requerimiento' },
-                { data: 'supervisor_nombre', name: 'supervisor_nombre' },
-                { data: 'colaborador_nombre', name: 'colaborador_nombre' },
-                { data: 'fecha_registro', name: 'fecha_registro' },
-                { data: 'estado', name: 'estado' },
+                { data: 'proveedor_nombre', name: 'proveedor_nombre' },
+                { data: 'modalidad_pago', name: 'modalidad_pago' },
+                { data: 'proyecto_nombre', name: 'proyecto_nombre' },
+                { data: 'orden_compra_documento', name: 'orden_compra_documento' },
+                { data: 'orden_compra_direccion_obra', name: 'orden_compra_direccion_obra' },
+                { data: 'orden_compra_observacion', name: 'orden_compra_observacion' },
+                { data: 'persona_contacto_nombre', name: 'persona_contacto_nombre' },
+                { data: 'orden_compra_fecha_entrega', name: 'orden_compra_fecha_entrega' },
+                { data: 'orden_compra_terminos_entrega', name: 'orden_compra_terminos_entrega' },
+                { data: 'orden_compra_estado', name: 'orden_compra_estado' },
                 {
                     data: null, 
                     render: function(data, type, row) {
@@ -77,36 +82,7 @@
                         const urlPdf            = `{{ route('compras.cotizacion_compra.pdf', ':id') }}`.replace(':id', data.id);
                         const urlOrdenCompra    =   `{{route('compras.cotizacion_compra.goToOrdenCompra',':id')}}`.replace(':id', data.id);
 
-                        return `
-                            <div class="btn-group dropstart">
-                            <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-grip"></i>
-                            </button>
-                            <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
-                                <li>
-                                    <a class="dropdown-item" href="${urlOrdenCompra}">
-                                        <i class="fa-solid fa-cart-shopping"></i> Orden compra
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="${urlPdf}" target="_blank">
-                                        <i class="fa-solid fa-file-pdf"></i> PDF
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="${urlEdit}">
-                                        <i class="fa-solid fa-file-pen"></i> Editar
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarCotizacionCompra(${data.id})">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
-                                    </a>
-                                </li>
-                            </ul>
-                            </div>
-                        `;
+                        return `ACCIONES`;
                     },
                     name: 'actions', 
                     orderable: false, 
@@ -145,7 +121,7 @@
 
     function eliminarCotizacionCompra(id){
         toastr.clear();
-        let row             =   getRowById(dtCotizacionesCompra,id);
+        let row             =   getRowById(dtOrdenesCompra,id);
         let message         =   '';
 
         message =   `Desea eliminar la cotización de compra N°${id}`;
@@ -192,7 +168,7 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtCotizacionesCompra.draw();
+                    dtOrdenesCompra.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR COTIZACIÓN DE COMPRA');
