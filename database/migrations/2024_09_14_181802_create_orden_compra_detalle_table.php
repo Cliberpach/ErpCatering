@@ -20,6 +20,12 @@ return new class extends Migration
             $table->foreign('producto_id')->references('id')->on('productos');
 
             $table->decimal('cantidad', 16, 2)->unsigned();
+            
+            $table->decimal('precio_soles',16,2)->unsigned();
+            $table->decimal('precio_dolares',16,2)->unsigned();
+
+            $table->decimal('precio_mas_igv_soles',16,2)->unsigned();
+            $table->decimal('precio_mas_igv_dolares',16,2)->unsigned();
 
             $table->timestamps();
             $table->primary(['orden_compra_id', 'producto_id']);

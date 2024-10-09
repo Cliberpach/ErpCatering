@@ -33,6 +33,21 @@ return new class extends Migration
             $table->date('fecha_entrega');
             $table->string('terminos_entrega',100);
 
+            $table->string('moneda',100);
+            $table->decimal('tipo_cambio',10,4)->unsigned()->nullable();
+
+            $table->tinyInteger('precios_igv')->unsigned();
+            $table->decimal('igv',16,4)->unsigned();
+
+            $table->decimal('subtotal',16,4)->unsigned();
+            $table->decimal('monto_igv',16,4)->unsigned();
+            $table->decimal('total',16,4)->unsigned();
+
+            $table->decimal('subtotal_soles',16,4)->unsigned();
+            $table->decimal('monto_igv_soles',16,4)->unsigned();
+            $table->decimal('total_soles',16,4)->unsigned();
+
+            $table->enum('estado', ['PENDIENTE', 'ANULADO', 'FACTURADO'])->default('PENDIENTE');
             $table->timestamps();
         });
     }

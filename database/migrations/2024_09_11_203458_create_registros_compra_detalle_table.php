@@ -30,7 +30,6 @@ return new class extends Migration
 
             $table->decimal('cantidad',16,2)->unsigned();
 
-
             $table->primary(['registro_compra_id','almacen_id', 'producto_id']);
             $table->timestamps();
         });

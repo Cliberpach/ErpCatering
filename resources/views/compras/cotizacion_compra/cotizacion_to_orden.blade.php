@@ -10,10 +10,9 @@
 
 @section('section-page')
 
-@include('compras.cotizacion_compra.modals.modal_productos')
-@include('compras.cotizacion_compra.modals.modal_edit_item')
+@include('compras.cotizacion_compra.modals.modal_productos_cotizacion_to_orden')
+@include('compras.cotizacion_compra.modals.modal_edit_item_cotizacion_to_orden')
 @include('reutilizables.modals.proveedores.mdl_create_proveedor')
-
 
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -48,9 +47,16 @@
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarSelect2();
         iniciarDataTableProductos();
-        iniciarDataTableCompraDetalle();
+        iniciarDataTableCotizacionToOrdenDetalle();
         cargarDetallePrevio();
+        getTipoCambio();
         mostrarMsgErrors();
+        
+        const montos    =  calcularMontos(lstCotizacionCompra,false,18);
+        const moneda    =   document.querySelector('#moneda').value;
+
+        pintarTableMontos(montos,moneda);
+
         events();
     })
 
@@ -63,6 +69,20 @@
             const validacion    =   validacionRegistrarCotizacionToOrden();
             if(validacion){
                 registrarCotizacionToOrden();
+            }
+        })
+
+        document.querySelector('#igv').addEventListener('change',(e)=>{
+            toastr.clear();
+            const estado    =   e.target.checked;
+            const valorIgv  =   e.target.value;
+
+            if(lstCotizacionCompra.length > 0){
+                const montos =  calcularMontos(lstCotizacionCompra,estado,valorIgv);
+                const moneda    =   document.querySelector('#moneda').value;
+
+                pintarTableMontos(montos,moneda);
+                toastr.info('MONTOS ACTUALIZADOS');
             }
         })
 
@@ -155,8 +175,8 @@
         });
     }
 
-    function iniciarDataTableCompraDetalle(){
-        dtCompraDetalle  =   new DataTable('#table_compra_detalle',{
+    function iniciarDataTableCotizacionToOrdenDetalle(){
+        dtCompraDetalle  =   new DataTable('#table_cotizacion_to_orden_detalle',{
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
@@ -189,12 +209,20 @@
         }
 
         const inputCantidad =   document.querySelector('#cantidad'); 
+        const inputPrecio   =   document.querySelector('#precio'); 
+
         if(!inputCantidad.value){
             toastr.error('DEBE INGRESAR UNA CANTIDAD!!');
             return false;
         }
         if(inputCantidad.value == 0){
             toastr.error('LA CANTIDAD DEBE SER MAYOR A 0!!');
+            return false;
+        }
+
+        if(!inputPrecio.value){
+            inputPrecio.focus();
+            toastr.error('DEBE INGRESAR UN PRECIO!!');
             return false;
         }
 
@@ -210,7 +238,9 @@
     }
 
     function agregarProducto(producto,cantidad){
-        producto.cantidad   =   cantidad;
+        producto.cantidad       =   cantidad;
+        producto.precio         =   document.querySelector('#precio').value;
+        producto.total          =   parseFloat(producto.cantidad) * parseFloat(producto.precio);
 
         const indiceProducto    =   lstCotizacionCompra.findIndex((p)=>{
             return p.producto_id == producto.producto_id;
@@ -222,10 +252,16 @@
         }
 
         lstCotizacionCompra.push(producto);
-        limpiarTabla('table_compra_detalle');
+        limpiarTabla('table_cotizacion_to_orden_detalle');
         destruirDataTableCompraDetalle();
         pintarTableCompraDetalle(lstCotizacionCompra);
-        iniciarDataTableCompraDetalle();
+        iniciarDataTableCotizacionToOrdenDetalle();
+
+        const inputIgv  =   document.querySelector('#igv');
+        const montos    =   calcularMontos(lstCotizacionCompra,inputIgv.checked,inputIgv.value);
+        const moneda    =   document.querySelector('#moneda').value;
+
+        pintarTableMontos(montos,moneda);
         toastr.info('PRODUCTO AGREGADO AL DETALLE');
     }
 
@@ -243,11 +279,13 @@
                             <td>${producto.categoria_nombre}</td>
                             <td>${producto.marca_nombre}</td>
                             <td>${producto.producto_unidad_medida}</td>
+                            <td>${producto.precio}</td>
                             <td>${producto.cantidad}</td>
+                            <td>${producto.total}</td>
                         </tr>`;
         })
 
-        const tbody =   document.querySelector('#table_compra_detalle tbody');
+        const tbody =   document.querySelector('#table_cotizacion_to_orden_detalle tbody');
         tbody.innerHTML =   filas;
     }
 
@@ -385,12 +423,131 @@
                                     marca_nombre:cd.marca_nombre,
                                     producto_id:cd.producto_id,
                                     producto_nombre:cd.producto_nombre,
-                                    producto_unidad_medida:cd.producto_unidad_medida
+                                    producto_unidad_medida:cd.producto_unidad_medida,
+                                    precio:cd.precio,
+                                    total:parseFloat(cd.cantidad) * parseFloat(cd.precio)
                                 }
             lstCotizacionCompra.push(producto);
         })
 
         pintarTableCompraDetalle(lstCotizacionCompra);
+    }
+
+    async function getTipoCambio(){
+        mostrarAnimacion1();
+        try {
+            document.querySelector('#tipo_cambio').value        =   '';
+            document.querySelector('#tipo_cambio').readOnly     =   true;
+            document.querySelector('#lbl_tipo_cambio').classList.remove('required_field');
+
+         
+
+            const token             =   document.querySelector('input[name="_token"]').value;
+            const urlGetTipoCambio  =   @json(route('utils.tipoCambio'));
+
+            const response  =   await fetch(urlGetTipoCambio, {
+                                    method: 'GET',
+                                    headers: {
+                                        'X-CSRF-TOKEN': token 
+                                    },
+                                });
+
+            const   res =   await response.json();
+
+            if(res.success){
+                setTipoCambio(res.data);
+                document.querySelector('#tipo_cambio').readOnly     =   false;
+                document.querySelector('#lbl_tipo_cambio').classList.add('required_field');
+                toastr.info('TIPO CAMBIO OBTENIDO');
+            }else{
+                toastr.error(res.message,'ERROR EN EL SERVIDOR AL OBTENER TIPO DE CAMBIO');
+            }
+        } catch (error) {
+            toastr.error(error,'ERROR EN LA PETICIÓN AL OBTENER TIPO DE CAMBIO');
+        }finally{
+            ocultarAnimacion1();
+        }
+    }
+
+    function setTipoCambio(data){
+        const inputTipoCambio   =   document.querySelector('#tipo_cambio');
+        inputTipoCambio.value   =   data.venta;
+    }
+
+    function calcularMontos(lstItems,chkIgv,valorIgv){
+        let subtotal    =   0;
+        let monto_igv   =   0;
+        let total       =   0;
+        valorIgv    =   parseFloat(valorIgv);
+
+        if(chkIgv){ //======= PRECIOS CON IGV ======
+            
+            lstItems.forEach((item)=>{
+                total   +=  parseFloat(item.total);
+            })
+
+            subtotal    =   total/((100 + valorIgv)/100);
+            monto_igv   =   total - subtotal;
+        }else{
+
+            //======= PRECIOS SIN IGV =======
+            lstItems.forEach((item)=>{
+                subtotal   +=  item.total;
+            })
+
+            monto_igv   =   (valorIgv/100)*subtotal;
+            total       =   subtotal + monto_igv;
+        }
+
+        return {subtotal,monto_igv,total};
+    }
+
+    function pintarTableMontos(montos,moneda){
+        toastr.clear();
+        if(moneda != 'PEN' && moneda != 'USD'){
+            toastr.error('EL FORMATO DE MONEDA ES INCORRECTO!!!');
+            return;
+        }
+
+        const tdSubtotal    =   document.querySelector('#tbl_subtotal');
+        const tdMontoIgv    =   document.querySelector('#tbl_monto_igv');
+        const tdTotal       =   document.querySelector('#tbl_total');
+        let region          =   '';
+
+        if(moneda == 'PEN'){
+            region  =   'es-PE';  
+        }
+
+        if(moneda == 'USD'){
+            region  =   'en-US';  
+        }
+
+        tdSubtotal.textContent  = formatCurrency(montos.subtotal,region,moneda);
+        tdMontoIgv.textContent  = formatCurrency(montos.monto_igv,region,moneda);
+        tdTotal.textContent     = formatCurrency(montos.total,region,moneda);
+
+    }
+
+    function formatCurrency(amount,region,moneda) {
+        return new Intl.NumberFormat(region, {
+            style: 'currency',
+            currency: moneda,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount);
+    }
+
+    function changeMoneda(moneda){
+        toastr.clear();
+
+        if(moneda != 'PEN' && moneda != 'USD'){
+            toastr.error('EL FORMATO DE MONEDA ES INCORRECTO!!!');
+            return;
+        }
+
+        const montos =  calcularMontos(lstCotizacionCompra,false,18);
+        pintarTableMontos(montos,moneda); 
+        toastr.info('MONEDA ACTUALIZADA A'+' '+ moneda);  
     }
 
 </script>

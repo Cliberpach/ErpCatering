@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Compras;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Compras\OrdenCompra\OrdenCompraStoreRequest;
 use App\Models\Compras\CotizacionCompra;
 use App\Models\Compras\CotizacionCompraDetalle;
 use App\Models\Compras\OrdenCompra;
@@ -10,6 +11,7 @@ use App\Models\Compras\OrdenCompraDetalle;
 use App\Models\Compras\Proveedor;
 use App\Models\Registros\Categoria;
 use App\Models\Registros\Marca;
+use App\Models\Registros\Proyecto;
 use App\Models\Requerimientos\Requerimiento;
 use Carbon\Carbon;
 use Exception;
@@ -255,7 +257,8 @@ class CotizacionCompraController extends Controller
                                         p.nombre as producto_nombre,
                                         c.descripcion as categoria_nombre,
                                         m.descripcion as marca_nombre,
-                                        tgd.descripcion as producto_unidad_medida
+                                        tgd.descripcion as producto_unidad_medida,
+                                        p.precio
                                         from cotizacion_compra_detalle as ccd
                                         inner join productos as p on p.id = ccd.producto_id
                                         inner join marcas as m on m.id = p.marca_id 
@@ -315,23 +318,57 @@ class CotizacionCompraController extends Controller
         $modalidades_pago   =   DB::select('select * from modalidades_pago as m
                                 where m.estado = "ACTIVO"');
 
+        $igv                =   DB::select('select e.igv from empresas as e')[0]->igv;
+
         return view('compras.cotizacion_compra.cotizacion_to_orden',
         compact('cotizacion_compra','cotizacion_compra_detalle','categorias',
         'marcas','proveedores','tipos_documento','modalidades_pago','requerimiento',
-        'proyecto_personal'));
+        'proyecto_personal','igv'));
         
     }
 
-    public function cotizacionToOrden(Request $request){
+
+
+    /*
+        array:21 [ // app\Http\Controllers\Compras\CotizacionCompraController.php:352
+            "_token"            => "0JxjfDhuvq6nx8BGCa4H6q2t19ohFZxgTGC72VQ9"
+            "fecha_entrega"     => "2024-10-09"             --VALIDACION REQUEST
+            "igv"               => "18"                     --VALIDACION REQUEST
+            "moneda"            => "USD"                    --VALIDACION REQUEST
+            "tipo_cambio"       => "3.744"                  --VALIDACION REQUEST
+            "terminos_entrega"  => "PUESTO EN OBRA"         --VALIDACION REQUEST
+            "proveedor"         => "1"                      --VALIDACION REQUEST
+            "direccion"         => "AV LAS MAGNOLIAS 321"   --VALIDACION REQUEST
+            "proyecto"          => "PROYECTO HUERTA GRANDE" 
+            "modalidad_pago"    => "2"                      --VALIDACION REQUEST
+            "tipo_doc"          => "FACTURA"                --VALIDACION REQUEST
+            "persona_contacto"  => "2"                      --VALIDACIÓN REQUEST Y COMPLEJA
+            "observacion"       => null
+            "producto"          => null
+            "unidad"            => null
+            "precio"            => null
+            "cantidad"          => null
+            "table_cotizacion_to_orden_detalle_length"  => "10"
+            "lstCotizacionCompra"                       => "[{"cantidad":"20.00","categoria_nombre":"CEMENTO","marca_nombre":"MOCHICA","producto_id":1,"producto_nombre":"CEMENTO ROJO MOCHICA X 45 KG","producto_unidad_medida":"UNIDAD","precio":"29.50","total":590},{"cantidad":"10.00","categoria_nombre":"TUBO","marca_nombre":"EUROTUBO","producto_id":2,"producto_nombre":"TUBO HIDRÁULICO","producto_unidad_medida":"UNIDAD","precio":"2","total":20,"almacen_nombre":""}]"
+            "cotizacion_compra_id"  => "1"  --VALIDACION COMPLEJA
+            "requerimiento_id"      => "1"  --VALIDACION COMPLEJA
+        ]
+    */
+    public function cotizacionToOrden(OrdenCompraStoreRequest $request){
         DB::beginTransaction();
         try {
 
-            $requerimiento  =   Requerimiento::find($request->get('requerimiento_id'));
-            
+            //===== VALIDACIÓN COMPLEJA ======
+            CotizacionCompraController::validacionCotizacionToOrden($request);
+
             $lstCotizacionCompraDetalle =   json_decode($request->get('lstCotizacionCompra'));
-            if(count($lstCotizacionCompraDetalle) === 0){
-                throw new Exception("EL DETALLE DE LA ORDEN DE COMPRA ESTÁ VACÍO");
-            }
+            CotizacionCompraController::validarLstCotizacionCompra($lstCotizacionCompraDetalle);
+
+            $montos             =   CotizacionCompraController::calcularMontos($lstCotizacionCompraDetalle,$request->get('igv',null),$request->get('valor_igv'));
+
+            $requerimiento      =   Requerimiento::find($request->get('requerimiento_id'));
+            $cotizacion_compra  =   CotizacionCompra::find($requerimiento->cotizacion_compra_id);
+
 
             $orden_compra                       =   new OrdenCompra();
             $orden_compra->proveedor_id         =   $request->get('proveedor');
@@ -343,23 +380,68 @@ class CotizacionCompraController extends Controller
             $orden_compra->observacion          =   $request->get('observacion');  
             $orden_compra->persona_contacto_id  =   $request->get('persona_contacto');  
             $orden_compra->fecha_entrega        =   $request->get('fecha_entrega');  
-            $orden_compra->terminos_entrega     =   $request->get('terminos_entrega');  
+            $orden_compra->terminos_entrega     =   $request->get('terminos_entrega');
+            $orden_compra->moneda               =   $request->get('moneda');
+            $orden_compra->tipo_cambio          =   $request->get('tipo_cambio');
+            $orden_compra->precios_igv          =   $request->has('igv')?1:0;
+            $orden_compra->observacion          =   $request->get('observacion');
+            $orden_compra->igv                  =   $request->get('valor_igv');
+            $orden_compra->subtotal             =   $montos->subtotal;
+            $orden_compra->monto_igv            =   $montos->monto_igv;
+            $orden_compra->total                =   $montos->total;  
+
+            $moneda                                  =   $request->get('moneda');
+            if($moneda === 'PEN'){
+                $orden_compra->subtotal_soles        =   $montos->subtotal;
+                $orden_compra->monto_igv_soles       =   $montos->monto_igv;
+                $orden_compra->total_soles           =   $montos->total;
+            }
+
+            if($moneda  === "USD"){
+                $orden_compra->subtotal_soles        =   $montos->subtotal  * (float)$request->get('tipo_cambio');
+                $orden_compra->monto_igv_soles       =   $montos->monto_igv * (float)$request->get('tipo_cambio');
+                $orden_compra->total_soles           =   $montos->total * (float)$request->get('tipo_cambio');
+            }
+
             $orden_compra->save();
-
+            
             foreach ($lstCotizacionCompraDetalle as $item) {
-                $producto_existe    =   DB::select('select p.id from productos as p
-                                        where p.id = ?',[$item->producto_id]);
-
-                if(count($producto_existe) === 0){
-                    throw new Exception("NO EXISTE EL PRODUCTO"." ".$item->producto_nombre." "."EN LA BD");
-                }
-
                 $orden_compra_detalle                          =   new OrdenCompraDetalle();
                 $orden_compra_detalle->orden_compra_id         =   $orden_compra->id;
                 $orden_compra_detalle->producto_id             =   $item->producto_id;
                 $orden_compra_detalle->cantidad                =   $item->cantidad;
+                $orden_compra_detalle->precio_soles            =   $item->precio;
+
+                if($moneda == 'USD')
+                {
+                    $orden_compra_detalle->precio_soles   =   (float) $item->precio * (float) $request->get('tipo_cambio');
+                    $orden_compra_detalle->precio_dolares =   (float) $item->precio;
+                }
+
+                if($moneda == 'PEN')
+                {
+                    $orden_compra_detalle->precio_soles   =   (float) $item->precio;
+                    $orden_compra_detalle->precio_dolares =   (float) $item->precio/$request->get('tipo_cambio');
+                }
+
+                if($request->has('igv')){
+                    $orden_compra_detalle->precio_mas_igv_soles   =   $item->precio;
+                    $orden_compra_detalle->precio_mas_igv_dolares =   $orden_compra_detalle->precio_dolares;
+                }else{
+                    $orden_compra_detalle->precio_mas_igv_soles   =   $item->precio * ((100+$request->get('igv'))/100);
+                    $orden_compra_detalle->precio_mas_igv_dolares =   $orden_compra_detalle->precio_dolares * ((100+$request->get('igv'))/100);
+                }
+
                 $orden_compra_detalle->save();
             }
+
+            //======== ACTUALIZAR ESTADO DEL REQUERIMIENTO =======
+            $requerimiento->estado  =   'CON ORDEN COMPRA';
+            $requerimiento->update();
+
+            //========= ACTUALIZAR ESTADO DE COTIZACIÓN =======
+            $cotizacion_compra->estado  =   'CON ORDEN COMPRA';
+            $cotizacion_compra->update();
 
             DB::commit();
 
@@ -369,4 +451,131 @@ class CotizacionCompraController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+
+    public static function validarLstCotizacionCompra($lstCompra){
+
+        if(count($lstCompra) === 0){
+            throw new Exception("EL DETALLE DE LA COMPRA ESTÁ VACÍO!!!");
+        }
+
+        foreach ($lstCompra as $item) {
+            $existe =   DB::table('productos')
+                        ->where('id', $item->producto_id)
+                        ->exists();
+
+            if(!$existe){
+                throw new Exception("EL PRODUCTO ".$item->producto_nombre."NO EXISTE EN LA BD");
+            }
+        }
+
+    }
+
+    public static function calcularMontos($lstCompra,$precios_con_igv,$igv){
+        $subtotal   =   0;
+        $monto_igv  =   0;
+        $total      =   0;
+        $valor_igv  =   $igv;
+
+        if($precios_con_igv){
+            foreach ($lstCompra as $item) {
+                $total  +=  (float)$item->total;
+            }
+            $subtotal    =   $total/((100 + (float)$valor_igv)/100);
+            $monto_igv   =   $total - $subtotal;
+        }else{
+            //======= PRECIOS SIN IGV =======
+            foreach ($lstCompra as $item) {
+                $subtotal  +=  (float)$item->total;
+            }
+
+            $monto_igv   =   ((float)$valor_igv/100)*$subtotal;
+            $total       =   $subtotal + $monto_igv;
+        }
+
+        return (object)['subtotal'=>$subtotal,'monto_igv'=>$monto_igv,'total'=>$total];
+    }
+
+    public static function validacionCotizacionToOrden($request){
+
+        if(!$request->has('cotizacion_compra_id')){
+            throw new Exception("FALTA EL PARÁMETRO COTIZACIÓN COMPRA ID");
+        }
+
+        if(!$request->get('cotizacion_compra_id')){
+            throw new Exception("FALTA EL PARÁMETRO COTIZACIÓN COMPRA ID");
+        }
+
+        if(!$request->has('requerimiento_id')){
+            throw new Exception("FALTA EL PARÁMETRO REQUERIMIENTO ID");
+        }
+
+        if(!$request->get('requerimiento_id')){
+            throw new Exception("FALTA EL PARÁMETRO REQUERIMIENTO ID");
+        }
+
+        //========= VALIDANDO REQUERIMIENTO EN BD ======
+        $requerimiento  =   Requerimiento::find($request->get('requerimiento_id'));
+
+        if(!$requerimiento){
+            throw new Exception("NO EXISTE EL REQUERIMIENTO EN LA BD");
+        }
+
+        if(!$requerimiento->estado  === 'PENDIENTE'){
+            throw new Exception("EL REQUERIMIENTO NO ESTÁ COTIZADO");
+        }
+
+        if(!$requerimiento->estado  === 'CON ORDEN COMPRA'){
+            throw new Exception("EL REQUERIMIENTO YA FUE CONVERTIDO A ORDEN DE COMPRA");
+        }
+
+        if(!$requerimiento->estado  === 'FACTURADO'){
+            throw new Exception("EL REQUERIMIENTO YA FUE FACTURADO");
+        }
+
+        if(!$requerimiento->estado  === 'ANULADO'){
+            throw new Exception("EL REQUERIMIENTO ESTÁ ANULADO");
+        }
+
+        //======= VALIDANDO COTIZACIÓN COMPRA EN BD ========
+        $cotizacion_compra  =   CotizacionCompra::find($request->get('cotizacion_compra_id'));
+
+        if(!$cotizacion_compra){
+            throw new Exception("NO EXISTE LA COTIZACIÓN DE COMPRA EN LA BD");
+        }
+
+        if(!$cotizacion_compra->estado  === 'CON ORDEN COMPRA'){
+            throw new Exception("LA COTIZACIÓN DE COMPRA YA FUE CONVERTIDA A ORDEN DE COMPRA");
+        }
+
+        if(!$cotizacion_compra->estado  === 'FACTURADO'){
+            throw new Exception("LA COTIZACIÓN DE COMPRA YA FUE FACTURADA");
+        }
+
+        if(!$cotizacion_compra->estado  === 'ANULADO'){
+            throw new Exception("LA COTIZACIÓN DE COMPRA ESTÁ ANULADA");
+        }
+
+        //======== VALIDANDO LA PERSONA DE CONTACTO ========
+        $persona_contacto_id    =   $request->get('persona_contacto');
+        $proyecto_id            =   $requerimiento->proyecto_id;
+
+        //======== COMPROBANDO SI LA PERSONA DE CONTACTO ES EL SUPERVISOR DEL PROYECTO =====
+        $proyecto               =   Proyecto::find($proyecto_id);
+
+        //======= EN CASO NO SEA EL SUPERVISOR DEL PROYECTO =======
+        //======= VERIFICAR SI ES UN PERSONAL DEL PROYECTO =======
+        if($proyecto->supervisor_id != $persona_contacto_id){
+            $proyecto_personal      =   DB::select('select *
+                                        from proyecto_personal as pp
+                                        where pp.proyecto_id = ?
+                                        and pp.colaborador_id = ?',
+                                        [$proyecto_id,$persona_contacto_id]);
+
+            if(count($proyecto_personal) === 0){
+                throw new Exception("LA PERSONA DE CONTACTO NO ES SUPERVISOR NI FORMA PARTE DEL PERSONAL DEL PROYECTO");
+            }  
+        }
+    }
+
+   
 }

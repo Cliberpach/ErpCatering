@@ -47,7 +47,7 @@
         dtOrdenesCompra  =   new DataTable('#table_list_orden_compra',{
             serverSide: true,
             processing: true,
-            responsive:true,
+            //responsive:true,
             ajax: {
                 url: urlGetOrdenCompra,
                 type: 'GET',
@@ -79,10 +79,22 @@
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
                         const urlDelete         = `{{ route('compras.cotizacion_compra.destroy', ':id') }}`.replace(':id', data.id);
-                        const urlPdf            = `{{ route('compras.cotizacion_compra.pdf', ':id') }}`.replace(':id', data.id);
+                        const urlPdf            = `{{ route('compras.orden_compra.pdf', ':id') }}`.replace(':id', data.id);
                         const urlOrdenCompra    =   `{{route('compras.cotizacion_compra.goToOrdenCompra',':id')}}`.replace(':id', data.id);
 
-                        return `ACCIONES`;
+                        return `<div class="btn-group dropstart">
+                                    <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa-solid fa-grip"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                                        
+                                        <li>
+                                            <a class="dropdown-item" href="${urlPdf}" target="_blank">
+                                                <i class="fa-solid fa-file-pdf"></i> PDF
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>`;
                     },
                     name: 'actions', 
                     orderable: false, 
