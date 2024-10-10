@@ -325,19 +325,18 @@ Route::group(['prefix' => 'orden_compra', 'middleware' => ['auth','checkCustomPe
 
 });
 
-Route::group(['prefix' => 'proveedores', 'middleware' => ['auth','checkCustomPermission:compras.proveedor']], function () {
-
-    Route::get('/index', [ProveedorController::class, 'index'])->name('compras.proveedor.index');
-    Route::post('/store', [ProveedorController::class, 'store'])->name('compras.proveedor.store');
-    Route::get('/create', [ProveedorController::class, 'create'])->name('compras.proveedor.create');
-    Route::get('/edit/{id}', [ProveedorController::class, 'edit'])->name('compras.proveedor.edit');
-    Route::put('/update/{id}', [ProveedorController::class, 'update'])->name('compras.proveedor.update');
-    Route::delete('/destroy/{id}', [ProveedorController::class, 'destroy'])->name('compras.proveedor.destroy');
-    //Route::get('/show/{id}', [RegistroCompraController::class, 'show'])->name('compras.registro_compra.show');
-    Route::get('/getProveedores', [ProveedorController::class, 'getProveedores'])->name('compras.proveedor.getProveedores');
+Route::group(['prefix' => 'proveedores', 'middleware' => 'auth'], function () {
+    Route::get('/index', [ProveedorController::class, 'index'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.index');
+    Route::post('/store', [ProveedorController::class, 'store'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.store');
+    Route::get('/create', [ProveedorController::class, 'create'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.create');
+    Route::get('/edit/{id}', [ProveedorController::class, 'edit'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.edit');
+    Route::put('/update/{id}', [ProveedorController::class, 'update'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.update');
+    Route::delete('/destroy/{id}', [ProveedorController::class, 'destroy'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.destroy');
+    Route::get('/getProveedores', [ProveedorController::class, 'getProveedores'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.getProveedores');
     Route::get('/consultarDocumento', [ProveedorController::class, 'consultarDocumento'])->name('compras.proveedor.consultarDocumento');
-    Route::get('/getListProveedores', [ProveedorController::class, 'getListProveedores'])->name('compras.proveedor.getListProveedores');
+    Route::get('/getListProveedores', [ProveedorController::class, 'getListProveedores'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.getListProveedores');
 });
+
 //====== FIN COMPRAS =========
 
 
