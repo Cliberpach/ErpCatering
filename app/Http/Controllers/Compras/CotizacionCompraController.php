@@ -34,7 +34,7 @@ class CotizacionCompraController extends Controller
 
         $cotizaciones_compra    =   DB::table('cotizacion_compra as cc')
                                     ->leftJoin('requerimientos as r','r.cotizacion_compra_id','=','cc.id')
-                                    ->join('colaboradores as c', 'c.id', '=', 'cc.colaborador_id')
+                                    ->leftJoin('colaboradores as c', 'c.id', '=', 'cc.colaborador_id')
                                     ->leftJoin('colaboradores as cs','cs.id','=','cc.supervisor_id')
                                     ->select(
                                         DB::raw('CONCAT("CO-", cc.id) as simbolo'), 
@@ -42,10 +42,9 @@ class CotizacionCompraController extends Controller
                                         'c.nombre as colaborador_nombre',
                                         'cc.estado',
                                         'cc.created_at as fecha_registro',
-                                        'r.id',
+                                        'r.id as requerimiento_id',
                                         DB::raw('CONCAT("RQ-", r.id) as simbolo_requerimiento'),
                                         'cs.nombre as supervisor_nombre'
-
                                     )
                                     ->where('cc.estado','<>','ANULADO')
                                     ->get();
