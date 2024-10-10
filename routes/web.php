@@ -247,6 +247,7 @@ Route::group(['prefix' => 'requerimientos', 'middleware' => ['auth','checkCustom
     Route::get('/edit/{id}', [RequerimientoController::class, 'edit'])->name('requerimientos.requerimientos.edit')->middleware('checkRole:SUPERVISOR');
     Route::delete('/destroy/{id}', [RequerimientoController::class, 'destroy'])->name('requerimientos.requerimientos.destroy');
     Route::get('/show/{id}', [RequerimientoController::class, 'show'])->name('requerimientos.requerimientos.show');
+    Route::get('/getProductos', [RequerimientoController::class, 'getProductos'])->name('requerimientos.requerimientos.getProductos');
 
 });
 
