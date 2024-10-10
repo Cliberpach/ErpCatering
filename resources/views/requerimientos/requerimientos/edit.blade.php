@@ -96,7 +96,7 @@
     }
 
     function iniciarDataTableProductos(){
-        const urlGetProductos   =   @json(route('registros.producto.getProductos'));
+        const urlGetProductos   =   @json(route('requerimientos.requerimientos.getProductos'));
         
         dtProductos  =   new DataTable('#table_productos',{
             serverSide: true,  

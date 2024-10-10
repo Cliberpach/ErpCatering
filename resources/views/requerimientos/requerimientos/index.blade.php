@@ -45,7 +45,7 @@
     }
 
     function iniciarDataTableRequerimientos(){
-        const urlGetRequerimientos = '{{ route("requerimientos.requerimientos.getProductos") }}';
+        const urlGetRequerimientos = '{{ route("requerimientos.requerimientos.getRequerimientos") }}';
         console.log(urlGetRequerimientos);
         
         dtRequerimientos  =   new DataTable('#table_list_requerimientos',{
