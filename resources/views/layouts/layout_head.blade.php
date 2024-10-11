@@ -4,6 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
    
     <title>ErpConstructora</title>
+    <link rel="icon" href="{{ asset('img/favicon.ico') }}" type="image/x-icon">
+
 
     <script src="{{asset('jquery/jquery.js')}}"></script>
 

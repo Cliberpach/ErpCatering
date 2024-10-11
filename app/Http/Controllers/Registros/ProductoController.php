@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Registros;
 
+use App\Exports\Formatos\Producto\ProductoExport;
+use App\Exports\Registros\Producto\ProductoExport as ListProductoExport;
 use App\Http\Requests\Registros\Producto\ProductoStoreRequest;
 use App\Http\Requests\Registros\Producto\ProductoUpdateRequest;
 use App\Models\Registros\Producto;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Registros\Producto\ProductoImportExcelRequest;
+use App\Imports\Registros\Producto\ProductoImport;
 use App\Models\Registros\Marca;
 use App\Models\Registros\Categoria;
+use Carbon\Carbon;
 use Exception;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
@@ -16,12 +21,16 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class ProductoController extends Controller
 {
     public function index(){
-        return view('registros.productos.index');
+        $marcas             =   Marca::where('estado','ACTIVO')->get();
+        $categorias         =   Categoria::where('estado','ACTIVO')->get();
+
+        return view('registros.productos.index',compact('marcas','categorias'));
     }
 
     public function create(){
@@ -272,5 +281,111 @@ class ProductoController extends Controller
         return (object)['barcode'=>$barcode,
         'codigo_barras'=>$codigo_barras,
         'path'=>'img/codigos_barra/productos/'.$codigo_barras.'.png']; 
+    }
+
+    public function descargarFormatoExcel(Request $request)
+    {
+        return Excel::download(new ProductoExport(), 'formato_import_productos.xlsx');
+    }
+
+
+
+    /*
+    {#2060 // app\Http\Controllers\Registros\ProductoController.php:299
+        +"con_errores": true
+        +"listadoProductos": array:2 [
+            0 => array:10 [
+            "fila" => 2
+            "nombre" => "PRODUCTO 1"
+            "codigo_barras" => 12345678
+            "codigo_interno" => 12345678
+            "categoria" => "PRODUCTO"
+            "marca" => "NACIONAL"
+            "unidad_medida" => "UNIDAD"
+            "precio" => 1
+            "stock_minimo" => 1
+            "error" => "El nombre 'PRODUCTO 1' ya existe en productos activos."
+            ]
+            1 => array:10 [
+            "fila" => 3
+            "nombre" => "PRODUCTO 2"
+            "codigo_barras" => 12345678
+            "codigo_interno" => 12345678
+            "categoria" => "PRODUCTO"
+            "marca" => "NACIONAL"
+            "unidad_medida" => "UNIDAD"
+            "precio" => 1
+            "stock_minimo" => 1
+            "error" => "El nombre 'PRODUCTO 2' ya existe en productos activos."
+            ]
+        ]
+    }
+    */ 
+    public function importarProductosExcel(ProductoImportExcelRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+
+            $import = new ProductoImport();
+
+            Excel::import($import, $request->file('productos_import_excel'));
+
+            $resultado = $import->getResultados();
+
+            if($resultado->con_errores){
+                return response()->json(['success'=>false,'message'=>'ERRORES EN EL EXCEL','resultado'=>$resultado]);
+            }else{
+                $lstProductos  =   $resultado->listadoProductos;
+                foreach ($lstProductos as $producto_excel) {
+
+                    $categoria      =   DB::select('select c.id 
+                                        from categorias as c
+                                        where c.estado = "ACTIVO" 
+                                        and c.descripcion = ?',[$producto_excel['categoria']])[0];
+
+                    $marca          =   DB::select('select m.id 
+                                        from marcas as m
+                                        where m.estado = "ACTIVO" 
+                                        and m.descripcion = ?',[$producto_excel['marca']])[0];
+                                        
+                    $unidad_medida  =   DB::select('select tgd.id 
+                                        from tablas_generales_detalles as tgd
+                                        where tgd.estado = "ACTIVO" 
+                                        and tgd.tabla_general_id = 1
+                                        and tgd.descripcion = ?',[$producto_excel['unidad_medida']])[0];
+
+                    $producto                   =   new Producto();
+                    $producto->marca_id         =   $marca->id;
+                    $producto->categoria_id     =   $categoria->id;
+                    $producto->unidad_medida_id =   $unidad_medida->id;
+                    $producto->nombre           =   mb_strtoupper($producto_excel['nombre'], 'UTF-8');
+                    $producto->codigo_barras    =   $producto_excel['codigo_barras'];
+                    $producto->codigo_interno   =   $producto_excel['codigo_interno'];
+                    $producto->precio           =   $producto_excel['precio'];
+                    $producto->stock_minimo     =   $producto_excel['stock_minimo'];
+                    $producto->save();
+
+                    if (!empty($producto_excel['codigo_barras'])) {
+                        $res_generar_barcode            =   ProductoController::generarCodigoBarras($producto_excel['codigo_barras']);
+                        $producto->ruta_codigo_barras   =   $res_generar_barcode->path;
+                        $producto->update();
+                    }
+                }
+                DB::commit();
+                return response()->json(['success'=>true,'message'=>'EXCEL IMPORTADO CON ÉXITO','resultado'=>$resultado]);
+            }
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage(),'line'=>$th->getLine()]);
+        }
+    }
+
+    public function excel(Request $request){
+        $categoriaId    =   $request->query('categoriaId');
+        $marcaId        =   $request->query('marcaId');
+        $fecha_actual   =   Carbon::now();
+
+        return Excel::download(new ListProductoExport($categoriaId,$marcaId,$fecha_actual), 'lista_productos_'.$fecha_actual.'.xlsx');
     }
 }

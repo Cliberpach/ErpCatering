@@ -11,6 +11,7 @@
 
 @section('section-page')
 @include('registros.productos.modals.modal_show')
+@include('registros.productos.modals.modal_import_producto')
 
 <div class="card-style settings-card-1 mb-30">
     @csrf
@@ -20,6 +21,34 @@
       <button class="btn btn-primary" onclick="goToCrearProducto()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
+    </div>
+    <div class="row mb-3">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+            <label for="categoria" style="font-weight: bold;">CATEGORIA</label>
+            <select data-placeholder="Seleccionar" name="categoria" id="categoria" class="select2_form" onchange="dtProductos.ajax.reload();">
+                @foreach ($categorias as $categoria)
+                    <option value="{{$categoria->id}}">{{$categoria->descripcion}}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+            <label for="categoria" style="font-weight: bold;">MARCA</label>
+            <select data-placeholder="Seleccionar" name="marca" id="marca" class="select2_form" onchange="dtProductos.ajax.reload();">
+                @foreach ($marcas as $marca)
+                    <option value="{{$marca->id}}">{{$marca->descripcion}}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 d-flex justify-content-end">
+            <button class="btn btn-warning" onclick="openMdlImportProducto()">
+                <i class="fa-solid fa-upload"></i> IMPORTAR
+            </button>
+            <button class="btn btn-dark" style="margin-left:6px;" onclick="exportarExcelProductos();">
+                <i class="fa-solid fa-download"></i> EXPORTAR
+            </button>
+        </div>
     </div>
     <div class="table-responsive">
         @include('registros.productos.tables.table_list_productos')
@@ -40,6 +69,8 @@
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarDataTableProductos();
         iniciarDataTableStocks();
+        iniciarSelect2();
+        eventsMdlImportarProductos();
     })
 
     function iniciarDataTableProductos(){
@@ -51,6 +82,10 @@
             ajax: {
                 url: urlGetProductos,
                 type: 'GET',
+                data: function (d) {
+                    d.categoria_id  =   $('#categoria').val();
+                    d.marca_id      =   $('#marca').val();
+                }
             },
             columns: [
                 { data: 'id', name: 'id' },
@@ -124,6 +159,15 @@
                 }
             }
         });
+    }
+
+    function iniciarSelect2(){
+        $( '.select2_form' ).select2( {
+            theme: "bootstrap-5",
+            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+            allowClear: true 
+        } );
     }
 
     function goToCrearProducto(){
@@ -204,6 +248,15 @@
             });
         }
         });
+    }
+
+    function exportarExcelProductos(){
+        const categoriaId   = document.getElementById('categoria').value;
+        const marcaId       = document.getElementById('marca').value;
+        
+        const url = '{{ route('registros.producto.excel') }}' + `?categoriaId=${categoriaId}&marcaId=${marcaId}`;
+    
+        window.location.href = url;    
     }
 
 

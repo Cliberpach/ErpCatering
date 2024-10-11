@@ -8,7 +8,7 @@ use App\Models\Registros\Almacen;
 use App\Models\Registros\Proyecto;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 use Dompdf\Dompdf;

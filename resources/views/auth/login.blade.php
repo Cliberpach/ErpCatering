@@ -1,48 +1,232 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ErpConstructora</title>
+    <link rel="icon" href="{{ asset('img/favicon.ico') }}" type="image/x-icon">
+    <style>
 
-        <x-validation-errors class="mb-4" />
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background: #000;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0.5;
+            width: 100%;
+            height: 100%;
+            background: url("/img/img_login.jpeg"); 
+            background-position: center;
+            background-repeat:no-repeat;
+            background-size: cover;
+        }
+        
+        nav {
+            position: fixed;
+            padding: 25px 60px;
+            z-index: 1;
+        }
+        
+        nav a img {
+            width: 167px;
+        }
+        
+        .form-wrapper {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border-radius: 4px;
+            padding: 70px;
+            width: 450px;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, .75);
+        }
+        
+        .form-wrapper h3 {
+            color: #fff;
+            font-size: 1.7rem;
+        }
+        
+        .form-wrapper form {
+            margin: 25px 0 65px;
+        }
+        
+        form .form-control {
+            height: 50px;
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .form-control input {
+            height: 100%;
+            width: 100%;
+            background: #333;
+            border: none;
+            outline: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 1rem;
+            padding: 0 20px;
+        }
+        
+        .form-control input:is(:focus, :valid) {
+            background: #444;
+            padding: 16px 20px 0;
+        }
+        
+        .form-control label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            pointer-events: none;
+            color: #8c8c8c;
+            transition: all 0.1s ease;
+        }
+        
+        .form-control input:is(:focus, :valid)~label {
+            font-size: 0.75rem;
+            transform: translateY(-130%);
+        }
+        
+        form button {
+            width: 100%;
+            padding: 16px 0;
+            font-size: 1rem;
+            background: #e50914;
+            color: #fff;
+            font-weight: 500;
+            border-radius: 4px;
+            border: none;
+            outline: none;
+            margin: 25px 0 10px;
+            cursor: pointer;
+            transition: 0.1s ease;
+        }
+        
+        form button:hover {
+            background: #c40812;
+        }
+        
+        .form-wrapper a {
+            text-decoration: none;
+        }
+        
+        .form-wrapper a:hover {
+            text-decoration: underline;
+        }
+        
+        .form-wrapper :where(label, p, small, a) {
+            color: #b3b3b3;
+        }
+        
+        form .form-help {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        form .remember-me {
+            display: flex;
+        }
+        
+        form .remember-me input {
+            margin-right: 5px;
+            accent-color: #b3b3b3;
+        }
+        
+        form .form-help :where(label, a) {
+            font-size: 0.9rem;
+        }
+        
+        .form-wrapper p a {
+            color: #fff;
+        }
+        
+        .form-wrapper small {
+            display: block;
+            margin-top: 15px;
+            color: #b3b3b3;
+        }
+        
+        .form-wrapper small a {
+            color: #0071eb;
+        }
+        
+        @media (max-width: 740px) {
+            /* body::before {
+                display: none;
+            } */
+        
+            nav, .form-wrapper {
+                padding: 20px;
+            }
+        
+            nav a img {
+                width: 140px;
+            }
+        
+            .form-wrapper {
+                width: 100%;
+                top: 43%;
+            }
+        
+            .form-wrapper form {
+                margin: 25px 0 40px;
+            }
+        }</style>
+</head>
+<body>
+   
+    <div class="form-wrapper">
 
+        <div style="color:white;margin-bottom:10px;">
+            <x-validation-errors />
+        </div>
+       
         @session('status')
             <div class="mb-4 font-medium text-sm text-green-600">
                 {{ $value }}
             </div>
         @endsession
 
+        <div style="display:flex;justify-content:center;">
+            <h3 class="text-center text-xl font-bold text-gray-800">
+                {{ $empresa->razon_social }}
+            </h3>
+        </div>   
+
         <form method="POST" action="{{ route('login') }}">
             @csrf
-
-            <div>
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <div class="form-control">
+                <input id="email" name="email" type="text" required>
+                <label :value="old('email')" required autofocus autocomplete="username" for="email" value="{{ __('Email') }}">Correo</label>
             </div>
-
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+            <div class="form-control">
+                <input name="password" id="password" type="password" required>
+                <label for="password" value="{{ __('Password') }}">Contraseña</label>
             </div>
-
-            <div class="block mt-4">
-                <label for="remember_me" class="flex items-center">
-                    <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
-
-                <x-button class="ms-4">
-                    {{ __('Log in') }}
-                </x-button>
+            <button type="submit">Iniciar Sesión</button>
+            <div class="form-help"> 
+                <div class="remember-me">
+                    <input type="checkbox" id="remember_me" name="remember">
+                    <label for="remember_me">Recuérdame</label>
+                </div>
+                
             </div>
         </form>
-    </x-authentication-card>
-</x-guest-layout>
+       
+    </div>
+</body>
+</html>

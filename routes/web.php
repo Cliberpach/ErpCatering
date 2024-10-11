@@ -28,13 +28,14 @@ use App\Http\Controllers\Registros\ProyectoController;
 use App\Http\Controllers\TrabajoEquipo\RegistroTareaController;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Middleware\CheckCustomPermission;
+use App\Models\Herramientas\Empresa;
 use App\Models\Herramientas\TablaGeneralDetalle;
 use App\Models\Logistica\CotizacionCompra;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('auth.login');
-});
+    $empresa = Empresa::first(); 
+    return view('auth.login', ['empresa' => $empresa]);});
 
 Route::get('/acceso_denegado', function () {
     return view('reutilizables.pages.acceso_denegado');
@@ -119,6 +120,9 @@ Route::group(['prefix' => 'productos', 'middleware' => ['auth','checkCustomPermi
     Route::get('/getProductosByAlmacen', [ProductoController::class, 'getProductosByAlmacen'])->name('registros.producto.getProductosByAlmacen');
     Route::delete('/destroy/{id}', [ProductoController::class, 'destroy'])->name('registros.producto.destroy');
     Route::get('/show/{id}', [ProductoController::class, 'show'])->name('registros.producto.show');
+    Route::get('/descargarFormatoExcel', [ProductoController::class, 'descargarFormatoExcel'])->name('registros.producto.descargarFormatoExcel');
+    Route::post('/importarProductosExcel', [ProductoController::class, 'importarProductosExcel'])->name('registros.producto.importarProductosExcel');
+    Route::get('/excel', [ProductoController::class, 'excel'])->name('registros.producto.excel');
 
 });
 

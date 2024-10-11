@@ -3,9 +3,9 @@
 namespace App\Exports\Consultas;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;

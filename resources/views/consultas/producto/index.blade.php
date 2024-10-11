@@ -99,7 +99,7 @@
                     d.fecha_fin     =   $('#fecha_fin').val();
                     d.proyecto_id   =   $('#proyecto').val();
                     d.almacen_id    =   $('#almacen').val();
-                },
+                }
             },
             columns: [
                 { data: 'producto_id', name: 'producto_id' },
