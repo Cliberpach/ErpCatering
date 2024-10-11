@@ -19,15 +19,21 @@ class DetallesSheet implements FromCollection, WithTitle,ShouldAutoSize,WithStyl
     */
     public function collection()
     {
-        $categorias         =   Categoria::where('estado', 'ACTIVO')
-                                ->pluck('descripcion');
+        $categorias =   Categoria::where('estado', 'ACTIVO')
+                        ->pluck('descripcion')
+                        ->sort()
+                        ->values(); 
 
-        $marcas             =   Marca::where('estado', 'ACTIVO')
-                                ->pluck('descripcion');
+        $marcas     =   Marca::where('estado', 'ACTIVO')
+                        ->pluck('descripcion')
+                        ->sort()
+                        ->values(); 
 
         $unidades_medida    =   DB::table('tablas_generales_detalles')
                                 ->where('estado', 'ACTIVO')
-                                ->pluck('descripcion'); 
+                                ->pluck('descripcion')
+                                ->sort()
+                                ->values(); 
 
         $maxCount           =   max($categorias->count(), $marcas->count(), $unidades_medida->count());
 

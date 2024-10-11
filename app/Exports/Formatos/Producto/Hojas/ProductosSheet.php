@@ -18,7 +18,7 @@ class ProductosSheet implements  FromCollection, WithStyles, ShouldAutoSize, Wit
         $contenido = [
             ['NOMBRE','CÓDIGO BARRAS','CÓDIGO INTERNO','CATEGORÍA','MARCA','UNIDAD MEDIDA','PRECIO','STOCK MÍNIMO'],
             ['PRODUCTO 1','12345678','12345678','PRODUCTO','NACIONAL','UNIDAD',1,1],
-            ['PRODUCTO 2','12345678','12345678','PRODUCTO','NACIONAL','UNIDAD',1,1],
+            ['PRODUCTO 2','12345678','12345678','PRODUCTO','NACIONAL','KILOGRAMO',1,1]
         ];
 
         return collect($contenido);
