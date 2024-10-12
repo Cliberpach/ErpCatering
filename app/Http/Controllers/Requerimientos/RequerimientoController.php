@@ -137,8 +137,9 @@ class RequerimientoController extends Controller
                                     order by r.id desc',[$requerimiento->id])[0];
 
             //======= ENVIAR MENSAJE AL SOCKET PARA QUE MUESTRE ALERTA DE NUEVO REQUERIMIENTO A LOS DE LOGÍSTICA ======
+            $socketUrl = env('SOCKET_URL', 'http://localhost:3000'); 
             $client = new \GuzzleHttp\Client();
-            $response   =   $client->post('http://localhost:3000/mensaje', [
+            $response   =   $client->post("$socketUrl/mensaje", [
                                 'json' => [ 
                                     'mensaje'       => 'NUEVO REQUERIMIENTO REGISTRADO',
                                     'requerimiento' => $nuevo_requerimiento

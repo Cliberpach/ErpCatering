@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-
+import https from 'https';
 
 const PORT = process.env.PORT || 3000; 
 
@@ -38,14 +38,15 @@ fs.readFile(envFile, 'utf8', (err, data) => {
 });
 */
 
+
 const app = express();
 const options = {
-    key: fs.readFileSync(process.env.SSL_KEY_PATH),  // Ruta a tu archivo de clave
-    cert: fs.readFileSync(process.env.SSL_CERT_PATH), // Ruta a tu archivo de certificado
+    key: fs.readFileSync('/etc/letsencrypt/live/www.obramaster.online/privkey.pem'),  // Ruta a tu archivo de >
+    cert: fs.readFileSync('/etc/letsencrypt/live/www.obramaster.online/fullchain.pem'), // Ruta a tu archivo d>
 };
-
 const server = https.createServer(options, app);
 //const server = http.createServer(app);
+
 const io = new Server(server, {
     cors: {
         origin: process.env.CORS_ORIGIN, // Usar la variable de entorno
@@ -71,7 +72,6 @@ app.post('/mensaje', (req, res) => {
     io.emit('nuevoRequerimiento', { mensaje, requerimiento });
     res.status(200).send('Mensaje enviado');
 });
-
 
 io.on('connection', (socket) => {
     console.log('Usuario conectado');
