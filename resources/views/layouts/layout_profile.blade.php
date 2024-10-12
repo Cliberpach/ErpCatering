@@ -1,4 +1,4 @@
-<div class="profile-box ml-15">
+<div class="profile-box ">
     <button class="dropdown-toggle bg-transparent border-0" type="button" id="profile"
       data-bs-toggle="dropdown" aria-expanded="false">
       <div class="profile-info">

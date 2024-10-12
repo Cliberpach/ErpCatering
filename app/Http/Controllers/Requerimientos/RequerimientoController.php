@@ -121,6 +121,16 @@ class RequerimientoController extends Controller
             }
 
             DB::commit();
+
+            //======= ENVIAR MENSAJE AL SOCKET PARA QUE MUESTRE ALERTA DE NUEVO REQUERIMIENTO A LOS DE LOGÍSTICA ======
+            $client = new \GuzzleHttp\Client();
+            $response   =   $client->post('http://localhost:3000/mensaje', [
+                                'json' => [ 
+                                    'mensaje' => 'NUEVO REQUERIMIENTO REGISTRADO',
+                                    'requerimiento' => $requerimiento
+                                ],
+                            ]);
+
             return response()->json(['success'=>true,'message'=>"REQUERIMIENTO REGISTRADO"]);
 
         } catch (\Throwable $th) {

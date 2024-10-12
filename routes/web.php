@@ -31,11 +31,13 @@ use App\Http\Middleware\CheckCustomPermission;
 use App\Models\Herramientas\Empresa;
 use App\Models\Herramientas\TablaGeneralDetalle;
 use App\Models\Logistica\CotizacionCompra;
+use App\Models\Requerimientos\Requerimiento;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $empresa = Empresa::first(); 
-    return view('auth.login', ['empresa' => $empresa]);});
+    return view('auth.login', ['empresa' => $empresa]);
+});
 
 Route::get('/acceso_denegado', function () {
     return view('reutilizables.pages.acceso_denegado');
@@ -46,7 +48,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('/dashboard', function () { 
         return view('layouts.layout');
     })->name('dashboard');
 });
@@ -277,8 +279,8 @@ Route::group(['prefix' => 'lista_requerimientos', 'middleware' => ['auth','check
     Route::post('/generarCotizacion', [ListaRequerimientoController::class, 'generarCotizacion'])->name('logistica.lista_requerimientos.generarCotizacion');
     Route::get('/getRequerimientos', [ListaRequerimientoController::class, 'getRequerimientos'])->name('logistica.lista_requerimientos.getRequerimientos');
     Route::get('/show/{id}', [ListaRequerimientoController::class, 'show'])->name('logistica.lista_requerimientos.show');
-
-    // Route::get('/create', [RequerimientoController::class, 'create'])->name('requerimientos.requerimientos.create')->middleware('checkRole:SUPERVISOR');
+    Route::get('/goToCotizacionCompra/{id}', [ListaRequerimientoController::class, 'goToCotizacionCompra'])->name('logistica.lista_requerimientos.goToCotizacionCompra');
+    Route::post('/requerimientoToCotizacion', [ListaRequerimientoController::class, 'requerimientoToCotizacion'])->name('logistica.lista_requerimientos.requerimientoToCotizacion');
     // Route::get('/getRequerimientos', [RequerimientoController::class, 'getRequerimientos'])->name('requerimientos.requerimientos.getRequerimientos');
     // Route::put('/update/{id}', [RequerimientoController::class, 'update'])->name('requerimientos.requerimientos.update');
     // Route::post('/store', [RequerimientoController::class, 'store'])->name('requerimientos.requerimientos.store')->middleware('checkRole:SUPERVISOR');
@@ -323,6 +325,8 @@ Route::group(['prefix' => 'orden_compra', 'middleware' => ['auth','checkCustomPe
     Route::get('/index', [OrdenCompraController::class, 'index'])->name('compras.orden_compra.index');
     // Route::post('/store', [RegistroCompraController::class, 'store'])->name('compras.registro_compra.store');
     Route::get('/create', [OrdenCompraController::class, 'create'])->name('compras.orden_compra.create');
+    Route::get('/edit/{id}', [OrdenCompraController::class, 'edit'])->name('compras.orden_compra.edit');
+    Route::put('/update/{id}', [OrdenCompraController::class, 'update'])->name('compras.orden_compra.update');
     // Route::get('/show/{id}', [RegistroCompraController::class, 'show'])->name('compras.registro_compra.show');
     Route::get('/getOrdenesCompra', [OrdenCompraController::class, 'getOrdenesCompra'])->name('compras.orden_compra.getOrdenesCompra');
     Route::get('/pdf/{id}', [OrdenCompraController::class, 'pdf'])->name('compras.orden_compra.pdf');

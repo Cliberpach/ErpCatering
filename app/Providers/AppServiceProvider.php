@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Requerimientos\Requerimiento;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
@@ -21,8 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $empresa = DB::table('empresas')->where('id', 1)->first();
+        $empresa        =   DB::table('empresas')->where('id', 1)->first();
+        $requerimientos =   Requerimiento::where('estado','<>','ANULADO')->get();
 
         View::share('empresa', $empresa);
+        View::share('requerimientos', $requerimientos);
+
     }
 }

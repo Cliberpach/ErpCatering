@@ -44,8 +44,7 @@ class CotizacionCompraController extends Controller
                                         'cc.created_at as fecha_registro',
                                         'r.id as requerimiento_id',
                                         DB::raw('CONCAT("RQ-", r.id) as simbolo_requerimiento'),
-                                        'cs.nombre as supervisor_nombre'
-                                    )
+                                        DB::raw('COALESCE(cs.nombre, c.nombre) as supervisor_nombre')                                     )
                                     ->where('cc.estado','<>','ANULADO')
                                     ->get();
 
@@ -369,25 +368,25 @@ class CotizacionCompraController extends Controller
             $cotizacion_compra  =   CotizacionCompra::find($requerimiento->cotizacion_compra_id);
 
 
-            $orden_compra                       =   new OrdenCompra();
-            $orden_compra->proveedor_id         =   $request->get('proveedor');
-            $orden_compra->modalidad_pago_id    =   $request->get('modalidad_pago');
-            $orden_compra->proyecto_id          =   $requerimiento->proyecto_id;
-            $orden_compra->documento            =   $request->get('documento');   
-            $orden_compra->documento            =   $request->get('tipo_doc');   
-            $orden_compra->direccion_obra       =   $request->get('direccion');   
-            $orden_compra->observacion          =   $request->get('observacion');  
-            $orden_compra->persona_contacto_id  =   $request->get('persona_contacto');  
-            $orden_compra->fecha_entrega        =   $request->get('fecha_entrega');  
-            $orden_compra->terminos_entrega     =   $request->get('terminos_entrega');
-            $orden_compra->moneda               =   $request->get('moneda');
-            $orden_compra->tipo_cambio          =   $request->get('tipo_cambio');
-            $orden_compra->precios_igv          =   $request->has('igv')?1:0;
-            $orden_compra->observacion          =   $request->get('observacion');
-            $orden_compra->igv                  =   $request->get('valor_igv');
-            $orden_compra->subtotal             =   $montos->subtotal;
-            $orden_compra->monto_igv            =   $montos->monto_igv;
-            $orden_compra->total                =   $montos->total;  
+            $orden_compra                               =   new OrdenCompra();
+            $orden_compra->colaborador_registrador_id   =   Auth::user()->colaborador_id;
+            $orden_compra->proveedor_id                 =   $request->get('proveedor');
+            $orden_compra->modalidad_pago_id            =   $request->get('modalidad_pago');
+            $orden_compra->proyecto_id                  =   $requerimiento->proyecto_id;
+            $orden_compra->documento                    =   $request->get('tipo_doc');   
+            $orden_compra->direccion_obra               =   $request->get('direccion');   
+            $orden_compra->observacion                  =   $request->get('observacion');  
+            $orden_compra->persona_contacto_id          =   $request->get('persona_contacto');  
+            $orden_compra->fecha_entrega                =   $request->get('fecha_entrega');  
+            $orden_compra->terminos_entrega             =   $request->get('terminos_entrega');
+            $orden_compra->moneda                       =   $request->get('moneda');
+            $orden_compra->tipo_cambio                  =   $request->get('tipo_cambio');
+            $orden_compra->precios_igv                  =   $request->has('igv')?1:0;
+            $orden_compra->observacion                  =   $request->get('observacion');
+            $orden_compra->igv                          =   $request->get('valor_igv');
+            $orden_compra->subtotal                     =   $montos->subtotal;
+            $orden_compra->monto_igv                    =   $montos->monto_igv;
+            $orden_compra->total                        =   $montos->total;  
 
             $moneda                                  =   $request->get('moneda');
             if($moneda === 'PEN'){
@@ -439,7 +438,8 @@ class CotizacionCompraController extends Controller
             $requerimiento->update();
 
             //========= ACTUALIZAR ESTADO DE COTIZACIÓN =======
-            $cotizacion_compra->estado  =   'CON ORDEN COMPRA';
+            $cotizacion_compra->estado          =   'CON ORDEN COMPRA';
+            $cotizacion_compra->orden_compra_id =   $orden_compra->id;
             $cotizacion_compra->update();
 
             DB::commit();

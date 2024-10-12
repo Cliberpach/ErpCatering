@@ -3,12 +3,20 @@
 namespace App\Http\Controllers\Compras;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Compras\OrdenCompra\OrdenCompraUpdateRequest;
+use App\Models\Compras\OrdenCompra;
+use App\Models\Compras\OrdenCompraDetalle;
+use App\Models\Registros\Categoria;
+use App\Models\Registros\Marca;
+use App\Models\Registros\Proyecto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Carbon\Carbon;
+use Exception;
+use PhpOffice\PhpSpreadsheet\Style\Supervisor;
 
 class OrdenCompraController extends Controller
 {
@@ -19,31 +27,35 @@ class OrdenCompraController extends Controller
     public function getOrdenesCompra(Request $request){
 
         $ordenes_compra    =   DB::table('ordenes_compra as oc')
-                                    ->join('proveedores as prov','prov.id','=','oc.proveedor_id')
-                                    ->join('modalidades_pago as m', 'm.id', '=', 'oc.modalidad_pago_id')
-                                    ->join('proyectos as proy','proy.id','=','oc.proyecto_id')
-                                    ->join('colaboradores as co','co.id','=','oc.persona_contacto_id')
-                                    ->select(
-                                        DB::raw('CONCAT("OC-", oc.id) as simbolo'), 
-                                        'oc.id', 
-                                        'prov.nombre as proveedor_nombre',
-                                        DB::raw('CASE 
-                                        WHEN m.tipo = "CONTADO" THEN m.tipo 
-                                        WHEN m.tipo = "CREDITO" THEN CONCAT(m.tipo, " - ", m.nro_dias," ","DÍAS") 
-                                        END as modalidad_pago'),
-                                        'proy.nombre as proyecto_nombre',
-                                        'oc.documento as orden_compra_documento',
-                                        'oc.direccion_obra as orden_compra_direccion_obra',
-                                        'oc.observacion as orden_compra_observacion',
-                                        'co.nombre as persona_contacto_nombre',
-                                        'oc.fecha_entrega as orden_compra_fecha_entrega',
-                                        'oc.terminos_entrega as orden_compra_terminos_entrega',
-                                        'oc.estado as orden_compra_estado',
-                                        'oc.created_at as orden_compra_fecha_registro',
-
-                                    )
-                                    ->where('oc.estado','<>','ANULADO')
-                                    ->get();
+                                ->leftJoin('cotizacion_compra as cc','cc.orden_compra_id','oc.id')
+                                ->join('proveedores as prov','prov.id','=','oc.proveedor_id')
+                                ->join('modalidades_pago as m', 'm.id', '=', 'oc.modalidad_pago_id')
+                                ->join('proyectos as proy','proy.id','=','oc.proyecto_id')
+                                ->join('colaboradores as co','co.id','=','oc.persona_contacto_id')
+                                ->join('colaboradores as col','col.id','=','oc.colaborador_registrador_id')
+                                ->select(
+                                    DB::raw('CONCAT("OC-", oc.id) as simbolo'), 
+                                    'oc.id', 
+                                    'prov.nombre as proveedor_nombre',
+                                    DB::raw('CASE 
+                                    WHEN m.tipo = "CONTADO" THEN m.tipo 
+                                    WHEN m.tipo = "CREDITO" THEN CONCAT(m.tipo, " - ", m.nro_dias," ","DÍAS") 
+                                    END as modalidad_pago'),
+                                    'proy.nombre as proyecto_nombre',
+                                    'oc.documento as orden_compra_documento',
+                                    'oc.direccion_obra as orden_compra_direccion_obra',
+                                    'oc.observacion as orden_compra_observacion',
+                                    'co.nombre as persona_contacto_nombre',
+                                    'col.nombre as colaborador_registrador_nombre',
+                                    'oc.fecha_entrega as orden_compra_fecha_entrega',
+                                    'oc.terminos_entrega as orden_compra_terminos_entrega',
+                                    'oc.estado as orden_compra_estado',
+                                    'oc.created_at as orden_compra_fecha_registro',
+                                    'cc.id as cotizacion_compra_id',
+                                    DB::raw('CONCAT("CO-", cc.id) as simbolo_cotizacion_compra') 
+                                )
+                                ->where('oc.estado','<>','ANULADO')
+                                ->get();
 
         return DataTables::of($ordenes_compra)
                 ->make(true);
@@ -52,6 +64,290 @@ class OrdenCompraController extends Controller
 
     public function create(){
         return view('compras.orden_compra.create');
+
+    }
+
+    public function edit($id){
+        
+        $orden_compra   =   DB::select('select 
+                            oc.*,
+                            c.nombre as persona_contacto_nombre,
+                            pr.nombre as proveedor_nombre,
+                            td.descripcion as tipo_documento_nombre,
+                            pr.nro_documento,
+                            m.tipo as modalidad_pago_nombre,
+                            m.nro_dias as modalidad_pago_nro_dias,
+                            proy.nombre as proyecto_nombre
+                            from ordenes_compra as oc
+                            inner join colaboradores as c on c.id = oc.persona_contacto_id
+                            inner join proveedores as pr on pr.id = oc.proveedor_id
+                            inner join modalidades_pago as m on m.id = oc.modalidad_pago_id
+                            inner join tipos_documento as td on td.id = pr.tipo_documento_id
+                            inner join proyectos as proy on proy.id = oc.proyecto_id
+                            where oc.id = ?',[$id])[0];
+
+        $orden_compra_detalle   =   DB::select('select 
+                                    ocd.producto_id,
+                                    ocd.cantidad,
+                                    ocd.precio_soles,
+                                    ocd.precio_dolares,
+                                    p.nombre as producto_nombre,
+                                    c.descripcion as categoria_nombre,
+                                    m.descripcion as marca_nombre,
+                                    tgd.descripcion as producto_unidad_medida
+                                    from orden_compra_detalle as ocd
+                                    inner join productos as p on p.id = ocd.producto_id
+                                    inner join marcas as m on m.id = p.marca_id 
+                                    inner join categorias as c on c.id = p.categoria_id
+                                    inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
+                                    where ocd.orden_compra_id = ?',[$id]);
+
+        $proyecto_personal  =   DB::select('select
+                                pp.colaborador_id,
+                                CONCAT(co.nombre, " - CEL:", co.telefono) AS persona_contacto
+                                from proyectos as pr
+                                inner join proyecto_personal as pp on pp.proyecto_id = pr.id
+                                inner join colaboradores AS co ON co.id = pp.colaborador_id
+                                where pr.id = ? 
+                                and (pr.estado = "PENDIENTE" or pr.estado = "EN PROCESO")',
+                                [$orden_compra->proyecto_id]);
+
+        $supervisor         =   DB::select('select 
+                                co.id as supervisor_id,
+                                CONCAT(co.nombre, " - CEL:", co.telefono) AS supervisor_contacto
+                                from proyectos as pr
+                                left join colaboradores as co on co.id = pr.supervisor_id
+                                where pr.id = ?',[$orden_compra->proyecto_id])[0];
+
+        $proyecto           =   DB::select('select * from proyectos as pr
+                                where pr.id = ?',[$orden_compra->proyecto_id])[0];
+
+        $categorias         =   Categoria::where('estado','ACTIVO')->get();
+
+        $marcas             =   Marca::where('estado','ACTIVO')->get();
+                            
+        $proveedores        =   DB::select('select 
+                                pr.id,
+                                pr.nombre,
+                                pr.nro_documento,
+                                td.descripcion as tipo_documento_descripcion
+                                from proveedores as pr
+                                inner join tipos_documento as td on td.id = pr.tipo_documento_id
+                                where pr.estado = "ACTIVO"');
+                            
+        $tipos_documento    =   DB::select('select * 
+                                from tipos_documento as td
+                                where td.estado = "ACTIVO"
+                                and td.id <> "3" ');
+                            
+        $modalidades_pago   =   DB::select('select * from modalidades_pago as m
+                                where m.estado = "ACTIVO"');
+                            
+        $igv                =   DB::select('select e.igv from empresas as e')[0]->igv;
+                    
+
+        return view('compras.orden_compra.edit',
+        compact('orden_compra','orden_compra_detalle','categorias',
+        'marcas','proveedores','tipos_documento','modalidades_pago',
+        'proyecto_personal','igv','proyecto','supervisor'));
+  
+    }
+
+
+    /*
+    array:20 [ // app\Http\Controllers\Compras\OrdenCompraController.php:153
+        "_token"                    => "JdyhDaaj0jitzyjdAmCOH8W69P5l6g2h4R18pbly"
+        "fecha_entrega"             => "2024-10-09"                 --VALIDACION REQUEST
+        "igv"                       => "18.00"                      --VALIDACION REQUEST
+        "valor_igv"                 => "18.00"                      --VALIDACION REQUEST
+        "moneda"                    => "PEN"                        --VALIDACION REQUEST
+        "tipo_cambio"               => "3.7440"                     --VALIDACION REQUEST
+        "terminos_entrega"          => "PUESTO EN OBRA"             --VALIDACION REQUEST
+        "proveedor"                 => "1"                          --VALIDACION REQUEST
+        "direccion"                 => "AV LAS MAGNOLIAS 321"       
+        "proyecto"                  => "PROYECTO HUERTA GRANDE"     
+        "modalidad_pago"            => "2"                          --VALIDACION REQUEST
+        "tipo_doc"                  => "FACTURA"                    --VALIDACION REQUEST
+        "persona_contacto"          => "5"                          --VALIDACION REQUEST Y COMPLEJA
+        "observacion"               => "LO MÁS RAPIDO"              --VALIDACION REQUEST
+        "producto"                  => null
+        "unidad"                    => null
+        "precio"                    => null
+        "cantidad"                  => null
+        "table_orden_compra_detalle_length" => "10"
+        "lstOrdenCompra"                    => "[{"cantidad":"20.00","categoria_nombre":"CEMENTO","marca_nombre":"MOCHICA","producto_id":1,"producto_nombre":"CEMENTO ROJO MOCHICA X 45 KG","producto_unidad_medida":"UNIDAD","precio":"29.50","total":590},{"cantidad":"10.00","categoria_nombre":"TUBO","marca_nombre":"EUROTUBO","producto_id":2,"producto_nombre":"TUBO HIDRÁULICO","producto_unidad_medida":"UNIDAD","precio":"1.00","total":10}]"
+    ]
+    */ 
+    public function update($id,OrdenCompraUpdateRequest $request){
+        DB::beginTransaction();
+        try {
+            
+            OrdenCompraController::validacionOrdenCompraUpdate($id,$request);
+            $lstOrdenCompraDetalle  =   json_decode($request->get('lstOrdenCompra'));
+            OrdenCompraController::validarLstOrdenCompra($lstOrdenCompraDetalle);
+
+            $montos     =   CotizacionCompraController::calcularMontos($lstOrdenCompraDetalle,$request->get('igv',null),$request->get('valor_igv'));
+
+            $orden_compra                               =   OrdenCompra::find($id);
+            //$orden_compra->colaborador_registrador_id =   Auth::user()->colaborador_id;
+            $orden_compra->proveedor_id                 =   $request->get('proveedor');
+            $orden_compra->modalidad_pago_id            =   $request->get('modalidad_pago');
+            //$orden_compra->proyecto_id                =   $requerimiento->proyecto_id;
+            $orden_compra->documento                    =   $request->get('tipo_doc');   
+            $orden_compra->direccion_obra               =   $request->get('direccion');   
+            $orden_compra->observacion                  =   $request->get('observacion');  
+            $orden_compra->persona_contacto_id          =   $request->get('persona_contacto');  
+            $orden_compra->fecha_entrega                =   $request->get('fecha_entrega');  
+            $orden_compra->terminos_entrega             =   $request->get('terminos_entrega');
+            $orden_compra->moneda                       =   $request->get('moneda');
+            $orden_compra->tipo_cambio                  =   $request->get('tipo_cambio');
+            $orden_compra->precios_igv                  =   $request->has('igv')?1:0;
+            $orden_compra->observacion                  =   $request->get('observacion');
+            $orden_compra->igv                          =   $request->get('valor_igv');
+            $orden_compra->subtotal                     =   $montos->subtotal;
+            $orden_compra->monto_igv                    =   $montos->monto_igv;
+            $orden_compra->total                        =   $montos->total;  
+
+            $moneda                                  =   $request->get('moneda');
+            if($moneda === 'PEN'){
+                $orden_compra->subtotal_soles        =   $montos->subtotal;
+                $orden_compra->monto_igv_soles       =   $montos->monto_igv;
+                $orden_compra->total_soles           =   $montos->total;
+            }
+
+            if($moneda  === "USD"){
+                $orden_compra->subtotal_soles        =   $montos->subtotal  * (float)$request->get('tipo_cambio');
+                $orden_compra->monto_igv_soles       =   $montos->monto_igv * (float)$request->get('tipo_cambio');
+                $orden_compra->total_soles           =   $montos->total * (float)$request->get('tipo_cambio');
+            }
+
+            $orden_compra->update();
+            
+            DB::delete('DELETE FROM orden_compra_detalle WHERE orden_compra_id = ?', [$id]);
+
+            foreach ($lstOrdenCompraDetalle as $item) {
+                $orden_compra_detalle                          =   new OrdenCompraDetalle();
+                $orden_compra_detalle->orden_compra_id         =   $orden_compra->id;
+                $orden_compra_detalle->producto_id             =   $item->producto_id;
+                $orden_compra_detalle->cantidad                =   $item->cantidad;
+                $orden_compra_detalle->precio_soles            =   $item->precio;
+
+                if($moneda == 'USD')
+                {
+                    $orden_compra_detalle->precio_soles   =   (float) $item->precio * (float) $request->get('tipo_cambio');
+                    $orden_compra_detalle->precio_dolares =   (float) $item->precio;
+                }
+
+                if($moneda == 'PEN')
+                {
+                    $orden_compra_detalle->precio_soles   =   (float) $item->precio;
+                    $orden_compra_detalle->precio_dolares =   (float) $item->precio/$request->get('tipo_cambio');
+                }
+
+                if($request->has('igv')){
+                    $orden_compra_detalle->precio_mas_igv_soles   =   $item->precio;
+                    $orden_compra_detalle->precio_mas_igv_dolares =   $orden_compra_detalle->precio_dolares;
+                }else{
+                    $orden_compra_detalle->precio_mas_igv_soles   =   $item->precio * ((100+$request->get('igv'))/100);
+                    $orden_compra_detalle->precio_mas_igv_dolares =   $orden_compra_detalle->precio_dolares * ((100+$request->get('igv'))/100);
+                }
+
+                $orden_compra_detalle->save();
+            }
+
+            DB::commit();
+
+            return response()->json(['success'=>true,'message'=>"ORDEN DE COMPRA ACTUALIZADA!!"]);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,
+            'message'=>$th->getMessage(),
+            'line' =>$th->getLine()]);
+        }
+    }
+
+    public static function calcularMontos($lstCompra,$precios_con_igv,$igv){
+        $subtotal   =   0;
+        $monto_igv  =   0;
+        $total      =   0;
+        $valor_igv  =   $igv;
+
+        if($precios_con_igv){
+            foreach ($lstCompra as $item) {
+                $total  +=  (float)$item->total;
+            }
+            $subtotal    =   $total/((100 + (float)$valor_igv)/100);
+            $monto_igv   =   $total - $subtotal;
+        }else{
+            //======= PRECIOS SIN IGV =======
+            foreach ($lstCompra as $item) {
+                $subtotal  +=  (float)$item->total;
+            }
+
+            $monto_igv   =   ((float)$valor_igv/100)*$subtotal;
+            $total       =   $subtotal + $monto_igv;
+        }
+
+        return (object)['subtotal'=>$subtotal,'monto_igv'=>$monto_igv,'total'=>$total];
+    }
+
+    public static function validacionOrdenCompraUpdate($id,$request){
+
+        //====== VALIDANDO ORDEN DE COMPRA ======
+        $orden_compra   =   OrdenCompra::find($id);
+        if(!$orden_compra){
+            throw new Exception("NO EXISTE LA ORDEN DE COMPRA EN LA BASE DE DATOS");
+        }
+
+        //======== VALIDANDO ESTADO DE LA ORDEN DE COMPRA ==========
+        if($orden_compra->estado === 'ANULADO'){
+            throw new Exception("LA ORDEN DE COMPRA ESTÁ ANULADA!!!");
+        }
+        if($orden_compra->estado === 'FACTURADO'){
+            throw new Exception("LA ORDEN DE COMPRA YA FUE FACTURADA!!!");
+        }
+
+        //======= VALIDANDO PERSONA DE CONTACTO ======
+         //======== VALIDANDO LA PERSONA DE CONTACTO ========
+         $persona_contacto_id    =   $request->get('persona_contacto');
+         $proyecto_id            =   $orden_compra->proyecto_id;
+ 
+         //======== COMPROBANDO SI LA PERSONA DE CONTACTO ES EL SUPERVISOR DEL PROYECTO =====
+         $proyecto               =   Proyecto::find($proyecto_id);
+ 
+         //======= EN CASO NO SEA EL SUPERVISOR DEL PROYECTO =======
+         //======= VERIFICAR SI ES UN PERSONAL DEL PROYECTO =======
+         if($proyecto->supervisor_id != $persona_contacto_id){
+             $proyecto_personal      =   DB::select('select *
+                                         from proyecto_personal as pp
+                                         where pp.proyecto_id = ?
+                                         and pp.colaborador_id = ?',
+                                         [$proyecto_id,$persona_contacto_id]);
+ 
+            if(count($proyecto_personal) === 0){
+                throw new Exception("LA PERSONA DE CONTACTO NO ES SUPERVISOR NI FORMA PARTE DEL PERSONAL DEL PROYECTO");
+            }  
+        } 
+
+    }
+
+
+    public static function validarLstOrdenCompra($lstOrdenCompra){
+
+        if(count($lstOrdenCompra) === 0){
+            throw new Exception("EL DETALLE DE LA ORDEN DE COMPRA ESTÁ VACÍO!!!");
+        }
+
+        foreach ($lstOrdenCompra as $item) {
+            $existe =   DB::table('productos')
+                        ->where('id', $item->producto_id)
+                        ->exists();
+
+            if(!$existe){
+                throw new Exception("EL PRODUCTO ".$item->producto_nombre."NO EXISTE EN LA BD");
+            }
+        }
 
     }
 

@@ -3,6 +3,8 @@
       <tr>
         <th scope="col">ID</th>
         <th scope="col">#</th>
+        <th scope="col">N° COT</th>
+        <th scope="col">REGISTRADOR</th>
         <th scope="col">PROVEEDOR</th>
         <th scope="col">MODALIDAD PAGO</th>
         <th scope="col">PROYECTO</th>

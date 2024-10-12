@@ -1,4 +1,4 @@
-<div class="modal fade" id="mdlProductos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="mdlReqToCotAddProducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -62,7 +62,7 @@
     }
 
     function openMdlProductos(){
-        $('#mdlProductos').modal('show');
+        $('#mdlReqToCotAddProducto').modal('show');
     }
 
     function seleccionarProducto(producto_id) {
@@ -91,7 +91,7 @@
         console.log(producto_elegido);
 
 
-        $('#mdlProductos').modal('hide');
+        $('#mdlReqToCotAddProducto').modal('hide');
         document.querySelector('#cantidad').focus();
 
     }

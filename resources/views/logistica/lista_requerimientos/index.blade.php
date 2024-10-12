@@ -78,6 +78,9 @@
                         const baseUrlEdit   =   `{{ route('requerimientos.requerimientos.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
+                        let urlGoToCotizacionCompra     =   `{{route('logistica.lista_requerimientos.goToCotizacionCompra',['id' => ':id'])}}`;
+                        urlGoToCotizacionCompra         =   urlGoToCotizacionCompra.replace(':id',data.id);   
+
                         const urlDelete = `{{ route('requerimientos.requerimientos.destroy', ':id') }}`.replace(':id', data.id);
                         
                         let acciones    =   `
@@ -95,7 +98,7 @@
 
                         if(data.estado === 'PENDIENTE'){
                              acciones    +=  ` <li>
-                                                    <a class="dropdown-item" href="javascript:void(0);" onclick="generarCotizacion(${data.id})">
+                                                    <a class="dropdown-item" href="${urlGoToCotizacionCompra}">
                                                         <i class="fa-solid fa-clipboard-list"></i> Cotizar
                                                     </a>
                                                 </li>`;

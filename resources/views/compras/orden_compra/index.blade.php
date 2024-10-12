@@ -62,6 +62,14 @@
                         $(td).css('font-weight', 'bold');
                     }
                 },
+                {
+                    data: 'simbolo_cotizacion_compra',
+                    name: 'simbolo_cotizacion_compra',
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).css('font-weight', 'bold');
+                    }
+                },
+                { data: 'colaborador_registrador_nombre', name: 'colaborador_registrador_nombre' },
                 { data: 'proveedor_nombre', name: 'proveedor_nombre' },
                 { data: 'modalidad_pago', name: 'modalidad_pago' },
                 { data: 'proyecto_nombre', name: 'proyecto_nombre' },
@@ -75,26 +83,37 @@
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('compras.cotizacion_compra.edit', ['id' => ':id']) }}`;
+                        const baseUrlEdit   =   `{{ route('compras.orden_compra.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
                         const urlDelete         = `{{ route('compras.cotizacion_compra.destroy', ':id') }}`.replace(':id', data.id);
                         const urlPdf            = `{{ route('compras.orden_compra.pdf', ':id') }}`.replace(':id', data.id);
                         const urlOrdenCompra    =   `{{route('compras.cotizacion_compra.goToOrdenCompra',':id')}}`.replace(':id', data.id);
 
-                        return `<div class="btn-group dropstart">
-                                    <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa-solid fa-grip"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
-                                        
-                                        <li>
-                                            <a class="dropdown-item" href="${urlPdf}" target="_blank">
-                                                <i class="fa-solid fa-file-pdf"></i> PDF
+                        let acciones    =   `
+                                            <div class="btn-group dropstart">
+                                                <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fa-solid fa-grip"></i>
+                                                </button>
+                                                <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                                                    
+                                                    <li>
+                                                        <a class="dropdown-item" href="${urlPdf}" target="_blank">
+                                                            <i class="fa-solid fa-file-pdf"></i> PDF
+                                                        </a>
+                                                    </li>
+                                            `;
+                        if(data.orden_compra_estado === 'PENDIENTE'){
+                            acciones += `<li>
+                                            <a class="dropdown-item" href="${urlEdit}">
+                                                <i class="fa-solid fa-pen-to-square"></i> EDITAR
                                             </a>
-                                        </li>
-                                    </ul>
-                                </div>`;
+                                        </li>`;
+                        }
+
+                        acciones += `</ul></div>`;
+
+                        return acciones;
                     },
                     name: 'actions', 
                     orderable: false, 

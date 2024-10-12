@@ -70,4 +70,37 @@
   @vite(['resources/js/app.js'])
   @yield('css-page')
 
+ <style>
+  @media (min-width: 768px) {
+    .header-right {
+        flex-direction: row; /* En pantallas grandes, mantener el diseño en fila */
+    }
+    .header-profile {
+        margin-left: 15px; /* Espaciado entre la campanita y el perfil */
+    }
+}
+
+@media (max-width: 767px) {
+  .header-right {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Permite que los elementos se ajusten en varias líneas */
+}
+
+.profile-info {
+    max-width: 300px; /* Ancho máximo */
+    overflow: hidden; /* Oculta contenido que se desborda */
+    text-overflow: ellipsis; /* Muestra '...' si el texto es demasiado largo */
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+}
+
+
+
+}
+
+
+
+
+ </style>
+
 </head>
