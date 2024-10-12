@@ -14,15 +14,16 @@ toastr.options = {
 
 window.toastr   = toastr;
 
+const socketUrl = import.meta.env.VITE_SOCKET_URL;
+
 // Configuración de la conexión de Socket.IO
-const socket = io('http://127.0.0.1:3000'); // Cambia el puerto si es necesario
+const socket = io(socketUrl); 
 
 // Evento de conexión
 socket.on('connect', () => {
     console.log('Conectado al servidor de Socket.IO');
 });
 
-// Evento personalizado para escuchar mensajes desde el servidor
 
 
 window.io = socket; // Opcional: asignar el socket a window para acceder globalmente si es necesario

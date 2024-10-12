@@ -2,12 +2,47 @@ import http from 'http';
 import { Server } from 'socket.io';
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+
+const PORT = process.env.NODE_ENV || 8000;
+
+
+// Obtener el nombre del archivo y el directorio
+const __filename = fileURLToPath(new URL(import.meta.url));
+const __dirname = path.dirname(__filename);
+
+// Convertir a ruta absoluta y evitar duplicados
+const envFile = process.env.NODE_ENV === 'production' 
+    ? path.resolve(__dirname, '.env.production') 
+    : path.resolve(__dirname, '.env.development');
+
+
+//========== CARGANDO VARIABLES ========
+dotenv.config({ path: envFile }); 
+
+
+//==== MOSTRAR EN CONSOLA LAS VARIABLES DE ENTORNO =======
+//console.log('Variables de entorno:', process.env); 
+//======== IMPRIMIR EN CONSOLA EL ARCHIVO .ENV Q SE ESTÁ LEYENDO =========
+/*
+fs.readFile(envFile, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error al leer el archivo .env:', err);
+    } else {
+      console.log('Contenido del archivo .env:\n', data);
+    }
+});
+*/
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: 'http://127.0.0.1:8000', // Permitir el origen específico
+        origin: process.env.CORS_ORIGIN, // Usar la variable de entorno
         methods: ['GET', 'POST'],
         credentials: true // Habilitar si necesitas enviar cookies o autenticación
     }
@@ -15,7 +50,7 @@ const io = new Server(server, {
 
 // Configuración de CORS para las solicitudes HTTP
 const corsOptions = {
-    origin: 'http://127.0.0.1:8000',
+    origin: process.env.CORS_ORIGIN, // Usar la variable de entorno
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true
@@ -29,6 +64,12 @@ app.post('/mensaje', (req, res) => {
     console.log('Mensaje recibido:', mensaje, requerimiento);
     io.emit('nuevoRequerimiento', { mensaje, requerimiento });
     res.status(200).send('Mensaje enviado');
+});
+
+app.get('/config', (req, res) => {
+    res.json({
+        socketIoUrl: process.env.SOCKET_IO_URL 
+    });
 });
 
 io.on('connection', (socket) => {
