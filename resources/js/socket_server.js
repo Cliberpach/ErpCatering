@@ -8,7 +8,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 
-const PORT = process.env.NODE_ENV || 8000;
+const PORT = process.env.PORT || 3000; 
 
 
 // Obtener el nombre del archivo y el directorio
@@ -39,7 +39,13 @@ fs.readFile(envFile, 'utf8', (err, data) => {
 */
 
 const app = express();
-const server = http.createServer(app);
+const options = {
+    key: fs.readFileSync(process.env.SSL_KEY_PATH),  // Ruta a tu archivo de clave
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH), // Ruta a tu archivo de certificado
+};
+
+const server = https.createServer(options, app);
+//const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: process.env.CORS_ORIGIN, // Usar la variable de entorno
@@ -66,11 +72,6 @@ app.post('/mensaje', (req, res) => {
     res.status(200).send('Mensaje enviado');
 });
 
-app.get('/config', (req, res) => {
-    res.json({
-        socketIoUrl: process.env.SOCKET_IO_URL 
-    });
-});
 
 io.on('connection', (socket) => {
     console.log('Usuario conectado');
