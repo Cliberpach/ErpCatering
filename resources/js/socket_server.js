@@ -34,11 +34,6 @@ app.post('/mensaje', (req, res) => {
 io.on('connection', (socket) => {
     console.log('Usuario conectado');
 
-    socket.on('mensaje', (data) => {
-        console.log('Mensaje desde el cliente:', data);
-        io.emit('nuevoRequerimiento', data);
-    });
-
     socket.on('disconnect', () => {
         console.log('Usuario desconectado');
     });

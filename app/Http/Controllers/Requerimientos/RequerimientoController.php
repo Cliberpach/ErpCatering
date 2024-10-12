@@ -122,12 +122,26 @@ class RequerimientoController extends Controller
 
             DB::commit();
 
+            $nuevo_requerimiento =  DB::select('select 
+                                    r.id,
+                                    co.nombre as supervisor_nombre,
+                                    pr.nombre as proyecto_nombre,
+                                    r.created_at as fecha_registro,
+                                    r.estado
+                                    from 
+                                    requerimientos as r
+                                    inner join proyectos as pr on pr.id = r.proyecto_id
+                                    inner join colaboradores as co on co.id = r.supervisor_id
+                                    where r.estado != "ANULADO"
+                                    and r.id = ?
+                                    order by r.id desc',[$requerimiento->id])[0];
+
             //======= ENVIAR MENSAJE AL SOCKET PARA QUE MUESTRE ALERTA DE NUEVO REQUERIMIENTO A LOS DE LOGÍSTICA ======
             $client = new \GuzzleHttp\Client();
             $response   =   $client->post('http://localhost:3000/mensaje', [
                                 'json' => [ 
-                                    'mensaje' => 'NUEVO REQUERIMIENTO REGISTRADO',
-                                    'requerimiento' => $requerimiento
+                                    'mensaje'       => 'NUEVO REQUERIMIENTO REGISTRADO',
+                                    'requerimiento' => $nuevo_requerimiento
                                 ],
                             ]);
 

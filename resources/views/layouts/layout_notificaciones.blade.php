@@ -11,7 +11,7 @@
         </svg>
         <span></span>
     </button>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notification">
+    <ul class="dropdown-menu dropdown-menu-end" id="ul_notificaciones" aria-labelledby="notification">
         <li>
             <a href="#0">
                 <div class="image">

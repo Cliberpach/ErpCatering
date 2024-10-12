@@ -89,35 +89,162 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const socket            = window.io;
-    const lstRequerimientos = @json($requerimientos);   
+    const socket            =   window.io;
+    const lstRequerimientos =   @json($requerimientos);   
 
-    pintarNotificacionesRequerimientos(lstRequerimientos);
+    console.log(lstRequerimientos);
 
-    // Escuchar evento de conexión
+    limpiarNotificaciones();
+
+    const rol_nombre  = @json(Auth::user()->getRoleNames()[0]);
+
+    if(rol_nombre === 'LOGISTICA'){
+      pintarNotificacionesRequerimientosLogistica(lstRequerimientos);
+    }
+
+    //Escuchar evento de conexión
     socket.on('connect', () => {
       console.log('Conectado al servidor de Socket.IO AA');
     });
 
-    // Escuchar otros eventos personalizados, por ejemplo, 'message'
+    //Escuchar otros eventos personalizados, por ejemplo, 'message'
     socket.on('message', (data) => {
       console.log('Mensaje recibido:', data);
+      console.log(data);
     });
 
-    // Escuchar evento de desconexión
+    //Escuchar evento de desconexión
     socket.on('disconnect', () => {
       console.log('Desconectado del servidor de Socket.IO');
     });
 
     socket.on('nuevoRequerimiento', (data) => {
-        console.log('Nuevo requerimiento recibido:', data);
-        toastr.info(`Nuevo mensaje: ${data.mensaje}, Requerimiento: ${data.requerimiento}`);
+      console.log('Nuevo requerimiento recibido:', data);
+
+      toastr.options = {
+          closeButton: true, 
+          timeOut: 0,        
+          extendedTimeOut: 0, 
+          allowHtml: true    
+      };
+
+      toastr.info(`
+          <div class="content">
+               <h6 style="color:white;">
+                   ${data.requerimiento.supervisor_nombre}
+                   <span class="text-regular">
+                       ${data.requerimiento.fecha_registro}
+                   </span>
+               </h6>
+               <p>
+                   RQ-${data.requerimiento.id}
+               </p>
+               <p>
+                   <strong>PROYECTO:</strong> ${data.requerimiento.proyecto_nombre}
+               </p>
+               <span>${tiempoTranscurrido(data.requerimiento.fecha_registro)}</span>
+          </div>
+      `,'NUEVO REQUERIMIENTO');
+
+      pintarNuevoRequerimientoLogistica(data.requerimiento);
     });
 
   });
 
-  function pintarNotificacionesRequerimientos(lstRequerimientos) {
-    
+  function limpiarNotificaciones(){
+    const ulNotificaciones      =   document.querySelector('#ul_notificaciones');
+    ulNotificaciones.innerHTML  =   ``;
+  }
+
+  function tiempoTranscurrido(fechaRegistro) {
+      const fecha = new Date(fechaRegistro);
+      const ahora = new Date();
+      const diferencia = Math.floor((ahora - fecha) / 1000); 
+
+      const minutos = Math.floor(diferencia / 60);
+      const horas = Math.floor(minutos / 60);
+      const dias = Math.floor(horas / 24);
+
+      if (dias > 0) {
+          return `hace ${dias} días`;
+      } else if (horas > 0) {
+          return `hace ${horas} hrs`;
+      } else if (minutos > 0) {
+          return `hace ${minutos} mins`;
+      } else {
+          return "Justo ahora";
+      }
+  }
+
+  function pintarNuevoRequerimientoLogistica(nuevo_requerimiento) {
+      const ulNotificaciones = document.querySelector('#ul_notificaciones');
+      let nuevoElemento = '';
+
+      if (nuevo_requerimiento.estado !== 'ANULADO') {
+          nuevoElemento = `
+              <li>
+                  <a href="#0">
+                      <div class="image">
+                          <img src="{{asset('layout/assets/images/lead/lead-6.png')}}" alt="" />
+                      </div>
+                      <div class="content">
+                          <h6>
+                              ${nuevo_requerimiento.supervisor_nombre}
+                              <span class="text-regular">
+                                  ${nuevo_requerimiento.fecha_registro}
+                              </span>
+                          </h6>
+                          <p>
+                              RQ-${nuevo_requerimiento.id}
+                          </p>
+                          <p>
+                              <strong>PROYECTO:</strong> ${nuevo_requerimiento.proyecto_nombre}
+                          </p>
+                          <span>${tiempoTranscurrido(nuevo_requerimiento.fecha_registro)}</span>
+                      </div>
+                  </a>
+              </li>
+          `;
+      }
+
+    ulNotificaciones.innerHTML = nuevoElemento + ulNotificaciones.innerHTML;
+  }
+
+
+  function pintarNotificacionesRequerimientosLogistica(lstRequerimientos) {
+    const ulNotificaciones      =   document.querySelector('#ul_notificaciones');
+    let notificaciones          =   ``;
+
+    lstRequerimientos.forEach((r)=>{
+      
+      if(r.estado !== 'ANULADO'){
+        notificaciones  +=  ` <li>
+            <a href="#0">
+                <div class="image">
+                    <img src="{{asset('layout/assets/images/lead/lead-6.png')}}" alt="" />
+                </div>
+                <div class="content">
+                    <h6>
+                        ${r.supervisor_nombre}
+                        <span class="text-regular">
+                          ${r.fecha_registro}
+                        </span>
+                    </h6>
+                    <p>
+                      RQ-${r.id}
+                    </p>
+                    <p>
+                      <p>PROYECTO:</p> ${r.proyecto_nombre}
+                    </p>
+                    <span>${tiempoTranscurrido(r.fecha_registro)}</span>
+                </div>
+            </a>
+        </li>`;
+      }
+      
+    })
+
+    ulNotificaciones.innerHTML  = notificaciones;
   }
 </script>
 
