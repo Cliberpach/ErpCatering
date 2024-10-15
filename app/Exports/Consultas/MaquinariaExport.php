@@ -3,16 +3,15 @@
 namespace App\Exports\Consultas;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use DB;
 use Exception;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use App\Models\Registros\Proyecto;
-
+use Illuminate\Support\Facades\DB;
 
 class MaquinariaExport implements FromCollection, ShouldAutoSize, WithStyles
 {

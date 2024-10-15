@@ -12,13 +12,21 @@
 @section('section-page')
 <div class="card-style settings-card-1 mb-30">
     @csrf
-    <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Registro de Cotizaciones Compra <i class="fa-solid fa-cart-shopping"></i>
-      </h6>
-        
+    <div class="row">
+        <div class="col-lg-5 col-md-12 col-sm-12 col-xs-12">
+            <h6>Registro de Cotizaciones Compra <i class="fa-solid fa-cart-shopping"></i></h6>
+        </div>
+        <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12" style="display: flex;justify-content:end;">
             <button class="btn btn-primary" onclick="goToRegistrarCotizacionCompra()">
                 <i class="fa-solid fa-plus"></i> NUEVO
             </button>
+            {{-- <button class="btn btn-dark" style="margin-left:6px;" onclick="goToRegistrarCotizacionCompra()">
+                <i class="fa-solid fa-plus"></i> COMPUESTA
+            </button> --}}
+        </div>
+    </div>
+    <div class="title mb-30 d-flex justify-content-between align-items-center">
+        
     </div>
     <div class="table-responsive">
         @include('compras.cotizacion_compra.tables.table_cotizacion_compra')

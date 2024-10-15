@@ -26,6 +26,7 @@
         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
             <label for="categoria" style="font-weight: bold;">CATEGORIA</label>
             <select data-placeholder="Seleccionar" name="categoria" id="categoria" class="select2_form" onchange="dtProductos.ajax.reload();">
+                <option value=""></option>
                 @foreach ($categorias as $categoria)
                     <option value="{{$categoria->id}}">{{$categoria->descripcion}}</option>
                 @endforeach
@@ -34,6 +35,7 @@
         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
             <label for="categoria" style="font-weight: bold;">MARCA</label>
             <select data-placeholder="Seleccionar" name="marca" id="marca" class="select2_form" onchange="dtProductos.ajax.reload();">
+                <option value=""></option>
                 @foreach ($marcas as $marca)
                     <option value="{{$marca->id}}">{{$marca->descripcion}}</option>
                 @endforeach

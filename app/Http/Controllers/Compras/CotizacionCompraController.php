@@ -474,6 +474,7 @@ class CotizacionCompraController extends Controller
             $orden_compra->subtotal                     =   $montos->subtotal;
             $orden_compra->monto_igv                    =   $montos->monto_igv;
             $orden_compra->total                        =   $montos->total;  
+            $orden_compra->primer_producto_id           =   $lstCotizacionCompraDetalle[0]->producto_id;
 
             $moneda                                  =   $request->get('moneda');
             if($moneda === 'PEN'){
@@ -522,8 +523,9 @@ class CotizacionCompraController extends Controller
 
             if(count($requerimiento) !== 0){
                 //======== ACTUALIZAR ESTADO DEL REQUERIMIENTO =======
-                $requerimiento          =   Requerimiento::find($requerimiento[0]->id);
-                $requerimiento->estado  =   'CON ORDEN COMPRA';
+                $requerimiento                  =   Requerimiento::find($requerimiento[0]->id);
+                $requerimiento->orden_compra_id =   $orden_compra->id;
+                $requerimiento->estado          =   'CON ORDEN COMPRA';
                 $requerimiento->update();
             }
            

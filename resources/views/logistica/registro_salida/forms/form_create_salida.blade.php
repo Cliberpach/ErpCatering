@@ -58,7 +58,7 @@
                                     <span class="input-group-text" id="basic-addon1">
                                         <i class="fa-solid fa-box-open"></i>                                    
                                     </span>
-                                    <input id="cantidad" name="cantidad" type="text" class="form-control inputDecimalPositivo" placeholder="Cantidad" aria-label="Username" aria-describedby="basic-addon1">
+                                    <input id="cantidad" name="cantidad" type="text" class="form-control inputDecimalPositivo cantidad" data-type="create" placeholder="Cantidad" aria-label="Username" aria-describedby="basic-addon1">
                                   </div>
                             </div>
                         </div>

@@ -14,6 +14,7 @@
         <th scope="col">CONTACTO</th>
         <th scope="col">FECHA ENTREGA</th>
         <th scope="col">TÉRMINOS</th>
+        <th scope="col">PRODUCTO</th>
         <th scope="col">ESTADO</th>
       </tr>
     </thead>

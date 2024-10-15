@@ -33,6 +33,7 @@ class OrdenCompraController extends Controller
                                 ->join('proyectos as proy','proy.id','=','oc.proyecto_id')
                                 ->join('colaboradores as co','co.id','=','oc.persona_contacto_id')
                                 ->join('colaboradores as col','col.id','=','oc.colaborador_registrador_id')
+                                ->join('productos as p','p.id','oc.primer_producto_id')
                                 ->select(
                                     DB::raw('CONCAT("OC-", oc.id) as simbolo'), 
                                     'oc.id', 
@@ -52,7 +53,8 @@ class OrdenCompraController extends Controller
                                     'oc.estado as orden_compra_estado',
                                     'oc.created_at as orden_compra_fecha_registro',
                                     'cc.id as cotizacion_compra_id',
-                                    DB::raw('CONCAT("CO-", cc.id) as simbolo_cotizacion_compra') 
+                                    DB::raw('CONCAT("CO-", cc.id) as simbolo_cotizacion_compra'),
+                                    'p.nombre as primer_producto_nombre' 
                                 )
                                 ->where('oc.estado','<>','ANULADO')
                                 ->get();
@@ -207,6 +209,7 @@ class OrdenCompraController extends Controller
             $orden_compra->subtotal                     =   $montos->subtotal;
             $orden_compra->monto_igv                    =   $montos->monto_igv;
             $orden_compra->total                        =   $montos->total;  
+            $orden_compra->primer_producto_id           =   $lstOrdenCompraDetalle[0]->producto_id;
 
             $moneda                                  =   $request->get('moneda');
             if($moneda === 'PEN'){
@@ -449,7 +452,151 @@ class OrdenCompraController extends Controller
         $dompdf->render();
 
         // Visualizar el PDF en una nueva ventana en lugar de descargarlo
-        return $dompdf->stream('archivo.pdf', ['Attachment' => false]);
+        return $dompdf->stream('orden_compra_'.$orden_compra->id.'.pdf', ['Attachment' => false]);
+    }
+
+
+    /*
+    array:1 [ // app\Http\Controllers\Compras\OrdenCompraController.php:479
+        0 => {#1376
+            +"id": 2
+            +"colaborador_registrador_id": 3
+            +"proveedor_id": 1
+            +"modalidad_pago_id": 1
+            +"proyecto_id": 2
+            +"documento": "FACTURA"
+            +"direccion_obra": "AV LAS MAGNOLIAS 342"
+            +"observacion": null
+            +"persona_contacto_id": 2
+            +"fecha_entrega": "2024-10-14"
+            +"terminos_entrega": "PUESTO EN OBRA"
+            +"moneda": "PEN"
+            +"tipo_cambio": "3.7590"
+            +"precios_igv": 0
+            +"igv": "18.0000"
+            +"subtotal": "649.0000"
+            +"monto_igv": "116.8200"
+            +"total": "765.8200"
+            +"subtotal_soles": "649.0000"
+            +"monto_igv_soles": "116.8200"
+            +"total_soles": "765.8200"
+            +"estado": "PENDIENTE"
+            +"created_at": "2024-10-14 22:21:42"
+            +"updated_at": "2024-10-14 22:21:42"
+            +"persona_contacto_nombre": "LUIS DANIEL ALVA LUJAN"
+            +"proveedor_nombre": "PROVEEDORES VARIOS"
+            +"tipo_documento_nombre": "DNI"
+            +"nro_documento": "99999999"
+            +"modalidad_pago_nombre": "CONTADO"
+            +"modalidad_pago_nro_dias": 0
+            +"proyecto_nombre": "PROYECTO HUERTA GRANDE"
+            +"colaborador_registrador_nombre": "EVA MARIA ALVA LUJAN"
+        }   
+    ]
+    */
+    public function show($id){
+
+        try {
+            $requerimiento  =   null;
+
+            $orden_compra   =   DB::select('select 
+                                oc.*,
+                                c.nombre as persona_contacto_nombre,
+                                c.telefono as persona_contacto_telefono,
+                                co.nombre as colaborador_registrador_nombre,
+                                pr.nombre as proveedor_nombre,
+                                td.descripcion as proveedor_tipo_documento,
+                                pr.nro_documento as proveedor_nro_documento,
+                                m.tipo as modalidad_pago_nombre,
+                                m.nro_dias as modalidad_pago_nro_dias,
+                                proy.nombre as proyecto_nombre
+                                from ordenes_compra as oc
+                                inner join colaboradores as c on c.id = oc.persona_contacto_id
+                                inner join colaboradores as co on co.id = oc.colaborador_registrador_id
+                                inner join proveedores as pr on pr.id = oc.proveedor_id
+                                inner join modalidades_pago as m on m.id = oc.modalidad_pago_id
+                                inner join tipos_documento as td on td.id = pr.tipo_documento_id
+                                inner join proyectos as proy on proy.id = oc.proyecto_id
+                                where oc.id = ?',[$id]);
+
+            $orden_compra_detalle   =   DB::select('select 
+                                        ocd.producto_id,
+                                        ocd.cantidad,
+                                        ocd.precio_soles,
+                                        ocd.precio_dolares,
+                                        p.nombre as producto_nombre,
+                                        c.descripcion as categoria_nombre,
+                                        m.descripcion as marca_nombre,
+                                        tgd.descripcion as producto_unidad_medida
+                                        from orden_compra_detalle as ocd
+                                        inner join productos as p on p.id = ocd.producto_id
+                                        inner join marcas as m on m.id = p.marca_id 
+                                        inner join categorias as c on c.id = p.categoria_id
+                                        inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
+                                        where ocd.orden_compra_id = ?',[$id]);
+            
+            if(count($orden_compra) === 0){
+                throw new Exception("NO EXISTE LA ORDEN DE COMPRA EN LA BD");
+            }
+
+            //========= BUSCAR SI LA ORDEN DE COMPRA FUE GENERADA A PARTIR DE UNA COTIZACION ======
+            $cotizacion_compra  =   DB::select('select 
+                                    cc.id,
+                                    co.nombre as colaborador_registrador_nombre,
+                                    cos.nombre as supervisor_nombre,
+                                    pr.nombre as proyecto_nombre,
+                                    cc.created_at as fecha_registro,
+                                    cc.estado
+                                    from cotizacion_compra as cc
+                                    inner join colaboradores as co on co.id = cc.colaborador_id
+                                    left join colaboradores as cos on cos.id = cc.supervisor_id
+                                    inner join proyectos as pr on pr.id = cc.proyecto_id
+                                    where cc.orden_compra_id = ?',[$id]);
+
+            if(count($cotizacion_compra) === 0){
+                $cotizacion_compra  =   null;
+            }else{
+
+                $cotizacion_compra  =   $cotizacion_compra[0];
+                //========= BUSCAR SI LA ORDEN DE COMPRA PARTIÓ DESDE UN REQUERIMIENTO ======
+                $requerimiento  =   DB::select('select 
+                                    r.id,
+                                    pr.nombre as proyecto_nombre,
+                                    c.nombre as supervisor_nombre,
+                                    prov.nombre as proveedor_nombre,
+                                    r.factura_atencion,
+                                    r.fecha_atencion,
+                                    r.estado,
+                                    r.created_at as fecha_registro
+                                    from requerimientos as r
+                                    inner join proyectos as pr on pr.id = r.proyecto_id
+                                    inner join colaboradores as c on c.id = r.supervisor_id
+                                    inner join proveedores as prov on prov.id = r.proveedor_id
+                                    where r.cotizacion_compra_id = ?
+                                    and r.orden_compra_id = ?',
+                                    [$cotizacion_compra->id,
+                                    $orden_compra[0]->id]);
+
+                if(count($requerimiento) === 0){
+                    $requerimiento  =   null;
+                }else{
+                    $requerimiento  =   $requerimiento[0];
+                }
+            }
+
+           
+            
+            return response()->json([   
+                                        'success'=>true,
+                                        'orden_compra'=>$orden_compra[0],
+                                        'orden_compra_detalle'=>$orden_compra_detalle,
+                                        'cotizacion_compra' =>  $cotizacion_compra,
+                                        'requerimiento'=>$requerimiento
+                                    ]);
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+        
     }
 
 }

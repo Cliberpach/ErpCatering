@@ -10,6 +10,7 @@
 @section('orden_compra-active', 'active')
 
 @section('section-page')
+@include('compras.orden_compra.modals.modal_orden_compra_show')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -79,6 +80,7 @@
                 { data: 'persona_contacto_nombre', name: 'persona_contacto_nombre' },
                 { data: 'orden_compra_fecha_entrega', name: 'orden_compra_fecha_entrega' },
                 { data: 'orden_compra_terminos_entrega', name: 'orden_compra_terminos_entrega' },
+                { data: 'primer_producto_nombre', name: 'primer_producto_nombre' },
                 { data: 'orden_compra_estado', name: 'orden_compra_estado' },
                 {
                     data: null, 
@@ -88,7 +90,7 @@
 
                         const urlDelete         = `{{ route('compras.cotizacion_compra.destroy', ':id') }}`.replace(':id', data.id);
                         const urlPdf            = `{{ route('compras.orden_compra.pdf', ':id') }}`.replace(':id', data.id);
-                        const urlOrdenCompra    =   `{{route('compras.cotizacion_compra.goToOrdenCompra',':id')}}`.replace(':id', data.id);
+                        const urlOrdenCompra    = `{{route('compras.cotizacion_compra.goToOrdenCompra',':id')}}`.replace(':id', data.id);
 
                         let acciones    =   `
                                             <div class="btn-group dropstart">
@@ -100,6 +102,11 @@
                                                     <li>
                                                         <a class="dropdown-item" href="${urlPdf}" target="_blank">
                                                             <i class="fa-solid fa-file-pdf"></i> PDF
+                                                        </a>
+                                                    </li>
+                                                     <li>
+                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowOrdenCompra(${data.id});">
+                                                            <i class="fa-solid fa-eye"></i> VER
                                                         </a>
                                                     </li>
                                             `;
@@ -224,5 +231,5 @@
         });
     }
 
-
+  
 </script>

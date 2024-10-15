@@ -10,7 +10,7 @@
 
 @section('section-page')
 @include('logistica.registro_salida.modals.modal_productos')
-
+@include('logistica.registro_salida.modals.modal_edit_item')
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
       <h6>Datos de la Salida <i class="fa-solid fa-toolbox"></i></h6>
@@ -48,7 +48,7 @@
     })
 
     function events(){
-
+        eventsMdlEditItemRegistroSalida();
         document.querySelector('#formRegistrarSalida').addEventListener('submit',(e)=>{
             e.preventDefault();
             const validacion    =   validacionRegistrarSalida();
@@ -57,29 +57,38 @@
             }
         })
 
-        document.querySelector('#cantidad').addEventListener('input',(e)=>{
-            const select_almacen    =   document.querySelector('#almacen_origen');
-            const producto_id       =   producto_elegido.producto_id;
-            const inputCantidad     =   document.querySelector('#cantidad');
+        document.addEventListener('input',(e)=>{
 
-            toastr.clear();
-            if(!select_almacen.value){
-                toastr.error('DEBE SELECCIONAR UN ALMACÉN DE ORIGEN!!!');
-                select_almacen.focus();
-                return;
-            }
-            if(!producto_id){
-                toastr.error('DEBE SELECCIONAR UN PRODUCTO!!!');
-                document.querySelector('.btnBuscarProducto').focus();
-                return;
-            }
-            if(!inputCantidad.value){
-                return;
-            }
+            if(e.target.classList.contains('cantidad')){
+                const select_almacen    =   document.querySelector('#almacen_origen');
+                const cantidad          =   e.target.value;
+                const type              =   e.target.getAttribute('data-type');
+                const producto_id       =   producto_elegido.producto_id;
+                const inputCantidad     =   document.querySelector('#cantidad')
 
-            validarCantidad(select_almacen.value,producto_id,inputCantidad.value);
+                toastr.clear();
+                if(!select_almacen.value){
+                    toastr.error('DEBE SELECCIONAR UN ALMACÉN DE ORIGEN!!!');
+                    select_almacen.focus();
+                    return;
+                }
+                if(!producto_id){
+                    toastr.error('DEBE SELECCIONAR UN PRODUCTO!!!');
+                    document.querySelector('.btnBuscarProducto').focus();
+                    return;
+                }
+                if(!cantidad){
+                    return;
+                }
 
+                validarCantidad(select_almacen.value,producto_id,cantidad,inputCantidad);
+            }
         })
+
+        // document.querySelector('#cantidad').addEventListener('input',(e)=>{
+           
+
+        // })
      
 
         document.addEventListener('click',(e)=>{
@@ -241,24 +250,7 @@
         toastr.info('PRODUCTO AGREGADO AL DETALLE');
     }
 
-    function formatCurrency(amount) {
-        return new Intl.NumberFormat('es-PE', {
-            style: 'currency',
-            currency: 'PEN',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(amount);
-    }
-
-    function pintarTableMontos(montos){
-        const tdSubtotal    =   document.querySelector('#tbl_subtotal');
-        const tdMontoIgv    =   document.querySelector('#tbl_monto_igv');
-        const tdTotal       =   document.querySelector('#tbl_total');
-
-        tdSubtotal.textContent  = formatCurrency(montos.subtotal);
-        tdMontoIgv.textContent  = formatCurrency(montos.monto_igv);
-        tdTotal.textContent     = formatCurrency(montos.total);
-    }
+   
 
     function pintarTableSalidaDetalle(lstItems){
         let filas   =   ``;
@@ -484,7 +476,7 @@
         toastr.info('ALMACÉN ORIGEN CAMBIADO');
     }
 
-    async function validarCantidad(almacen_id,producto_id,cantidad){
+    async function validarCantidad(almacen_id,producto_id,cantidad,inputCantidad){
         mostrarAnimacion1();
         try {
             const btnAgregarProducto    =   document.querySelector('.btnAgregarProducto');
@@ -514,8 +506,8 @@
                 }else{
                     btnAgregarProducto.disabled =   true;
                     toastr.error(res.message);
-                    document.querySelector('#cantidad').value   =   '';
-                    document.querySelector('#cantidad').focus();
+                    inputCantidad.value   =   '';
+                    inputCantidad.focus();
                 }
             }else{
                 toastr.error(res.message,'ERROR EN EL SERVIDOR AL VALIDAR CANTIDAD');

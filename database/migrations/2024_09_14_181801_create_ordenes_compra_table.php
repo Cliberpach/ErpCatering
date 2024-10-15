@@ -26,6 +26,9 @@ return new class extends Migration
             $table->unsignedBigInteger('proyecto_id');
             $table->foreign('proyecto_id')->references('id')->on('proyectos');
 
+            $table->unsignedBigInteger('primer_producto_id');
+            $table->foreign('primer_producto_id')->references('id')->on('productos');
+
             $table->string('documento',100);
             $table->string('direccion_obra',200);
             $table->string('observacion',200)->nullable();
