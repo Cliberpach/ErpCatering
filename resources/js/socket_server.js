@@ -40,12 +40,20 @@ fs.readFile(envFile, 'utf8', (err, data) => {
 
 
 const app = express();
-const options = {
-    key: fs.readFileSync('/etc/letsencrypt/live/www.obramaster.online/privkey.pem'),  // Ruta a tu archivo de >
-    cert: fs.readFileSync('/etc/letsencrypt/live/www.obramaster.online/fullchain.pem'), // Ruta a tu archivo d>
-};
-const server = https.createServer(options, app);
-//const server = http.createServer(app);
+
+let server  =   null;
+
+if(process.env.NODE_ENV === 'production'){
+    const options = {
+        key: fs.readFileSync('/etc/letsencrypt/live/www.obramaster.online/privkey.pem'),  // Ruta a tu archivo de >
+        cert: fs.readFileSync('/etc/letsencrypt/live/www.obramaster.online/fullchain.pem'), // Ruta a tu archivo d>
+    };
+    server = https.createServer(options, app);
+}
+
+if(process.env.NODE_ENV === 'development'){
+    server = http.createServer(app);
+}
 
 const io = new Server(server, {
     cors: {

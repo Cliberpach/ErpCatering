@@ -89,17 +89,18 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const socket            =   window.io;
-    const lstRequerimientos =   @json($requerimientos);   
 
-    console.log(lstRequerimientos);
+    eventsLayout();
+
+    const socket            =   window.io;
+    const lstNotificaciones =   @json(isset($notificaciones) ? $notificaciones : []);
 
     limpiarNotificaciones();
 
     const rol_nombre  = @json(Auth::user()->getRoleNames()[0]);
 
     if(rol_nombre === 'LOGISTICA'){
-      pintarNotificacionesRequerimientosLogistica(lstRequerimientos);
+      pintarNotificacionesRequerimientosLogistica(lstNotificaciones);
     }
 
     //Escuchar evento de conexión
@@ -119,37 +120,98 @@
     });
 
     socket.on('nuevoRequerimiento', (data) => {
-      console.log('Nuevo requerimiento recibido:', data);
 
-      toastr.options = {
-          closeButton: true, 
-          timeOut: 0,        
-          extendedTimeOut: 0, 
-          allowHtml: true    
-      };
+      const rol_nombre  = @json(Auth::user()->getRoleNames()[0]);
 
-      toastr.info(`
-          <div class="content">
-               <h6 style="color:white;">
-                   ${data.requerimiento.supervisor_nombre}
-                   <span class="text-regular">
-                       ${data.requerimiento.fecha_registro}
-                   </span>
-               </h6>
-               <p>
-                   RQ-${data.requerimiento.id}
-               </p>
-               <p>
-                   <strong>PROYECTO:</strong> ${data.requerimiento.proyecto_nombre}
-               </p>
-               <span>${tiempoTranscurrido(data.requerimiento.fecha_registro)}</span>
-          </div>
-      `,'NUEVO REQUERIMIENTO');
+      if(rol_nombre === 'LOGISTICA'){
 
-      pintarNuevoRequerimientoLogistica(data.requerimiento);
+        console.log('Nuevo requerimiento recibido:', data);
+
+        toastr.options = {
+            closeButton: true, 
+            timeOut: 0,        
+            extendedTimeOut: 0, 
+            allowHtml: true    
+        };
+
+        toastr.info(`
+            <div class="content">
+                <h6 style="color:white;">
+                    ${data.requerimiento.supervisor_nombre}
+                    <span class="text-regular">
+                        ${data.requerimiento.fecha_registro}
+                    </span>
+                </h6>
+                <p>
+                    RQ-${data.requerimiento.requerimiento_id}
+                </p>
+                <p>
+                    <strong>PROYECTO:</strong> ${data.requerimiento.proyecto_nombre}
+                </p>
+                <span>${tiempoTranscurrido(data.requerimiento.fecha_registro)}</span>
+            </div>
+        `,'NUEVO REQUERIMIENTO');
+
+        pintarNuevoRequerimientoLogistica(data.requerimiento);
+      }
+
     });
 
   });
+
+  function eventsLayout(){
+    document.addEventListener('click',(e)=>{
+      const notificacionLink = e.target.closest('.notificacion_link');
+
+      if (notificacionLink) {
+        const notificacion_id = notificacionLink.getAttribute('data-id');
+        eliminarNotificacion(notificacion_id);
+      }
+
+    })
+  }
+
+  async function eliminarNotificacion(id){
+    toastr.clear();
+        
+    Swal.fire({
+      title: 'Cargando...',
+      html: 'Eliminando notificación...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(); 
+      }
+    });
+
+    try {
+      let urlDeleteNotificacion   =   `{{ route('notificaciones.destroy', ['id' => ':id']) }}`;
+      urlDeleteNotificacion       =   urlDeleteNotificacion.replace(':id', id);
+      const token                 =   document.querySelector('input[name="_token"]').value;
+
+      const response  =   await fetch(urlDeleteNotificacion, {
+                                method: 'DELETE',
+                                headers: {
+                                  'X-CSRF-TOKEN': token 
+                                }
+                              });
+
+      const   res =   await response.json();
+
+      if(res.success){
+        toastr.success(res.message,'OPERACIÓN COMPLETADA');
+      }else{
+        toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR NOTIFICACIÓN');
+      }
+
+    } catch (error) {
+      toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR NOTIFICACIÓN');
+    }finally{
+      Swal.close();
+      const requerimiento_index =   @json(route('logistica.lista_requerimientos.index'));
+      window.location.href      =   requerimiento_index;
+    } 
+
+  }
 
   function limpiarNotificaciones(){
     const ulNotificaciones      =   document.querySelector('#ul_notificaciones');
@@ -177,15 +239,15 @@
   }
 
   function pintarNuevoRequerimientoLogistica(nuevo_requerimiento) {
-      const ulNotificaciones = document.querySelector('#ul_notificaciones');
-      let nuevoElemento = '';
+      const ulNotificaciones  =   document.querySelector('#ul_notificaciones');
+      let nuevoElemento       =   '';
 
-      if (nuevo_requerimiento.estado !== 'ANULADO') {
+      if (nuevo_requerimiento.requerimiento_estado !== 'ANULADO') {
           nuevoElemento = `
-              <li>
-                  <a href="#0">
+              <li class="notificacion_link" data-id="${nuevo_requerimiento.notificacion_id}">
+                  <a href="javascript:void(0);">
                       <div class="image">
-                          <img src="{{asset('layout/assets/images/lead/lead-6.png')}}" alt="" />
+                        <img src="{{asset('layout/assets/images/lead/requerimiento_logo.png')}}" alt="" />
                       </div>
                       <div class="content">
                           <h6>
@@ -195,7 +257,7 @@
                               </span>
                           </h6>
                           <p>
-                              RQ-${nuevo_requerimiento.id}
+                              RQ-${nuevo_requerimiento.requerimiento_id}
                           </p>
                           <p>
                               <strong>PROYECTO:</strong> ${nuevo_requerimiento.proyecto_nombre}
@@ -211,32 +273,33 @@
   }
 
 
-  function pintarNotificacionesRequerimientosLogistica(lstRequerimientos) {
+  function pintarNotificacionesRequerimientosLogistica(lstNotificaciones) {
     const ulNotificaciones      =   document.querySelector('#ul_notificaciones');
     let notificaciones          =   ``;
 
-    lstRequerimientos.forEach((r)=>{
+    lstNotificaciones.forEach((n)=>{
       
-      if(r.estado !== 'ANULADO'){
-        notificaciones  +=  ` <li>
-            <a href="#0">
+      if(n.requerimiento_estado !== 'ANULADO' && n.notificacion_estado !== 'ANULADO'){
+        notificaciones  +=  `             
+          <li class="notificacion_link" data-id="${n.notificacion_id}">
+            <a href="javascript:void(0);">
                 <div class="image">
-                    <img src="{{asset('layout/assets/images/lead/lead-6.png')}}" alt="" />
+                    <img src="{{asset('layout/assets/images/lead/requerimiento_logo.png')}}" alt="" />
                 </div>
                 <div class="content">
                     <h6>
-                        ${r.supervisor_nombre}
+                        ${n.supervisor_nombre}
                         <span class="text-regular">
-                          ${r.fecha_registro}
+                          ${n.fecha_registro}
                         </span>
                     </h6>
                     <p>
-                      RQ-${r.id}
+                      RQ-${n.requerimiento_id}
                     </p>
                     <p>
-                      <p>PROYECTO:</p> ${r.proyecto_nombre}
+                      <p>PROYECTO:</p> ${n.proyecto_nombre}
                     </p>
-                    <span>${tiempoTranscurrido(r.fecha_registro)}</span>
+                    <span>${tiempoTranscurrido(n.fecha_registro)}</span>
                 </div>
             </a>
         </li>`;

@@ -182,11 +182,11 @@
                         <td>{{$item->cantidad}}</td>
                         @if ($orden_compra->moneda == "PEN")
                             <td>{{$item->precio_soles}}</td>
-                            <td>{{$item->precio_soles * $item->cantidad}}</td>
+                            <td>{{ number_format($item->precio_soles * $item->cantidad, 2) }}</td>
                         @endif
                         @if ($orden_compra->moneda == "USD")
                             <td>{{$item->precio_dolares}}</td>
-                            <td>{{$item->precio_dolares * $item->cantidad}}</td>
+                            <td>{{ number_format($item->precio_dolares * $item->cantidad, 2) }}</td>
                         @endif
                     </tr>         
                 @endforeach
@@ -199,7 +199,7 @@
                     <td  style="text-align: right;"><strong>TOTAL</strong></td>
                     <td  >
                         <strong>
-                           {{$orden_compra->total}}
+                            {{ number_format($orden_compra->total, 2) }}
                         </strong>
                     </td>
                 </tr>
@@ -232,24 +232,21 @@
                     <td><strong>MODALIDAD PAGO:</strong></td>
                     <td>
                         @if($orden_compra->modalidad_pago_nombre == 'CREDITO')
-                            {{ $orden_compra->modalidad_pago_nombre . ' (' . $orden_compra->nro_dias . ' días)' }}
+                            {{ $orden_compra->modalidad_pago_nombre . ' (' . $orden_compra->modalidad_pago_nro_dias . ' días)' }}
                         @else
                             {{ $orden_compra->modalidad_pago_nombre }}
                         @endif
                     </td> 
                 </tr>
-            </tbody>
-        </table>
-        
-
-        <table class="products-table">
-            <tbody>
                 <tr>
                     <td><strong>OBSERVACIONES:</strong></td>
                     <td>{{$orden_compra->observacion}}</td>
                 </tr>
             </tbody>
         </table>
+        
+
+        
         
     </div>
 </body>

@@ -93,7 +93,7 @@ class AttemptToAuthenticate
     protected function throwFailedAuthenticationException($request)
     {
         $this->limiter->increment($request);
-
+        
         throw ValidationException::withMessages([
             Fortify::username() => [trans('auth.failed')],
         ]);

@@ -5,6 +5,21 @@
         <div class="row">
             <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
                 <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-3">
+                        <label class="required_field" for="requerimiento" style="font-weight: bold;">REQUERIMIENTO</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">
+                                <i class="fa-solid fa-bell-concierge"></i>                            
+                            </span>
+                            <input 
+                            @if ($requerimiento)
+                                value="{{"RE-".$requerimiento->id}}"
+                            @else
+                                value="SIN REQUERIMIENTO"
+                            @endif required disabled  id="requerimiento" name="requerimiento" type="text" class="form-control" placeholder="PROYECTO" aria-label="Username" aria-describedby="basic-addon1">
+                        </div>
+                        <span class="fecha_entrega_error msgError"  style="color:red;"></span>
+                    </div>
                     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                         <label class="required_field" for="fecha_entrega" style="font-weight: bold;">FECHA ENTREGA</label>
                         <input required  value="<?php echo date('Y-m-d'); ?>"  type="date" name="fecha_entrega" id="fecha_entrega" class="form-control">
@@ -65,7 +80,7 @@
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-3">
                         <label for="direccion" class="required_field" style="font-weight: bold;">DIRECCIÓN DE OBRA</label>
                         <div class="form-floating">
-                            <textarea required maxlength="200" id="direccion" name="direccion" class="form-control" placeholder="Leave a comment here" id="floatingTextarea">{{$requerimiento->direccion}}</textarea>
+                            <textarea required maxlength="200" id="direccion" name="direccion" class="form-control" placeholder="Leave a comment here" id="floatingTextarea">{{$proyecto->direccion}}</textarea>
                             <label for="floatingTextarea">Dirección</label>
                         </div>
                         <span class="direccion_error msgError"  style="color:red;"></span>                       
@@ -80,7 +95,7 @@
                             <span class="input-group-text" id="basic-addon1">
                                 <i class="fa-solid fa-diagram-project"></i>                            
                             </span>
-                            <input value="{{$requerimiento->nombre}}" required readonly  id="proyecto" name="proyecto" type="text" class="form-control inputDecimalPositivoLibre" placeholder="PROYECTO" aria-label="Username" aria-describedby="basic-addon1">
+                            <input value="{{$proyecto->nombre}}" required readonly  id="proyecto" name="proyecto" type="text" class="form-control inputDecimalPositivoLibre" placeholder="PROYECTO" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
@@ -117,7 +132,7 @@
                                 <i class="fa-solid fa-address-book"></i>                           
                             </span>
                             <select required name="persona_contacto" id="persona_contacto" data-placeholder="Seleccionar" class="select2_form">
-                                <option value="{{$requerimiento->supervisor_id}}">{{$requerimiento->persona_contacto.' - '.'(S)'}}</option>
+                                <option value="{{$proyecto->supervisor_id}}">{{$proyecto->persona_contacto.' - '.'(S)'}}</option>
                                 @foreach ($proyecto_personal as $personal)
                                     <option value="{{$personal->colaborador_id}}">{{$personal->persona_contacto}}</option>
                                 @endforeach

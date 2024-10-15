@@ -101,6 +101,7 @@ class ListaRequerimientoController extends Controller
     ]
     */ 
     public function requerimientoToCotizacion(Request $request){
+        
         DB::beginTransaction();
         try {
 
@@ -116,8 +117,10 @@ class ListaRequerimientoController extends Controller
             //========= CONVIRTIENDO A COTIZACIÓN =========
             $request_store_cotizacion   =   new Request();
             $request_store_cotizacion->merge([
-                'supervisor_id'         =>  $requerimiento->supervisor_id,
-                'lstCotizacionCompra'   =>  $request->get('lstCotizacionCompra'),
+                'supervisor_id'                 =>  $requerimiento->supervisor_id,
+                'lstCotizacionCompra'           =>  $request->get('lstCotizacionCompra'),
+                'colaborador_registrador_id'    =>  $request->get('registrador_id'),
+                'proyecto_id'                   =>  $requerimiento->proyecto_id  
             ]);
 
             $cotizacion_controller  =   new CotizacionCompraController();

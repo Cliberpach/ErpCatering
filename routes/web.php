@@ -19,6 +19,7 @@ use App\Http\Controllers\Registros\CategoriaController;
 use App\Http\Controllers\Registros\ColaboradorController;
 use App\Http\Controllers\Herramientas\UsuarioController;
 use App\Http\Controllers\Logistica\ListaRequerimientoController;
+use App\Http\Controllers\Notificaciones\NotificacionController;
 use App\Http\Controllers\Requerimientos\RequerimientoController;
 use App\Http\Controllers\Registros\MaquinariaController;
 use App\Http\Controllers\Registros\MarcaController;
@@ -53,9 +54,9 @@ Route::middleware([
     })->name('dashboard');
 });
 
-//============ INICIO REGISTROS =================
 
-Route::group(['prefix' => 'colaboradores', 'middleware' => ['auth','checkCustomPermission:registros.colaborador']], function () {
+//============ INICIO REGISTROS =================
+Route::group(['prefix' => 'colaboradores', 'middleware' => ['auth','checkCustomPermission:registros.colaborador','notificacionMiddleware']], function () {
 
     Route::get('/index', [ColaboradorController::class, 'index'])->name('registros.colaborador.index');
     Route::get('/create', [ColaboradorController::class, 'create'])->name('registros.colaborador.create');
@@ -69,7 +70,12 @@ Route::group(['prefix' => 'colaboradores', 'middleware' => ['auth','checkCustomP
 
 });
 
-Route::group(['prefix' => 'cargos', 'middleware' => ['auth','checkCustomPermission:registros.cargo']], function () {
+
+
+
+
+
+Route::group(['prefix' => 'cargos', 'middleware' => ['auth','checkCustomPermission:registros.cargo','notificacionMiddleware']], function () {
 
     Route::get('/index', [CargoController::class, 'index'])->name('registros.cargo.index');
     // Route::get('/create', [ColaboradorController::class, 'create'])->name('registros.colaborador.create');
@@ -83,7 +89,7 @@ Route::group(['prefix' => 'cargos', 'middleware' => ['auth','checkCustomPermissi
 });
 
 
-Route::group(['prefix' => 'marcas', 'middleware' => ['auth','checkCustomPermission:registros.marca']], function () {
+Route::group(['prefix' => 'marcas', 'middleware' => ['auth','checkCustomPermission:registros.marca','notificacionMiddleware']], function () {
 
     Route::get('/index', [MarcaController::class, 'index'])->name('registros.marca.index');
     Route::get('/create', [MarcaController::class, 'create'])->name('registros.marca.create');
@@ -97,7 +103,7 @@ Route::group(['prefix' => 'marcas', 'middleware' => ['auth','checkCustomPermissi
 
 });
 
-Route::group(['prefix' => 'categorias', 'middleware' => ['auth','checkCustomPermission:registros.categoria']], function () {
+Route::group(['prefix' => 'categorias', 'middleware' => ['auth','checkCustomPermission:registros.categoria','notificacionMiddleware']], function () {
 
     Route::get('/index', [CategoriaController::class, 'index'])->name('registros.categoria.index');
     Route::get('/create', [CategoriaController::class, 'create'])->name('registros.categoria.create');
@@ -111,7 +117,7 @@ Route::group(['prefix' => 'categorias', 'middleware' => ['auth','checkCustomPerm
 
 });
 
-Route::group(['prefix' => 'productos', 'middleware' => ['auth','checkCustomPermission:registros.producto']], function () {
+Route::group(['prefix' => 'productos', 'middleware' => ['auth','checkCustomPermission:registros.producto','notificacionMiddleware']], function () {
 
     Route::get('/index', [ProductoController::class, 'index'])->name('registros.producto.index');
     Route::get('/create', [ProductoController::class, 'create'])->name('registros.producto.create');
@@ -128,7 +134,7 @@ Route::group(['prefix' => 'productos', 'middleware' => ['auth','checkCustomPermi
 
 });
 
-Route::group(['prefix' => 'modalidad_pago', 'middleware' => ['auth','checkCustomPermission:registros.modalidad_pago']], function () {
+Route::group(['prefix' => 'modalidad_pago', 'middleware' => ['auth','checkCustomPermission:registros.modalidad_pago','notificacionMiddleware']], function () {
 
     Route::get('/index', [ModalidadPagoController::class, 'index'])->name('registros.modalidad_pago.index');
     Route::get('/create', [ModalidadPagoController::class, 'create'])->name('registros.modalidad_pago.create');
@@ -141,7 +147,7 @@ Route::group(['prefix' => 'modalidad_pago', 'middleware' => ['auth','checkCustom
 });
 
 
-Route::group(['prefix' => 'maquinarias', 'middleware' => ['auth','checkCustomPermission:registros.maquinaria']], function () {
+Route::group(['prefix' => 'maquinarias', 'middleware' => ['auth','checkCustomPermission:registros.maquinaria','notificacionMiddleware']], function () {
 
     Route::get('/index', [MaquinariaController::class, 'index'])->name('registros.maquinaria.index');
     Route::get('/create', [MaquinariaController::class, 'create'])->name('registros.maquinaria.create');
@@ -153,7 +159,7 @@ Route::group(['prefix' => 'maquinarias', 'middleware' => ['auth','checkCustomPer
 
 });
 
-Route::group(['prefix' => 'almacenes', 'middleware' => ['auth','checkCustomPermission:registros.almacen']], function () {
+Route::group(['prefix' => 'almacenes', 'middleware' => ['auth','checkCustomPermission:registros.almacen','notificacionMiddleware']], function () {
 
     Route::get('/index', [AlmacenController::class, 'index'])->name('registros.almacen.index');
     Route::get('/create', [AlmacenController::class, 'create'])->name('registros.almacen.create');
@@ -166,7 +172,7 @@ Route::group(['prefix' => 'almacenes', 'middleware' => ['auth','checkCustomPermi
 
 });
 
-Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermission:registros.proyecto']], function () {
+Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermission:registros.proyecto','notificacionMiddleware']], function () {
 
     Route::get('/index', [ProyectoController::class, 'index'])->name('registros.proyecto.index');
     Route::get('/create', [ProyectoController::class, 'create'])->name('registros.proyecto.create');
@@ -189,7 +195,7 @@ Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermi
 });
 
 
-Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','checkCustomPermission:herramientas.tabla_general']], function () {
+Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','checkCustomPermission:herramientas.tabla_general','notificacionMiddleware']], function () {
 
     // Route::get('/index', [TablaGeneralDetalle::class, 'index'])->name('registros.maquinaria.index');
     // Route::get('/create', [MaquinariaController::class, 'create'])->name('registros.maquinaria.create');
@@ -205,7 +211,7 @@ Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','
 
 //========= INICIO JORNALES =========
 
-Route::group(['prefix' => 'jornales', 'middleware' => ['auth','checkCustomPermission:jornal.registro_labor']], function () {
+Route::group(['prefix' => 'jornales', 'middleware' => ['auth','checkCustomPermission:jornal.registro_labor','notificacionMiddleware']], function () {
 
     Route::get('/index', [RegistroLaborController::class, 'index'])->name('jornales.registro_labor.index');
     Route::post('/store', [RegistroLaborController::class, 'store'])->name('jornales.registro_labor.store');
@@ -223,7 +229,7 @@ Route::group(['prefix' => 'jornales', 'middleware' => ['auth','checkCustomPermis
 
 
 //============ INICIO TRABAJO EQUIPOS =======
-Route::group(['prefix' => 'trabajo_equipos', 'middleware' => ['auth','checkCustomPermission:trabajo_equipo.registro_tarea']], function () {
+Route::group(['prefix' => 'trabajo_equipos', 'middleware' => ['auth','checkCustomPermission:trabajo_equipo.registro_tarea','notificacionMiddleware']], function () {
 
     Route::get('/index', [RegistroTareaController::class, 'index'])->name('trabajo_equipos.registro_tarea.index');
     Route::post('/store', [RegistroTareaController::class, 'store'])->name('trabajo_equipos.registro_tarea.store');
@@ -243,7 +249,7 @@ Route::group(['prefix' => 'trabajo_equipos', 'middleware' => ['auth','checkCusto
 
 //========== INICIO REQUERIMIENTOS ==========
 
-Route::group(['prefix' => 'requerimientos', 'middleware' => ['auth','checkCustomPermission:requerimientos.requerimientos']], function () {
+Route::group(['prefix' => 'requerimientos', 'middleware' => ['auth','checkCustomPermission:requerimientos.requerimientos','notificacionMiddleware']], function () {
 
     Route::get('/index', [RequerimientoController::class, 'index'])->name('requerimientos.requerimientos.index');
     Route::get('/create', [RequerimientoController::class, 'create'])->name('requerimientos.requerimientos.create')->middleware('checkRole:SUPERVISOR');
@@ -261,7 +267,7 @@ Route::group(['prefix' => 'requerimientos', 'middleware' => ['auth','checkCustom
 
 
 //============ INICIO LOGÍSTICA =======
-Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCustomPermission:logistica.registro_salida']], function () {
+Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCustomPermission:logistica.registro_salida','notificacionMiddleware']], function () {
 
     Route::get('/index', [RegistroSalidaController::class, 'index'])->name('logistica.registro_salida.index');
     Route::get('/create', [RegistroSalidaController::class, 'create'])->name('logistica.registro_salida.create');
@@ -273,7 +279,7 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
 
 });
 
-Route::group(['prefix' => 'lista_requerimientos', 'middleware' => ['auth','checkCustomPermission:logistica.lista_requerimientos']], function () {
+Route::group(['prefix' => 'lista_requerimientos', 'middleware' => ['auth','checkCustomPermission:logistica.lista_requerimientos','notificacionMiddleware']], function () {
 
     Route::get('/index', [ListaRequerimientoController::class, 'index'])->name('logistica.lista_requerimientos.index');
     Route::post('/generarCotizacion', [ListaRequerimientoController::class, 'generarCotizacion'])->name('logistica.lista_requerimientos.generarCotizacion');
@@ -294,7 +300,7 @@ Route::group(['prefix' => 'lista_requerimientos', 'middleware' => ['auth','check
 
 
 //======== INICIO COMPRAS =======
-Route::group(['prefix' => 'cotizacion_compra', 'middleware' => ['auth','checkCustomPermission:compras.cotizacion_compra']], function () {
+Route::group(['prefix' => 'cotizacion_compra', 'middleware' => ['auth','checkCustomPermission:compras.cotizacion_compra','notificacionMiddleware']], function () {
 
     Route::get('/index', [CotizacionCompraController::class, 'index'])->name('compras.cotizacion_compra.index');
     Route::post('/store', [CotizacionCompraController::class, 'store'])->name('compras.cotizacion_compra.store');
@@ -309,7 +315,7 @@ Route::group(['prefix' => 'cotizacion_compra', 'middleware' => ['auth','checkCus
 
 });
 
-Route::group(['prefix' => 'registro_compra', 'middleware' => ['auth','checkCustomPermission:compras.registro_compra']], function () {
+Route::group(['prefix' => 'registro_compra', 'middleware' => ['auth','checkCustomPermission:compras.registro_compra','notificacionMiddleware']], function () {
 
     Route::get('/index', [RegistroCompraController::class, 'index'])->name('compras.registro_compra.index');
     Route::post('/store', [RegistroCompraController::class, 'store'])->name('compras.registro_compra.store');
@@ -320,7 +326,7 @@ Route::group(['prefix' => 'registro_compra', 'middleware' => ['auth','checkCusto
 
 });
 
-Route::group(['prefix' => 'orden_compra', 'middleware' => ['auth','checkCustomPermission:compras.orden_compra']], function () {
+Route::group(['prefix' => 'orden_compra', 'middleware' => ['auth','checkCustomPermission:compras.orden_compra','notificacionMiddleware']], function () {
 
     Route::get('/index', [OrdenCompraController::class, 'index'])->name('compras.orden_compra.index');
     // Route::post('/store', [RegistroCompraController::class, 'store'])->name('compras.registro_compra.store');
@@ -333,7 +339,7 @@ Route::group(['prefix' => 'orden_compra', 'middleware' => ['auth','checkCustomPe
 
 });
 
-Route::group(['prefix' => 'proveedores', 'middleware' => 'auth'], function () {
+Route::group(['prefix' => 'proveedores', 'middleware' => 'auth','notificacionMiddleware'], function () {
     Route::get('/index', [ProveedorController::class, 'index'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.index');
     Route::post('/store', [ProveedorController::class, 'store'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.store');
     Route::get('/create', [ProveedorController::class, 'create'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.create');
@@ -350,7 +356,7 @@ Route::group(['prefix' => 'proveedores', 'middleware' => 'auth'], function () {
 
 //============== INICIO PLAN PROYECTO ==========
 
-Route::group(['prefix' => 'plan_proyecto', 'middleware' => ['auth','checkCustomPermission:plan_proyecto.tarea']], function () {
+Route::group(['prefix' => 'plan_proyecto', 'middleware' => ['auth','checkCustomPermission:plan_proyecto.tarea','notificacionMiddleware']], function () {
 
     Route::get('/index', [TareaController::class, 'index'])->name('plan_proyecto.tarea.index');
     Route::get('/create/{id}', [TareaController::class, 'create'])->name('plan_proyecto.tarea.create');
@@ -367,7 +373,7 @@ Route::group(['prefix' => 'plan_proyecto', 'middleware' => ['auth','checkCustomP
 //=========== FIN PLAN PROYECTO ============
 
 //======== INICIO HERRAMIENTAS ===========//
-Route::group(['prefix' => 'usuarios', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'usuarios', 'middleware' => ['auth','notificacionMiddleware']], function () {
 
     Route::get('/index', [UsuarioController::class, 'index'])->name('herramientas.usuario.index');
     Route::get('/create', [UsuarioController::class, 'create'])->name('herramientas.usuario.create');
@@ -380,7 +386,7 @@ Route::group(['prefix' => 'usuarios', 'middleware' => ['auth']], function () {
 
 });
 
-Route::group(['prefix' => 'roles', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'roles', 'middleware' => ['auth','notificacionMiddleware']], function () {
 
     Route::get('/index', [RolController::class, 'index'])->name('herramientas.rol.index');
     Route::get('/create', [RolController::class, 'create'])->name('herramientas.rol.create');
@@ -392,7 +398,7 @@ Route::group(['prefix' => 'roles', 'middleware' => ['auth']], function () {
 
 });
 
-Route::group(['prefix' => 'empresa', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'empresa', 'middleware' => ['auth','notificacionMiddleware']], function () {
 
     Route::get('/index', [EmpresaController::class, 'index'])->name('herramientas.empresa.index');
     Route::get('/consultarDocumento', [EmpresaController::class, 'consultarDocumento'])->name('herramientas.empresa.consultarDocumento');
@@ -408,7 +414,7 @@ Route::group(['prefix' => 'empresa', 'middleware' => ['auth']], function () {
 
 //========== INICIO CONSULTAS ===========
 
-Route::group(['prefix' => 'consultas_personal', 'middleware' => ['auth','checkCustomPermission:consultas.personal']], function () {
+Route::group(['prefix' => 'consultas_personal', 'middleware' => ['auth','checkCustomPermission:consultas.personal','notificacionMiddleware']], function () {
 
     Route::get('/index', [CPersonalController::class, 'index'])->name('consultas.personal.index');
     Route::get('/getConsultaPersonal', [CPersonalController::class, 'getConsultaPersonal'])->name('consultas.personal.getConsultaPersonal');
@@ -417,7 +423,7 @@ Route::group(['prefix' => 'consultas_personal', 'middleware' => ['auth','checkCu
  
 });
 
-Route::group(['prefix' => 'consultas_maquinaria', 'middleware' => ['auth','checkCustomPermission:consultas.maquinaria']], function () {
+Route::group(['prefix' => 'consultas_maquinaria', 'middleware' => ['auth','checkCustomPermission:consultas.maquinaria','notificacionMiddleware']], function () {
 
     Route::get('/index', [CMaquinariaController::class, 'index'])->name('consultas.maquinaria.index');
     Route::get('/getConsultaMaquinaria', [CMaquinariaController::class, 'getConsultaMaquinaria'])->name('consultas.maquinaria.getConsultaMaquinaria');
@@ -426,7 +432,7 @@ Route::group(['prefix' => 'consultas_maquinaria', 'middleware' => ['auth','check
  
 });
 
-Route::group(['prefix' => 'consultas_producto', 'middleware' => ['auth','checkCustomPermission:consultas.producto']], function () {
+Route::group(['prefix' => 'consultas_producto', 'middleware' => ['auth','checkCustomPermission:consultas.producto','notificacionMiddleware']], function () {
 
     Route::get('/index', [CProductoController::class, 'index'])->name('consultas.producto.index');
     Route::get('/getConsultaProducto', [CProductoController::class, 'getConsultaProducto'])->name('consultas.producto.getConsultaProducto');
@@ -444,5 +450,11 @@ Route::group(['prefix' => 'utils', 'middleware' => ['auth']], function () {
     Route::get( '/tipoCambio', [UtilController::class, 'tipoCambio'])->name('utils.tipoCambio');
 
 });
+
+Route::group(['prefix' => 'notificaciones', 'middleware' => ['auth']], function () {
+    Route::delete('/destroy/{id}', [NotificacionController::class, 'destroy'])->name('notificaciones.destroy');
+});
+
+
 
 

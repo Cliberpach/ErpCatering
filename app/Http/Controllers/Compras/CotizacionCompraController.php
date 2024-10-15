@@ -36,6 +36,7 @@ class CotizacionCompraController extends Controller
                                     ->leftJoin('requerimientos as r','r.cotizacion_compra_id','=','cc.id')
                                     ->leftJoin('colaboradores as c', 'c.id', '=', 'cc.colaborador_id')
                                     ->leftJoin('colaboradores as cs','cs.id','=','cc.supervisor_id')
+                                    ->join('proyectos as pr','pr.id','=','cc.proyecto_id')
                                     ->select(
                                         DB::raw('CONCAT("CO-", cc.id) as simbolo'), 
                                         'cc.id', 
@@ -43,6 +44,7 @@ class CotizacionCompraController extends Controller
                                         'cc.estado',
                                         'cc.created_at as fecha_registro',
                                         'r.id as requerimiento_id',
+                                        'pr.nombre as proyecto_nombre',
                                         DB::raw('CONCAT("RQ-", r.id) as simbolo_requerimiento'),
                                         DB::raw('COALESCE(cs.nombre, c.nombre) as supervisor_nombre')                                     )
                                     ->where('cc.estado','<>','ANULADO')
@@ -56,7 +58,37 @@ class CotizacionCompraController extends Controller
         $categorias =   Categoria::where('estado','ACTIVO')->get();
         $marcas     =   Marca::where('estado','ACTIVO')->get();
 
-        return view('compras.cotizacion_compra.create',compact('categorias','marcas'));
+        //======== VERIFICANDO QUE FORME PARTE DE UN PROYECTO ==========
+        $proyecto   =   DB::select('select 
+                        pr.id as proyecto_id,
+                        pr.nombre as proyecto_nombre
+                        from proyecto_personal as pp
+                        inner join proyectos as pr on pr.id = pp.proyecto_id
+                        where pp.colaborador_id = ?',[Auth::user()->colaborador_id]); 
+
+        if(count($proyecto) === 0){
+            Session::flash('cotizacion_error',"DEBES FORMAR PARTE DE UN PROYECTO PARA REALIZAR COTIZACIONES");
+            return back();
+        }
+
+        $proyecto   =   $proyecto[0];
+
+        $colaborador_registrador    =   DB::select('select 
+                                        co.id as colaborador_id,
+                                        co.nombre as colaborador_nombre
+                                        from 
+                                        colaboradores as co
+                                        where co.id = ?',[Auth::user()->colaborador_id]);
+
+        if(count($colaborador_registrador) === 0){
+            Session::flash('cotizacion_error',"NO SE ENCUENTRA EL COLABORADOR EN LA BD");
+            return back();
+        }
+                                
+        $colaborador_registrador    =   $colaborador_registrador[0];
+
+        return view('compras.cotizacion_compra.create',
+        compact('categorias','marcas','proyecto','colaborador_registrador'));
     }
 
     public function edit($id){
@@ -81,6 +113,15 @@ class CotizacionCompraController extends Controller
         compact('cotizacion_compra_detalle','categorias','marcas','id'));
     }
 
+
+    /*
+        array:3 [ // app\Http\Controllers\Compras\CotizacionCompraController.php:120
+            "lstCotizacionCompra"           => "[{"producto_id":1,"producto_nombre":"CEMENTO ROJO MOCHICA X 45 KG","categoria_nombre":"CEMENTO","marca_nombre":"MOCHICA","producto_unidad_medida":"UNIDAD","cantidad":"2"}]"
+            "proyecto_id"                   => "2"  --VALIDACIÓN COMPLEJA
+            "colaborador_registrador_id"    => "3"  --VALIDACIÓN COMPLEJA
+            "supervisor_id"                 =>  "VIENE CUANDO SE CONVIERTE REQ A COT"
+        ]
+    */
     public function store(Request $request){
         
         DB::beginTransaction();
@@ -91,7 +132,8 @@ class CotizacionCompraController extends Controller
             }
             
             $cotizacion_compra                  =   new CotizacionCompra();
-            $cotizacion_compra->colaborador_id  =   Auth::user()->colaborador_id;
+            $cotizacion_compra->colaborador_id  =   $request->get('colaborador_registrador_id');
+            $cotizacion_compra->proyecto_id     =   $request->get('proyecto_id');
             if($request->has('supervisor_id')){
                 $cotizacion_compra->supervisor_id   =   $request->get('supervisor_id');
             }
@@ -113,7 +155,8 @@ class CotizacionCompraController extends Controller
             }
 
             DB::commit();
-            return response()->json(['success'=>true,'message'=>"COTIZACIÓN DE COMPRA REGISTRADA",'cid'=>$cotizacion_compra->id]);
+            return response()->json(['success'=>true,'message'=>"COTIZACIÓN DE COMPRA REGISTRADA",
+            'cid'=>$cotizacion_compra->id]);
 
 
         } catch (\Throwable $th) {
@@ -248,6 +291,21 @@ class CotizacionCompraController extends Controller
                                 from cotizacion_compra as cc
                                 inner join colaboradores as c on c.id = cc.colaborador_id
                                 where cc.id = ?',[$cotizacion_id])[0];
+
+        if($cotizacion_compra->estado === 'ANULADO'){
+            Session::flash('cotizacion_compra_error','LA COTIZACIÓN ESTÁ ANULADA!!!');
+            return back();
+        }
+
+        if($cotizacion_compra->estado === 'FACTURADO'){
+            Session::flash('cotizacion_compra_error','LA COTIZACIÓN YA FUE FACTURADA!!!');
+            return back();
+        }
+
+        if($cotizacion_compra->estado === 'CON ORDEN COMPRA'){
+            Session::flash('cotizacion_compra_error','LA COTIZACIÓN YA TIENE ORDEN DE COMPRA!!!');
+            return back();
+        }
         
         $cotizacion_compra_detalle  =   DB::select('select 
                                         ccd.producto_id,
@@ -278,24 +336,50 @@ class CotizacionCompraController extends Controller
                             and (pr.estado = "PENDIENTE" or pr.estado = "EN PROCESO")',
                             [$cotizacion_id]);
 
+        $proyecto   =   DB::select('select 
+                        pr.nombre,
+                        pr.direccion,
+                        pr.supervisor_id,
+                        CONCAT(co.nombre, " - CEL:", co.telefono) AS persona_contacto
+                        from 
+                        proyectos as pr
+                        JOIN colaboradores AS co ON co.id = pr.supervisor_id
+                        where pr.id = ?
+                        and (pr.estado = "PENDIENTE" or pr.estado = "EN PROCESO")',
+                        [$cotizacion_compra->proyecto_id])[0]; 
+                        
+        //========= COTIZACIÓN SIN REQUERIMIENTO ========
         if(count($requerimiento) === 0){
-            Session::flash('cotizacion_compra_error','NO SE ENCONTRÓ EL REQUERIMIENTO ASOCIADO A LA COTIZACIÓN!!!');
-            return back();
-        }
-        $requerimiento      =   $requerimiento[0];
+            $requerimiento      =   null;
 
-        $proyecto_personal  =   DB::select('select
-                                pp.colaborador_id,
-                                CONCAT(co.nombre, " - CEL:", co.telefono) AS persona_contacto
-                                from requerimientos as r
-                                join proyectos as pr on pr.id = r.proyecto_id
-                                join proyecto_personal as pp on pp.proyecto_id = pr.id
-                                JOIN colaboradores AS co ON co.id = pp.colaborador_id
-                                where r.cotizacion_compra_id = ?
-                                and r.estado = "COTIZADO"
-                                and (pr.estado = "PENDIENTE" or pr.estado = "EN PROCESO")',
-                                [$cotizacion_id]);
-                
+            $proyecto_personal  =   DB::select('select
+                                    pp.colaborador_id,
+                                    CONCAT(co.nombre, " - CEL:", co.telefono) AS persona_contacto
+                                    from 
+                                    proyectos as pr 
+                                    join proyecto_personal as pp on pp.proyecto_id = pr.id
+                                    JOIN colaboradores AS co ON co.id = pp.colaborador_id
+                                    where pr.id = ?
+                                    and (pr.estado = "PENDIENTE" or pr.estado = "EN PROCESO")',
+                                    [$cotizacion_compra->proyecto_id]);
+                            
+        }else{
+            //======= COTIZACIÓN CON REQUERIMIENTO ==========
+            $requerimiento      =   $requerimiento[0];
+
+            $proyecto_personal  =   DB::select('select
+                                    pp.colaborador_id,
+                                    CONCAT(co.nombre, " - CEL:", co.telefono) AS persona_contacto
+                                    from requerimientos as r
+                                    join proyectos as pr on pr.id = r.proyecto_id
+                                    join proyecto_personal as pp on pp.proyecto_id = pr.id
+                                    JOIN colaboradores AS co ON co.id = pp.colaborador_id
+                                    where r.cotizacion_compra_id = ?
+                                    and r.estado = "COTIZADO"
+                                    and (pr.estado = "PENDIENTE" or pr.estado = "EN PROCESO")',
+                                    [$cotizacion_id]);
+        }
+         
         $categorias         =   Categoria::where('estado','ACTIVO')->get();
         $marcas             =   Marca::where('estado','ACTIVO')->get();
 
@@ -320,11 +404,10 @@ class CotizacionCompraController extends Controller
 
         return view('compras.cotizacion_compra.cotizacion_to_orden',
         compact('cotizacion_compra','cotizacion_compra_detalle','categorias',
-        'marcas','proveedores','tipos_documento','modalidades_pago','requerimiento',
+        'marcas','proveedores','tipos_documento','modalidades_pago','requerimiento','proyecto',
         'proyecto_personal','igv'));
         
     }
-
 
 
     /*
@@ -353,6 +436,7 @@ class CotizacionCompraController extends Controller
         ]
     */
     public function cotizacionToOrden(OrdenCompraStoreRequest $request){
+        
         DB::beginTransaction();
         try {
 
@@ -363,16 +447,19 @@ class CotizacionCompraController extends Controller
             CotizacionCompraController::validarLstCotizacionCompra($lstCotizacionCompraDetalle);
 
             $montos             =   CotizacionCompraController::calcularMontos($lstCotizacionCompraDetalle,$request->get('igv',null),$request->get('valor_igv'));
+            $requerimiento      =   DB::select('select r.id 
+                                    from requerimientos as r
+                                    where r.cotizacion_compra_id = ?',
+                                    [$request->get('cotizacion_compra_id')]);
 
-            $requerimiento      =   Requerimiento::find($request->get('requerimiento_id'));
-            $cotizacion_compra  =   CotizacionCompra::find($requerimiento->cotizacion_compra_id);
+            $cotizacion_compra  =   CotizacionCompra::find($request->get('cotizacion_compra_id'));
 
 
             $orden_compra                               =   new OrdenCompra();
             $orden_compra->colaborador_registrador_id   =   Auth::user()->colaborador_id;
             $orden_compra->proveedor_id                 =   $request->get('proveedor');
             $orden_compra->modalidad_pago_id            =   $request->get('modalidad_pago');
-            $orden_compra->proyecto_id                  =   $requerimiento->proyecto_id;
+            $orden_compra->proyecto_id                  =   $cotizacion_compra->proyecto_id;
             $orden_compra->documento                    =   $request->get('tipo_doc');   
             $orden_compra->direccion_obra               =   $request->get('direccion');   
             $orden_compra->observacion                  =   $request->get('observacion');  
@@ -433,10 +520,13 @@ class CotizacionCompraController extends Controller
                 $orden_compra_detalle->save();
             }
 
-            //======== ACTUALIZAR ESTADO DEL REQUERIMIENTO =======
-            $requerimiento->estado  =   'CON ORDEN COMPRA';
-            $requerimiento->update();
-
+            if(count($requerimiento) !== 0){
+                //======== ACTUALIZAR ESTADO DEL REQUERIMIENTO =======
+                $requerimiento          =   Requerimiento::find($requerimiento[0]->id);
+                $requerimiento->estado  =   'CON ORDEN COMPRA';
+                $requerimiento->update();
+            }
+           
             //========= ACTUALIZAR ESTADO DE COTIZACIÓN =======
             $cotizacion_compra->estado          =   'CON ORDEN COMPRA';
             $cotizacion_compra->orden_compra_id =   $orden_compra->id;
@@ -504,37 +594,6 @@ class CotizacionCompraController extends Controller
             throw new Exception("FALTA EL PARÁMETRO COTIZACIÓN COMPRA ID");
         }
 
-        if(!$request->has('requerimiento_id')){
-            throw new Exception("FALTA EL PARÁMETRO REQUERIMIENTO ID");
-        }
-
-        if(!$request->get('requerimiento_id')){
-            throw new Exception("FALTA EL PARÁMETRO REQUERIMIENTO ID");
-        }
-
-        //========= VALIDANDO REQUERIMIENTO EN BD ======
-        $requerimiento  =   Requerimiento::find($request->get('requerimiento_id'));
-
-        if(!$requerimiento){
-            throw new Exception("NO EXISTE EL REQUERIMIENTO EN LA BD");
-        }
-
-        if(!$requerimiento->estado  === 'PENDIENTE'){
-            throw new Exception("EL REQUERIMIENTO NO ESTÁ COTIZADO");
-        }
-
-        if(!$requerimiento->estado  === 'CON ORDEN COMPRA'){
-            throw new Exception("EL REQUERIMIENTO YA FUE CONVERTIDO A ORDEN DE COMPRA");
-        }
-
-        if(!$requerimiento->estado  === 'FACTURADO'){
-            throw new Exception("EL REQUERIMIENTO YA FUE FACTURADO");
-        }
-
-        if(!$requerimiento->estado  === 'ANULADO'){
-            throw new Exception("EL REQUERIMIENTO ESTÁ ANULADO");
-        }
-
         //======= VALIDANDO COTIZACIÓN COMPRA EN BD ========
         $cotizacion_compra  =   CotizacionCompra::find($request->get('cotizacion_compra_id'));
 
@@ -554,9 +613,52 @@ class CotizacionCompraController extends Controller
             throw new Exception("LA COTIZACIÓN DE COMPRA ESTÁ ANULADA");
         }
 
+
+        //======= VERIFICANDO SI LA COTIZACIÓN TIENE REQUERIMIENTO EN LA BD ======
+        $requerimiento  =   DB::select('select r.id from requerimientos as r
+                            where r.cotizacion_compra_id = ?',
+                            [$request->get('cotizacion_compra_id')]);
+
+        //======= EN CASO TENGA REQUERIMIENTO =====
+        //===== VALIDAR EL REQUERIMIENTO ======
+        if(count($requerimiento) === 1){
+
+            //====== CON REQUERIMIENTO =====
+            if(!$request->has('requerimiento_id')){
+                throw new Exception("FALTA EL PARÁMETRO REQUERIMIENTO ID");
+            }
+            if(!$request->get('requerimiento_id')){
+                throw new Exception("FALTA EL PARÁMETRO REQUERIMIENTO ID");
+            }
+
+             //========= VALIDANDO REQUERIMIENTO EN BD ======
+            $requerimiento  =   Requerimiento::find($request->get('requerimiento_id'));
+
+            if(!$requerimiento){
+                throw new Exception("NO EXISTE EL REQUERIMIENTO EN LA BD");
+            }
+
+            if(!$requerimiento->estado  === 'PENDIENTE'){
+                throw new Exception("EL REQUERIMIENTO NO ESTÁ COTIZADO");
+            }
+
+            if(!$requerimiento->estado  === 'CON ORDEN COMPRA'){
+                throw new Exception("EL REQUERIMIENTO YA FUE CONVERTIDO A ORDEN DE COMPRA");
+            }
+
+            if(!$requerimiento->estado  === 'FACTURADO'){
+                throw new Exception("EL REQUERIMIENTO YA FUE FACTURADO");
+            }
+
+            if(!$requerimiento->estado  === 'ANULADO'){
+                throw new Exception("EL REQUERIMIENTO ESTÁ ANULADO");
+            }
+        }
+      
         //======== VALIDANDO LA PERSONA DE CONTACTO ========
         $persona_contacto_id    =   $request->get('persona_contacto');
-        $proyecto_id            =   $requerimiento->proyecto_id;
+        $proyecto_id            =   $cotizacion_compra->proyecto_id;
+      
 
         //======== COMPROBANDO SI LA PERSONA DE CONTACTO ES EL SUPERVISOR DEL PROYECTO =====
         $proyecto               =   Proyecto::find($proyecto_id);

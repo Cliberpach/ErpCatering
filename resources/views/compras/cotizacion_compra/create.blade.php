@@ -295,7 +295,10 @@
             const formData                          =   new FormData();
             const urlRegistrarCotizacionCompra      =   @json(route('compras.cotizacion_compra.store'));
 
-            formData.append('lstCotizacionCompra',JSON.stringify(lstCotizacionCompra))
+            formData.append('lstCotizacionCompra',JSON.stringify(lstCotizacionCompra));
+            formData.append('proyecto_id',@json($proyecto->proyecto_id));
+            formData.append('colaborador_registrador_id',@json($colaborador_registrador->colaborador_id));
+
 
             Swal.fire({
                 title: 'Cargando...',

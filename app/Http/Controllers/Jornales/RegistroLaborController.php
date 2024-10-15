@@ -96,14 +96,7 @@ class RegistroLaborController extends Controller
 
         //======= OBTENIENDO EL REGISTRO LABOR ======
         $registro_labor_maestro =   RegistroLabor::find($id);
-        
-        //======== OBTENER EL ID DEL PROYECTO DEL SUPERVISOR =====
-        $proyecto   =   DB::select('select pr.id 
-                        from proyectos as pr
-                        where pr.supervisor_id = ? and pr.estado = "ACTIVO"',
-                        [$registro_labor_maestro->supervisor_id]);
-
-                
+          
         //======== OBTENIENDO LOS COLABORADORES ENLAZADOS A ESE PROYECTO =====
         $colaboradores  =   DB::select('select 
                                 rld.colaborador_id as colaborador_id,
@@ -120,9 +113,10 @@ class RegistroLaborController extends Controller
                             inner join colaboradores as co on co.id = rld.colaborador_id
                             inner join cargos as ca on ca.id = co.cargo_id
                             inner join tipos_documento as td on td.id = co.tipo_documento_id
-                            where pp.proyecto_id = ? and pp.estado = "ACTIVO" 
-                            and rld.registro_labor_id = ? or rld.registro_labor_id is null',
-                            [$proyecto[0]->id,$id]);
+                            where pp.proyecto_id = ? 
+                            and pp.estado = "ACTIVO" 
+                            and (rld.registro_labor_id = ? or rld.registro_labor_id is null)',
+                            [$registro_labor_maestro->proyecto_id,$id]);
 
         //======== OBTENIENDO COLABORADOR ACTUAL =======
         $colaborador_actual_id  =   DB::select('select co.id

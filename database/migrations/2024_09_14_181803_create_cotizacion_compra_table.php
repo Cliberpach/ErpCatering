@@ -20,6 +20,9 @@ return new class extends Migration
             $table->unsignedBigInteger('supervisor_id')->nullable();
             $table->foreign('supervisor_id')->references('id')->on('colaboradores');
 
+            $table->unsignedBigInteger('proyecto_id');
+            $table->foreign('proyecto_id')->references('id')->on('proyectos');
+
             $table->unsignedBigInteger('orden_compra_id')->nullable(); 
             $table->foreign('orden_compra_id')->references('id')->on('ordenes_compra'); 
 

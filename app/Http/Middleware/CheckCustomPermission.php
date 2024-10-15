@@ -16,7 +16,6 @@ class CheckCustomPermission
      */
     public function handle(Request $request, Closure $next,string $permission): Response
     {
-        
         if (Auth::check()) {
             if (Auth::user()->can($permission)) {
                 return $next($request);

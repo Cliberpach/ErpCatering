@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Requerimientos;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Requerimientos\Requerimiento\RequerimientoStoreRequest;
+use App\Models\Notificacion;
 use App\Models\Requerimientos\Requerimiento;
 use App\Models\Requerimientos\RequerimientoDetalle;
 use App\Models\Registros\Categoria;
@@ -120,25 +121,47 @@ class RequerimientoController extends Controller
                 $requerimiento_detalle->save();     
             }
 
+            //========= GRABANDO NOTIFICACIÓN PARA COLABORADORES CON CARGO LOGISTICA ======
+            $colaboradores_logistica    =   DB::select('select 
+                                            co.id
+                                            from 
+                                            colaboradores as co
+                                            inner join cargos as ca on co.cargo_id = ca.id
+                                            where ca.descripcion = "LOGISTICA"');
+
+            foreach ($colaboradores_logistica as $colaborador_logistica) {
+                $notificacion                               =   new Notificacion();
+                $notificacion->requerimiento_id             =   $requerimiento->id;
+                $notificacion->colaborador_notificado_id    =   $colaborador_logistica->id;
+                $notificacion->save();
+            }
+
+            //======= OBTENIENDO INFORMACIÓN DE LA NOTIFICACIÓN NUEVA =========
+            $nuevo_requerimiento =  DB::select('SELECT
+                                        DISTINCT 
+                                        n.id as notificacion_id,
+                                        r.id  as requerimiento_id,
+                                        co.nombre AS supervisor_nombre,
+                                        pr.nombre AS proyecto_nombre,
+                                        r.created_at AS fecha_registro,
+                                        r.estado as requerimiento_estado,
+                                        n.estado as notificacion_estado
+                                    FROM 
+                                        notificaciones AS n
+                                    INNER JOIN requerimientos AS r ON r.id = n.requerimiento_id
+                                    INNER JOIN proyectos AS pr ON pr.id = r.proyecto_id
+                                    INNER JOIN colaboradores AS co ON co.id = r.supervisor_id
+                                    WHERE r.estado != "ANULADO"
+                                    AND n.requerimiento_id = ? ', 
+                                    [$requerimiento->id])[0];
+
             DB::commit();
 
-            $nuevo_requerimiento =  DB::select('select 
-                                    r.id,
-                                    co.nombre as supervisor_nombre,
-                                    pr.nombre as proyecto_nombre,
-                                    r.created_at as fecha_registro,
-                                    r.estado
-                                    from 
-                                    requerimientos as r
-                                    inner join proyectos as pr on pr.id = r.proyecto_id
-                                    inner join colaboradores as co on co.id = r.supervisor_id
-                                    where r.estado != "ANULADO"
-                                    and r.id = ?
-                                    order by r.id desc',[$requerimiento->id])[0];
-
-            //======= ENVIAR MENSAJE AL SOCKET PARA QUE MUESTRE ALERTA DE NUEVO REQUERIMIENTO A LOS DE LOGÍSTICA ======
+            //======= ENTORNO PUERTO DEL SOCKET ======
             $socketUrl = env('SOCKET_URL', 'http://localhost:3000'); 
             //dd(env('SOCKET_URL'));
+
+            //========= COMUNICANDO AL SOCKET EN TIEMPO REAL =======
             $client = new \GuzzleHttp\Client();
             $response   =   $client->post("$socketUrl/mensaje", [
                                 'json' => [ 
@@ -150,6 +173,7 @@ class RequerimientoController extends Controller
             return response()->json(['success'=>true,'message'=>"REQUERIMIENTO REGISTRADO"]);
 
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }

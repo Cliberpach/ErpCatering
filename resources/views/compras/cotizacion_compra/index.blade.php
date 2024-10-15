@@ -39,7 +39,15 @@
 
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarDataTableCotizacionCompra();
+        mostrarMsgErrors();
     })
+
+    function mostrarMsgErrors(){
+        if("{{ Session::has('cotizacion_error') }}"){
+            const msgError  =   "{{ Session::get('cotizacion_error') }}";
+            toastr.error(msgError);
+        } 
+    }
 
     function iniciarDataTableCotizacionCompra(){
         const urlGetCotizacionesCompra = '{{ route('compras.cotizacion_compra.getCotizacionesCompra') }}';
@@ -63,6 +71,7 @@
                     }
                 },
                 { data: 'simbolo_requerimiento', name: 'simbolo_requerimiento' },
+                { data: 'proyecto_nombre', name: 'proyecto_nombre' },
                 { data: 'supervisor_nombre', name: 'supervisor_nombre' },
                 { data: 'colaborador_nombre', name: 'colaborador_nombre' },
                 { data: 'fecha_registro', name: 'fecha_registro' },
