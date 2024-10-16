@@ -3,12 +3,18 @@
 namespace App\Http\Controllers\Compras;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Kardex\KardexController;
 use App\Http\Requests\Compras\OrdenCompra\OrdenCompraUpdateRequest;
+use App\Models\Compras\CotizacionCompra;
 use App\Models\Compras\OrdenCompra;
 use App\Models\Compras\OrdenCompraDetalle;
+use App\Models\Compras\RegistroCompra;
+use App\Models\Compras\RegistroCompraDetalle;
+use App\Models\Registros\AlmacenProducto;
 use App\Models\Registros\Categoria;
 use App\Models\Registros\Marca;
 use App\Models\Registros\Proyecto;
+use App\Models\Requerimientos\Requerimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -16,6 +22,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Style\Supervisor;
 
 class OrdenCompraController extends Controller
@@ -157,6 +164,247 @@ class OrdenCompraController extends Controller
         'marcas','proveedores','tipos_documento','modalidades_pago',
         'proyecto_personal','igv','proyecto','supervisor'));
   
+    }
+
+    public function goToRegistroCompra($id){
+        
+        $categorias =   DB::select('select c.id,c.descripcion 
+                        from categorias as c
+                        where c.estado = "ACTIVO"');
+
+        $marcas =   DB::select('select m.id,m.descripcion 
+                        from marcas as m
+                        where m.estado = "ACTIVO"');
+
+        $tipos_documento    =   DB::select('select * 
+                                from tipos_documento as td
+                                where td.estado = "ACTIVO"
+                                and td.id <> "3" ');
+
+        $proveedores    =   DB::select('select 
+                                pr.id,
+                                pr.nombre,
+                                pr.nro_documento,
+                                td.descripcion as tipo_documento_descripcion
+                                from proveedores as pr
+                                inner join tipos_documento as td on td.id = pr.tipo_documento_id
+                                where pr.estado = "ACTIVO"
+                                and pr.id != 1');
+
+        $orden_compra   =   DB::select('select 
+                                oc.*,
+                                c.nombre as persona_contacto_nombre,
+                                pr.nombre as proveedor_nombre,
+                                td.descripcion as tipo_documento_nombre,
+                                pr.nro_documento,
+                                m.tipo as modalidad_pago_nombre,
+                                m.nro_dias as modalidad_pago_nro_dias,
+                                proy.nombre as proyecto_nombre
+                                from ordenes_compra as oc
+                                inner join colaboradores as c on c.id = oc.persona_contacto_id
+                                inner join proveedores as pr on pr.id = oc.proveedor_id
+                                inner join modalidades_pago as m on m.id = oc.modalidad_pago_id
+                                inner join tipos_documento as td on td.id = pr.tipo_documento_id
+                                inner join proyectos as proy on proy.id = oc.proyecto_id
+                                where oc.id = ?',[$id])[0];
+    
+        $orden_compra_detalle   =   DB::select('select 
+                                        ocd.producto_id,
+                                        ocd.cantidad,
+                                        ocd.precio_soles,
+                                        ocd.precio_dolares,
+                                        ocd.precio_mas_igv_soles,
+                                        ocd.precio_mas_igv_dolares,
+                                        p.nombre as producto_nombre,
+                                        c.descripcion as categoria_nombre,
+                                        m.descripcion as marca_nombre,
+                                        tgd.descripcion as producto_unidad_medida
+                                        from orden_compra_detalle as ocd
+                                        inner join productos as p on p.id = ocd.producto_id
+                                        inner join marcas as m on m.id = p.marca_id 
+                                        inner join categorias as c on c.id = p.categoria_id
+                                        inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
+                                        where ocd.orden_compra_id = ?',[$id]);
+
+        $almacenes  =   DB::select('select 
+                        a.id,
+                        a.descripcion 
+                        from almacenes as a
+                        where a.estado = "ACTIVO"
+                        and a.proyecto_id = ? or a.id = 1',
+                        [$orden_compra->proyecto_id]);
+
+        
+
+        return view('compras.orden_compra.orden_compra_to_registro_compra',
+        compact('categorias','marcas','almacenes','tipos_documento','proveedores',
+        'orden_compra','orden_compra_detalle'));
+    }
+
+
+    /*
+        array:12 [ // app\Http\Controllers\Compras\OrdenCompraController.php:239
+            "_token"                => "f9lwYjwjxcyChsx4qQFtJKjwQsBYF20EUPdJhjcO"
+            "fecha_emision"         => "2024-10-16"  --REQUEST
+            "fecha_entrega"         => "2024-10-16"  --REQUEST
+            "proveedor"             => "RUC:20419387658-CEMENTOS PACASMAYO S.A.A."
+            "observacion"           => "dasdasd"     --REQUEST
+            "moneda"                => "PEN"   
+            "tipo_cambio"           => "3.7700"
+            "tipo_doc"              => "FACTURA"
+            "serie"                 => "B001"       --REQUEST
+            "numero"                => "12"         --REQUEST
+            "table_orden_compra_to_registro_compra_length"  => "10"
+            "almacen"                                       => "1"
+            lstCompra" => "[{"producto_id":1,"producto_nombre":"CEMENTO ROJO MOCHICA X 42.5 KG","categoria_nombre":"CEMENTO","marca_nombre":"MOCHICA","almacen_nombre":"CENTRAL","almacen_id":1,"producto_unidad_medida":"UNIDAD","precio":"29.50","cantidad":"2.00","total":"59.00"},{"producto_id":2,"producto_nombre":"VARILLAS DE 1/2\"  SIDER","categoria_nombre":"ACERO","marca_nombre":"SIDER","almacen_nombre":"CENTRAL","almacen_id":1,"producto_unidad_medida":"UNIDAD","precio":"1.00","cantidad":"500.00","total":"500.00"},{"producto_id":3,"producto_nombre":"VARILLAS DE 3/8\" SIDER","categoria_nombre":"ACERO","marca_nombre":"SIDER","almacen_nombre":"CENTRAL","almacen_id":1,"producto_unidad_medida":"UNIDAD","precio":"1.00","cantidad":"400.00","total":"400.00"},{"producto_id":4,"producto_nombre":"VARILLAS DE 5/8\" SIDER","categoria_nombre":"ACERO","marca_nombre":"SIDER","almacen_nombre":"CENTRAL","almacen_id":1,"producto_unidad_medida":"UNIDAD","precio":"1.00","cantidad":"200.00","total":"200.00"}]"
+            "orden_compra_id"       => "3"          --VALIDACIÓN COMPLEJA
+        ]
+    */
+    public function ordenCompraToRegistroCompra(Request $request){
+
+        DB::beginTransaction();
+
+        try {
+            $lstCompra              =   json_decode($request->get('lstCompra'));
+
+            $orden_compra           =   OrdenCompra::find($request->get('orden_compra_id'));
+            $orden_compra_detalle   =   DB::select('select * from orden_compra_detalle as ocd
+                                        where ocd.orden_compra_id = ?',[$orden_compra->id]);
+    
+            $registro_compra                            =   new RegistroCompra();
+            $registro_compra->colaborador_registro_id   =   Auth::user()->colaborador_id;
+            $registro_compra->proveedor_id              =   $orden_compra->proveedor_id;
+            $registro_compra->fecha_emision             =   $request->get('fecha_emision');
+            $registro_compra->fecha_entrega             =   $request->get('fecha_entrega');
+            $registro_compra->serie                     =   mb_strtoupper($request->get('serie'), 'UTF-8');
+            $registro_compra->correlativo               =   $request->get('numero');
+            $registro_compra->moneda                    =   $orden_compra->moneda;
+            $registro_compra->tipo_cambio               =   $orden_compra->tipo_cambio;
+            $registro_compra->precios_igv               =   $orden_compra->precios_igv;
+            $registro_compra->observacion               =   $request->get('observacion');
+            $registro_compra->igv                       =   $orden_compra->igv;
+            $registro_compra->subtotal                  =   $orden_compra->subtotal;
+            $registro_compra->monto_igv                 =   $orden_compra->monto_igv;
+            $registro_compra->total                     =   $orden_compra->total;
+            $registro_compra->subtotal_soles            =   $orden_compra->subtotal_soles;
+            $registro_compra->monto_igv_soles           =   $orden_compra->monto_igv_soles;
+            $registro_compra->total_soles               =   $orden_compra->total_soles;
+            $registro_compra->save();
+    
+    
+            //======= GUARDANDO DETALLE ========
+            foreach ($orden_compra_detalle as $item) {
+    
+                //======== OBTENIENDO STOCK ANTES DE LA COMPRA =========
+                $stock_previo           =   0;
+                $stock_posterior        =   0;
+    
+                //====== OBTENER EL ALMACEN ID ESTABLECIDO EN LA VISTA ====
+                $producto_id_a_buscar   =   $item->producto_id;
+                $producto_encontrado = array_filter($lstCompra, function($item) use ($producto_id_a_buscar) {
+                    return $item->producto_id === $producto_id_a_buscar;
+                });
+                $producto_encontrado = reset($producto_encontrado); 
+                
+                if(!$producto_encontrado){
+                    throw new Exception("EL DETALLE DE LA ORDEN DE COMPRA NO COINCIDE CON LA BD");
+                }
+
+                if(!$producto_encontrado->almacen_id){
+                    throw new Exception("FALTA INDICAR EL ALMACÉN PARA EL PRODUCTO ".$producto_encontrado->producto_nombre);
+                }
+    
+                $compra_detalle                         =   new RegistroCompraDetalle();
+                $compra_detalle->registro_compra_id     =   $registro_compra->id;
+                $compra_detalle->almacen_id             =   $producto_encontrado->almacen_id;
+                $compra_detalle->producto_id            =   $item->producto_id;
+                $compra_detalle->precio_soles           =   $item->precio_soles;
+                $compra_detalle->cantidad               =   $item->cantidad;
+                $compra_detalle->precio_soles           =   $item->precio_soles;
+                $compra_detalle->precio_dolares         =   $item->precio_dolares;
+                $compra_detalle->precio_mas_igv_soles   =   $item->precio_mas_igv_soles;
+                $compra_detalle->precio_mas_igv_dolares =   $item->precio_mas_igv_dolares;
+                $compra_detalle->save();
+    
+                //======= INSERTANDO STOCK ========
+                $existe_almacen_producto =   DB::table('almacen_productos')
+                                            ->where('almacen_id', $producto_encontrado->almacen_id)
+                                            ->where('producto_id', $item->producto_id)
+                                            ->exists();
+    
+                if(!$existe_almacen_producto){
+                    $almacen_producto               =   new AlmacenProducto();
+                    $almacen_producto->almacen_id   =   $producto_encontrado->almacen_id;
+                    $almacen_producto->producto_id  =   $item->producto_id;
+                    $almacen_producto->stock        =   $item->cantidad;
+                    $almacen_producto->save();
+                    $stock_posterior                =   $almacen_producto->stock;
+                }else{
+    
+                    $almacen_producto_previo = DB::table('almacen_productos')
+                    ->where('almacen_id', $producto_encontrado->almacen_id)
+                    ->where('producto_id', $item->producto_id)
+                    ->value('stock');
+    
+                    $stock_previo = $almacen_producto_previo;
+    
+                    DB::table('almacen_productos')
+                    ->where('almacen_id', $producto_encontrado->almacen_id)
+                    ->where('producto_id', $item->producto_id)
+                    ->update([
+                    'stock' => DB::raw('stock + ' . $item->cantidad),
+                    'updated_at' => Carbon::now(),
+                    ]);
+    
+                    $almacen_producto_posterior = DB::table('almacen_productos')
+                                        ->where('almacen_id', $producto_encontrado->almacen_id)
+                                        ->where('producto_id', $item->producto_id)
+                                        ->value('stock');
+    
+                    $stock_posterior = $almacen_producto_posterior;
+                }
+
+                $item->almacen_id =   $producto_encontrado->almacen_id;
+    
+                KardexController::storeCompra($item,$registro_compra->id,$stock_previo,$stock_posterior);
+    
+            }
+            
+            $orden_compra->estado   =   'FACTURADO';
+            $orden_compra->save();
+
+            $cotizacion_compra      =   DB::select('select 
+                                        cc.id
+                                        from cotizacion_compra as cc
+                                        where cc.orden_compra_id = ?'
+                                        ,[$orden_compra->id]);
+
+            if(count($cotizacion_compra) !== 0){
+                $cotizacion_compra_update           =   CotizacionCompra::find($cotizacion_compra[0]->id);
+                $cotizacion_compra_update->estado   =   'FACTURADO';   
+                $cotizacion_compra_update->update();
+            }
+
+            $requerimiento      =   DB::select('select 
+                                    r.id
+                                    from requerimientos as r
+                                    where r.orden_compra_id = ?'
+                                    ,[$orden_compra->id]); 
+
+            if(count($requerimiento) !== 0){
+                $requerimiento_update           =   Requerimiento::find($requerimiento[0]->id);
+                $requerimiento_update->estado   =   'FACTURADO';   
+                $requerimiento_update->update();
+            }
+
+            DB::commit();
+            return response()->json(['success'=>true,'message'=>'REGISTRO DE COMPRA GENERADO']);
+    
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage(),'line'=>$th->getLine()]);
+        }
+       
     }
 
 

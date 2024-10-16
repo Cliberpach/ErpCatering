@@ -179,7 +179,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="table-responsive">
-                                @include('compras.registro_compra.tables.table_compra_detalle')
+                                @include('compras.orden_compra.tables.table_orden_compra_to_registro_compra_montos')
                             </div>
                         </div>
                     </div>

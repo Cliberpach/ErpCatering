@@ -103,6 +103,9 @@
                         const baseUrlEdit   =   `{{ route('compras.orden_compra.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
+                        const baseUrlGoToRegistroCompra   =   `{{ route('compras.orden_compra.goToRegistroCompra', ['id' => ':id']) }}`;
+                        urlGoToRegistroCompra             =   baseUrlGoToRegistroCompra.replace(':id', data.id); 
+
                         const urlDelete         = `{{ route('compras.cotizacion_compra.destroy', ':id') }}`.replace(':id', data.id);
                         const urlPdf            = `{{ route('compras.orden_compra.pdf', ':id') }}`.replace(':id', data.id);
                         const urlOrdenCompra    = `{{route('compras.cotizacion_compra.goToOrdenCompra',':id')}}`.replace(':id', data.id);
@@ -119,18 +122,25 @@
                                                             <i class="fa-solid fa-file-pdf"></i> PDF
                                                         </a>
                                                     </li>
-                                                     <li>
+                                                    <li>
                                                         <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowOrdenCompra(${data.id});">
                                                             <i class="fa-solid fa-eye"></i> VER
                                                         </a>
                                                     </li>
                                             `;
                         if(data.orden_compra_estado === 'PENDIENTE'){
-                            acciones += `<li>
+                            acciones += `
+                                        <li>
+                                            <a class="dropdown-item" href="${urlGoToRegistroCompra}">
+                                                <i class="fa-solid fa-file-invoice"></i> GENERAR DOCUMENTO
+                                            </a>
+                                        </li>
+                                        <li>
                                             <a class="dropdown-item" href="${urlEdit}">
                                                 <i class="fa-solid fa-pen-to-square"></i> EDITAR
                                             </a>
-                                        </li>`;
+                                        </li>
+                                        `;
                         }
 
                         acciones += `</ul></div>`;

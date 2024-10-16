@@ -337,6 +337,8 @@ Route::group(['prefix' => 'orden_compra', 'middleware' => ['auth','checkCustomPe
     Route::get('/show/{id}', [OrdenCompraController::class, 'show'])->name('compras.orden_compra.show');
     Route::get('/getOrdenesCompra', [OrdenCompraController::class, 'getOrdenesCompra'])->name('compras.orden_compra.getOrdenesCompra');
     Route::get('/pdf/{id}', [OrdenCompraController::class, 'pdf'])->name('compras.orden_compra.pdf');
+    Route::get('/goToRegistroCompra/{id}', [OrdenCompraController::class, 'goToRegistroCompra'])->name('compras.orden_compra.goToRegistroCompra');
+    Route::post('/ordenCompraToRegistroCompra', [OrdenCompraController::class, 'ordenCompraToRegistroCompra'])->name('compras.orden_compra.ordenCompraToRegistroCompra');
 
 });
 
