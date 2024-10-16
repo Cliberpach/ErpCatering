@@ -8,7 +8,7 @@
                     <label class="required_field" for="fecha_emision" style="font-weight: bold;">FECHA EMISIÓN</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">
-                            <img width="30" height="30" src="{{asset('icons/date/date2.png')}}" alt="coins"/>
+                            <img width="30" height="30" src="{{asset('img/icons/date/date2.png')}}" alt="coins"/>
                         </span>
                         <input style="background:rgb(255, 255, 220);" value="<?php echo date('Y-m-d'); ?>" required type="date" name="fecha_emision" id="fecha_emision" class="form-control">
                     </div>
@@ -17,7 +17,7 @@
                     <label class="required_field" for="fecha_entrega" style="font-weight: bold;">FECHA ENTREGA</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">
-                            <img width="30" height="30" src="{{asset('img/empresa/img_empresa.jpeg')}}" alt="coins"/>
+                            <img width="30" height="30" src="{{asset('img/icons/date/date2.png')}}" alt="coins"/>
                         </span>
                         <input style="background:rgb(255, 255, 220);" value="<?php echo date('Y-m-d'); ?>" required type="date" name="fecha_entrega" id="fecha_entrega" class="form-control">
                     </div>
@@ -26,7 +26,7 @@
                     <label class="required_field" for="proveedor" style="font-weight: bold;">PROVEEDOR</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">
-                            <img width="30" height="30" src="{{asset('icons/proveedor/proveedor1.png')}}" alt="coins"/>
+                            <img width="30" height="30" src="{{asset('img/icons/proveedor/proveedor1.png')}}" alt="coins"/>
                         </span>
                         <input readonly value="{{$orden_compra->tipo_documento_nombre.":".$orden_compra->nro_documento."-".$orden_compra->proveedor_nombre}}" required type="text" name="proveedor" id="proveedor" class="form-control">
                     </div>
@@ -46,7 +46,7 @@
                     <label class="required_field" for="moneda" style="font-weight: bold;">MONEDA</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">
-                            <img width="30" height="30" src="{{asset('icons/money/money1.png')}}" alt="coins"/>
+                            <img width="30" height="30" src="{{asset('img/icons/money/money1.png')}}" alt="coins"/>
                         </span>
                         <input readonly value="{{$orden_compra->moneda}}" required id="moneda" name="moneda" type="text" class="form-control" placeholder="Moneda" aria-label="Username" aria-describedby="basic-addon1">
                     </div>
@@ -56,7 +56,7 @@
                     <i class="fa-solid fa-rotate btn btn-primary" onclick="getTipoCambio()"></i>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">
-                            <img width="30" height="30" src="{{asset('icons/money/tipo_cambio.png')}}" alt="coins"/>
+                            <img width="30" height="30" src="{{asset('img/icons/money/tipo_cambio.png')}}" alt="coins"/>
                         </span>
                         <input value="{{$orden_compra->tipo_cambio}}" required readonly  id="tipo_cambio" name="tipo_cambio" type="text" class="form-control inputDecimalPositivoLibre" placeholder="Tipo cambio" aria-label="Username" aria-describedby="basic-addon1">
                     </div>
@@ -66,7 +66,7 @@
                     <label class="required_field" for="tipo_doc" style="font-weight: bold;">TIPO DOC</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">
-                            <img width="30" height="30" src="{{asset('icons/invoice/invoice2.png')}}" alt="coins"/>
+                            <img width="30" height="30" src="{{asset('img/icons/invoice/invoice2.png')}}" alt="coins"/>
                         </span>
                         <input value="{{$orden_compra->documento}}" required readonly  id="tipo_doc" name="tipo_doc" type="text" class="form-control" placeholder="Tipo Documento" aria-label="Username" aria-describedby="basic-addon1">
                     </div>
@@ -87,7 +87,7 @@
                     <label class="required_field" for="serie" style="font-weight: bold;">SERIE</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">
-                            <img width="30" height="30" src="{{asset('icons/invoice/invoice1.png')}}" alt="coins"/>
+                            <img width="30" height="30" src="{{asset('img/icons/invoice/invoice1.png')}}" alt="coins"/>
                         </span>
                         <input style="background:rgb(255, 255, 220);" required id="serie" name="serie" type="text" class="form-control" placeholder="Serie" aria-label="Username" aria-describedby="basic-addon1">
                     </div>
@@ -96,7 +96,7 @@
                     <label class="required_field" for="numero" style="font-weight: bold;">N°</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">
-                            <img width="30" height="30" src="{{asset('icons/hash/hash1.png')}}" alt="coins"/>
+                            <img width="30" height="30" src="{{asset('img/icons/hash/hash1.png')}}" alt="coins"/>
                         </span>
                         <input style="background:rgb(255, 255, 220);" required id="numero" name="numero" type="text" class="form-control inputEnteroPositivo" placeholder="Número" aria-label="Username" aria-describedby="basic-addon1">
                     </div>
