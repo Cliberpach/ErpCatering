@@ -276,6 +276,7 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
     Route::post('/store', [RegistroSalidaController::class, 'store'])->name('logistica.registro_salida.store');
     Route::get('/show/{salida_id}', [RegistroSalidaController::class, 'show'])->name('logistica.registro_salida.show');
     Route::get('/pdf/{id}', [RegistroSalidaController::class, 'pdf'])->name('logistica.registro_salida.pdf');
+    Route::get('/getProductosByAlmacen', [ProductoController::class, 'getProductosByAlmacen'])->name('logistica.producto.getProductosByAlmacen');
 
 });
 

@@ -4,6 +4,7 @@
   $proyecto     =   null;
 
   if($rol_usuario !== 'SUPERVISOR'){
+
     $proyecto = DB::select('select 
                 pr.nombre
                 from proyectos as pr
@@ -13,6 +14,7 @@
                 and pr.estado != "FINALIZADO"
                 and pp.colaborador_id = ?',
                 [Auth::user()->colaborador_id]);
+                
   }else{
     $proyecto = DB::select('select 
                 pr.nombre
