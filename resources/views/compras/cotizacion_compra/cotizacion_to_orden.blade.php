@@ -52,7 +52,7 @@
         getTipoCambio();
         mostrarMsgErrors();
         
-        const montos    =  calcularMontos(lstCotizacionCompra,false,18);
+        const montos    =   calcularMontos(lstCotizacionCompra,true,18);
         const moneda    =   document.querySelector('#moneda').value;
 
         pintarTableMontos(montos,moneda);

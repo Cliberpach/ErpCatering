@@ -59,7 +59,7 @@
                     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                         <label for="igv" style="font-weight: bold;">IGV</label>
                         <div class="form-check">
-                            <input id="igv" name="igv" class="form-check-input"  type="checkbox" value="18" >
+                            <input checked id="igv" name="igv" class="form-check-input"  type="checkbox" value="18" >
                             <label class="form-check-label" for="flexCheckDefault">
                                 18%
                             </label>

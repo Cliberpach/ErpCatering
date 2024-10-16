@@ -64,7 +64,8 @@ class CotizacionCompraController extends Controller
                         pr.nombre as proyecto_nombre
                         from proyecto_personal as pp
                         inner join proyectos as pr on pr.id = pp.proyecto_id
-                        where pp.colaborador_id = ?',[Auth::user()->colaborador_id]); 
+                        where pp.colaborador_id = ?',
+                        [Auth::user()->colaborador_id]); 
 
         if(count($proyecto) === 0){
             Session::flash('cotizacion_compra_error',"DEBES FORMAR PARTE DE UN PROYECTO PARA REALIZAR COTIZACIONES");
@@ -396,7 +397,8 @@ class CotizacionCompraController extends Controller
                                 td.descripcion as tipo_documento_descripcion
                                 from proveedores as pr
                                 inner join tipos_documento as td on td.id = pr.tipo_documento_id
-                                where pr.estado = "ACTIVO"');
+                                where pr.estado = "ACTIVO"
+                                and pr.id != 1');
 
         $tipos_documento    =   DB::select('select * 
                                 from tipos_documento as td

@@ -18,6 +18,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class RegistroSalidaController extends Controller
 {
@@ -26,9 +27,56 @@ class RegistroSalidaController extends Controller
     }
 
     public function create(){
-        $categorias =   Categoria::where('estado','ACTIVO')->get();
-        $marcas     =   Marca::where('estado','ACTIVO')->get();
-        $almacenes  =   Almacen::where('estado','ACTIVO')->get();
+
+        $categorias     =   Categoria::where('estado','ACTIVO')->get();
+        $marcas         =   Marca::where('estado','ACTIVO')->get();
+        $proyecto_id    =   null;
+
+        //======== VERIFICANDO SI EL USUARIO ES SUPERVISOR DE ALGÚN PROYECTO PENDIENTE O EN PROCESO ======
+        $proyecto   =   DB::select('select
+                        pr.id 
+                        from proyectos as pr
+                        where 
+                        pr.supervisor_id = ?
+                        and pr.estado != "ANULADO" 
+                        and pr.estado != "FINALIZADO"',
+                        [Auth::user()->colaborador_id]);
+
+        //======== EN CASO EL USUARIO NO SEA SUPERVISOR DE ALGÚN PROYECTO PENDIENTE O EN PROCESO =====
+        if(count($proyecto) === 0){
+            
+            //========= VERIFICAR SI EL USUARIO FORMA PARTE DEL EQUIPO DE UN PROYECTO PENDIENTE O EN PROCESO =======
+            $proyecto_personal  =   DB::select('select 
+                                    pr.id
+                                    from proyecto_personal as pp
+                                    inner join proyectos as pr on pr.id = pp.proyecto_id
+                                    where 
+                                    pp.colaborador_id = ?
+                                    and pr.estado != "ANULADO" 
+                                    and pr.estado != "FINALIZADO"',
+                                    [Auth::user()->colaborador_id]); 
+                                    
+            //======== EN CASO EL USUARIO NO FORME PARTE DE UN EQUIPO ======
+            if(count($proyecto_personal) === 0){
+                Session::flash('registro_salida_error','USTED NO FORMA PARTE DE UN PROYECTO ACTUALMENTE');
+                return back();
+            }else{
+                //========= EN CASO FORME PARTE DE UN EQUIPO =======
+                $proyecto_id    =   $proyecto_personal[0]->id;
+            }
+        }else{
+            //======= EN CASO SEA SUPERVISOR DE UN PROYECTO ======
+            $proyecto_id    =   $proyecto[0]->id;
+        }
+
+        //======= OBTENIENDO ALMACENES DEL PROYECTO ACTUAL DEL USUARIO ========
+        $almacenes  =   DB::select('select 
+                        a.id,
+                        a.descripcion
+                        from almacenes as a
+                        where a.proyecto_id = ?',[$proyecto_id]);
+    
+        //$almacenes  =   Almacen::where('estado','ACTIVO')->get();
 
         return view('logistica.registro_salida.create',compact('categorias','marcas','almacenes'));
     }

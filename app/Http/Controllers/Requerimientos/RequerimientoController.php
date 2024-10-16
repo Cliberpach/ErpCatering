@@ -74,7 +74,8 @@ class RequerimientoController extends Controller
                             td.descripcion as tipo_documento_descripcion
                             from proveedores as pr
                             inner join tipos_documento as td on td.id = pr.tipo_documento_id
-                            where pr.estado = "ACTIVO"');
+                            where pr.estado = "ACTIVO"
+                            and pr.id != 1');
 
         $tipos_documento    =   DB::select('select * 
                                 from tipos_documento as td

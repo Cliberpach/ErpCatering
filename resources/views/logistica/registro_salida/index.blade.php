@@ -39,8 +39,16 @@
     let dtSalidas    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
+        mostrarMsgErrors();
         iniciarDataTableSalidas();
     })
+
+    function mostrarMsgErrors(){
+        if("{{ Session::has('registro_salida_error') }}"){
+            const msgError  =   "{{ Session::get('registro_salida_error') }}";
+            toastr.error(msgError);
+        } 
+    }
 
     function iniciarDataTableSalidas(){
         const urlGetSalidas = '{{ route('logistica.registro_salida.getSalidas') }}';
