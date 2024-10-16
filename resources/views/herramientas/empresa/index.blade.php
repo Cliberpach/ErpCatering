@@ -237,18 +237,25 @@
                     return;
                 }
                 
-                console.log(res);
                 if(res.success){
-                    document.querySelector('#img_nav_empresa').src              =   @json(asset(''))+res.empresa.img_ruta;
+
+                    //========== GENERANDO VALOR DE TIEMPO ÚNICO PARA LA CACHÉ =======
+                    const timestamp     =   new Date().getTime();
+                    const imgUrl        =   `${@json(asset(''))}${res.empresa.img_ruta}?t=${timestamp}`;
+
+                    //========= ACTUALIZAR LA IMAGEN SIN PROBLEMAS DE CACHÉ ========
+                    const imgElement    =   document.querySelector('#img_nav_empresa');
+                    imgElement.src      =   imgUrl;
+
+                    //======== ACTUALIZAR NOMBRE DE LA EMPRESA ========
                     document.querySelector('#nombre_nav_empresa').textContent   =   res.empresa.razon_social;
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                    window.location.reload();
+                    //window.location.reload();
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();
                 }
 
-              
             } catch (error) {
                 toastr.error(error,'ERROR EN LA PETICIÓN ACTUALIZAR PRODUCTO');
             }finally{

@@ -37,7 +37,9 @@ class RegistroLaborController extends Controller
                                 'rl.created_at as fecha_registro',
                                 'rl.observacion as observacion',
                                 'rl.estado'
-                            )->where('rl.estado','!=','ANULADO')
+                            )
+                            ->where('rl.estado','!=','ANULADO')
+                            ->where('rl.supervisor_id',Auth::user()->colaborador_id)
                             ->get();
 
         return DataTables::of($registros_labor)

@@ -8,7 +8,7 @@ use App\Http\Requests\Herramientas\Empresa\EmpresaUpdateRequest;
 use App\Models\Herramientas\Empresa;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use File;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 
 class EmpresaController extends Controller
@@ -24,6 +24,7 @@ class EmpresaController extends Controller
        
         DB::beginTransaction();
         try {
+
             $empresa    =   Empresa::find($id);
             if(!$empresa){
                 throw new Exception("LA EMPRESA NO EXISTE EN LA BD");
@@ -36,7 +37,7 @@ class EmpresaController extends Controller
             $empresa->correo        =   mb_strtoupper($request->get('correo'), 'UTF-8');
             $empresa->update();
 
-            //======== MANEJANDO LA ACTUALIZACIÓN DE IMAGEN ========
+            //======== EN CASO SE ESTÉ ENVIANDO IMAGEN NUEVA ========
             if($request->hasFile('img_empresa')){
 
                 $carpeta_destino    =   public_path('img/empresa');
@@ -44,13 +45,17 @@ class EmpresaController extends Controller
                 if (!File::exists($carpeta_destino)) {
                     File::makeDirectory($carpeta_destino, 0755, true);
                 }
-            
-                $file               =   $request->file('img_empresa');
 
+                //========= ELIMINAR IMAGEN PREVIA =======
+                $ruta_imagen_previa =   $empresa->img_ruta;
+                if (File::exists($ruta_imagen_previa)) {
+                    File::delete($ruta_imagen_previa);
+                }
+
+                //========== MANEJAR NUEVA IMAGEN ======
+                $file               =   $request->file('img_empresa');
                 $extension          =   $file->getClientOriginalExtension();
-            
                 $fileName           =   'img_empresa.'.$extension;
-            
                 $file->move($carpeta_destino, $fileName);
 
                 $empresa->img_nombre    =   $fileName;
