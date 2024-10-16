@@ -1,3 +1,14 @@
+@php
+  $proyecto = DB::select('select 
+              pr.nombre
+              from proyectos as pr
+              where 
+              pr.estado != "ANULADO" 
+              and pr.estado != "FINALIZADO"
+              and pr.supervisor_id = ?',
+              [Auth::user()->colaborador_id]);
+@endphp
+
 <div class="profile-box ">
     <button class="dropdown-toggle bg-transparent border-0" type="button" id="profile"
       data-bs-toggle="dropdown" aria-expanded="false">
@@ -9,6 +20,13 @@
           <div>
             <h6 class="fw-500">{{Auth::user()->name}}</h6>
             <p>{{Auth::user()->getRoleNames()[0] }}</p>
+
+            @if(!empty($proyecto))
+              <p>{{ $proyecto[0]->nombre }}</p>
+            @else
+              <p>{{ "SIN PROYECTO" }}</p>
+            @endif
+
           </div>
         </div>
       </div>
