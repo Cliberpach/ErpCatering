@@ -397,7 +397,7 @@ class OrdenCompraController extends Controller
                 $requerimiento_update->update();
             }
 
-            DB::commit();
+            //DB::commit();
             return response()->json(['success'=>true,'message'=>'REGISTRO DE COMPRA GENERADO']);
     
         } catch (\Throwable $th) {
