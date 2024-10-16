@@ -67,7 +67,7 @@ class CotizacionCompraController extends Controller
                         where pp.colaborador_id = ?',[Auth::user()->colaborador_id]); 
 
         if(count($proyecto) === 0){
-            Session::flash('cotizacion_error',"DEBES FORMAR PARTE DE UN PROYECTO PARA REALIZAR COTIZACIONES");
+            Session::flash('cotizacion_compra_error',"DEBES FORMAR PARTE DE UN PROYECTO PARA REALIZAR COTIZACIONES");
             return back();
         }
 
@@ -81,7 +81,7 @@ class CotizacionCompraController extends Controller
                                         where co.id = ?',[Auth::user()->colaborador_id]);
 
         if(count($colaborador_registrador) === 0){
-            Session::flash('cotizacion_error',"NO SE ENCUENTRA EL COLABORADOR EN LA BD");
+            Session::flash('cotizacion_compra_error',"NO SE ENCUENTRA EL COLABORADOR EN LA BD");
             return back();
         }
                                 
@@ -343,10 +343,16 @@ class CotizacionCompraController extends Controller
                         CONCAT(co.nombre, " - CEL:", co.telefono) AS persona_contacto
                         from 
                         proyectos as pr
-                        JOIN colaboradores AS co ON co.id = pr.supervisor_id
+                        left join colaboradores AS co ON co.id = pr.supervisor_id
                         where pr.id = ?
                         and (pr.estado = "PENDIENTE" or pr.estado = "EN PROCESO")',
                         [$cotizacion_compra->proyecto_id])[0]; 
+                
+        //======= CONTROLANDO QUE EL PROYECTO TENGA SUPERVISOR ========
+        if(!$proyecto->supervisor_id){
+            Session::flash('cotizacion_compra_error','EL PROYECTO NO TIENE SUPERVISOR!!!');
+            return back();
+        }
                         
         //========= COTIZACIÓN SIN REQUERIMIENTO ========
         if(count($requerimiento) === 0){

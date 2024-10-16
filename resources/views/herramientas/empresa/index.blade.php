@@ -237,10 +237,12 @@
                     return;
                 }
                 
+                console.log(res);
                 if(res.success){
                     document.querySelector('#img_nav_empresa').src              =   @json(asset(''))+res.empresa.img_ruta;
                     document.querySelector('#nombre_nav_empresa').textContent   =   res.empresa.razon_social;
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
+                    window.location.reload();
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR');
                     Swal.close();

@@ -42,7 +42,7 @@
 <script>
     let dtImportCategorias =   null;
 
-    function events(){
+    function eventsMdlImportCategoria(){
         document.querySelector('#formImportarCategorias').addEventListener('submit',(e)=>{
             e.preventDefault();
             importarCategoriasExcel();

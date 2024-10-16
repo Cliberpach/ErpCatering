@@ -51,8 +51,8 @@
     })
 
     function mostrarMsgErrors(){
-        if("{{ Session::has('cotizacion_error') }}"){
-            const msgError  =   "{{ Session::get('cotizacion_error') }}";
+        if("{{ Session::has('cotizacion_compra_error') }}"){
+            const msgError  =   "{{ Session::get('cotizacion_compra_error') }}";
             toastr.error(msgError);
         } 
     }

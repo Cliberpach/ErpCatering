@@ -42,7 +42,7 @@
 <script>
     let dtImportCategorias =   null;
 
-    function events(){
+    function eventsMdlImportMarca(){
         document.querySelector('#formImportarMarcas').addEventListener('submit',(e)=>{
             e.preventDefault();
             importarMarcasExcel();

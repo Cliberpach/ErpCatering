@@ -10,7 +10,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button class="btn btn-primary btnRegistrarMarca" type="submit" form="formRegistrarCategoria">
+          <button class="btn btn-primary" type="submit" form="formRegistrarCategoria">
             <i class="fa-solid fa-floppy-disk"></i> Registrar
         </button>
         </div>
@@ -22,6 +22,7 @@
 <script>
 
     function eventsMdlCreateCategoria(){
+
         document.querySelector('#formRegistrarCategoria').addEventListener('submit',(e)=>{
             e.preventDefault();
             registrarCategoria();

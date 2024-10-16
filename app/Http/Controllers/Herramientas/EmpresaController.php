@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Requests\Herramientas\Empresa\EmpresaUpdateRequest;
 use App\Models\Herramientas\Empresa;
-use DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use File;
 use Illuminate\Http\Request;
 
@@ -53,14 +53,10 @@ class EmpresaController extends Controller
             
                 $file->move($carpeta_destino, $fileName);
 
-                $empresa->img_ruta  =   'img/empresa/'.$fileName;
+                $empresa->img_nombre    =   $fileName;
+                $empresa->img_ruta      =   'img/empresa/'.$fileName;
                 $empresa->update();
-            }else{
-                
             }
-
-            
-
 
             DB::commit();
             return response()->json(['success'=>true,'message'=>"EMPRESA ACTUALIZADA",'empresa'=>$empresa]);

@@ -14,12 +14,27 @@
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Registro de Órdenes Compra <i class="fa-solid fa-cart-shopping"></i>
-      </h6>
-        
-            {{-- <button class="btn btn-primary" onclick="goToRegistrarCotizacionCompra()">
-                <i class="fa-solid fa-plus"></i> NUEVO
-            </button> --}}
+      <h6>Registro de Órdenes Compra <i class="fa-solid fa-cart-shopping"></i></h6>
+    </div>
+    <div class="row mb-3">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+            <label for="proyecto" style="font-weight: bold;">PROYECTO</label>
+            <select name="proyecto" id="proyecto" class="select2_form" onchange="dtConsultaPersonal.ajax.reload();">
+                @foreach ($proyectos as $proyecto)
+                    <option value="{{$proyecto->id}}">{{$proyecto->nombre}}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+            <label for="fecha_inicio" style="font-weight: bold;">FECHA INICIO</label>
+            <input value="<?php echo date('Y-m-d'); ?>" type="date" id="fecha_inicio" class="form-control" onchange="cambioFechaInicio();">
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+            <label for="fecha_fin" style="font-weight: bold;">FECHA FIN</label>
+            <input value="<?php echo date('Y-m-d'); ?>" type="date" id="fecha_fin" class="form-control" onchange="cambioFechaFin();">
+        </div>
     </div>
     <div class="table-responsive">
         @include('compras.orden_compra.tables.table_list_orden_compra')

@@ -56,6 +56,7 @@
     function events(){
         eventsMdlCreateCategoria();
         eventsMdlEditCategoria();
+        eventsMdlImportCategoria();
     }
 
     function iniciarDataTableCategorias(){

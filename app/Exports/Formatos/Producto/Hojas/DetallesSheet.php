@@ -64,6 +64,19 @@ class DetallesSheet implements FromCollection, WithTitle,ShouldAutoSize,WithStyl
               ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
               ->getStartColor()->setARGB('bcd9e7');
 
+        $highestRow = $sheet->getHighestRow();
+        $sheet->getParent()->addNamedRange(
+            new \PhpOffice\PhpSpreadsheet\NamedRange('categorias', $sheet, "A2:A{$highestRow}")
+        );
+
+        $sheet->getParent()->addNamedRange(
+            new \PhpOffice\PhpSpreadsheet\NamedRange('marcas', $sheet, "B2:B{$highestRow}")
+        );
+
+        $sheet->getParent()->addNamedRange(
+            new \PhpOffice\PhpSpreadsheet\NamedRange('unidades_medida', $sheet, "C2:C{$highestRow}")
+        );
+
         return [];
     }
 

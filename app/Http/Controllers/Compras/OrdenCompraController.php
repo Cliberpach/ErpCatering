@@ -21,7 +21,11 @@ use PhpOffice\PhpSpreadsheet\Style\Supervisor;
 class OrdenCompraController extends Controller
 {
     public function index(){
-        return view('compras.orden_compra.index');
+        $proyectos  =   DB::select('select pr.id,pr.nombre 
+                        from proyectos as pr
+                        where pr.estado <> "ANULADO"');
+
+        return view('compras.orden_compra.index',compact('proyectos'));
     }
 
     public function getOrdenesCompra(Request $request){

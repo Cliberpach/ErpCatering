@@ -57,6 +57,7 @@
     function events(){
         eventsMdlCreateMarca();
         eventsMdlEditMarca();
+        eventsMdlImportMarca();
     }
 
     function iniciarDataTableMarcas(){

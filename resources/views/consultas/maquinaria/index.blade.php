@@ -125,7 +125,6 @@
         window.location.href = @json(route('registros.producto.create'));
     }
 
-
     function eliminarProducto(id){
         toastr.clear();
         let row             =   getRowById(dtConsultaPersonal,id);

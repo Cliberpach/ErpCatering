@@ -13,9 +13,25 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
 use PhpOffice\PhpSpreadsheet\NamedRange; 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
 
-class ProductosSheet implements  FromCollection, WithStyles, ShouldAutoSize, WithTitle
+class ProductosSheet implements  FromCollection, WithStyles, ShouldAutoSize, WithTitle,WithEvents
 {
+
+    protected $categoriasCount;
+    protected $marcasCount;
+    protected $unidadesCount;
+
+    public function __construct()
+    {
+        $this->categoriasCount  =   Categoria::where('estado', 'ACTIVO')->count();
+        $this->marcasCount      =   Marca::where('estado', 'ACTIVO')->count();
+        $this->unidadesCount    =   DB::table('tablas_generales_detalles')
+                                    ->where('estado', 'ACTIVO')
+                                    ->count();    
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
@@ -38,82 +54,48 @@ class ProductosSheet implements  FromCollection, WithStyles, ShouldAutoSize, Wit
               ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
               ->getStartColor()->setARGB('bcd9e7');
 
-     
-        $this->addDropdownToColumnD($sheet);
         return [];
     }
 
-    private function addDropdownToColumnD(Worksheet $sheet)
+    public function afterSheet(\Maatwebsite\Excel\Events\AfterSheet $event)
+ {
+     $sheet = $event->sheet->getDelegate();
+
+
+     $categoriasRange = "'DETALLES'!\$A\$2:\$A\$" . ($this->categoriasCount + 1);
+     $marcasRange = "'DETALLES'!\$B\$2:\$B\$" . ($this->marcasCount + 1);
+     $unidadesRange = "'DETALLES'!\$C\$2:\$C\$" . ($this->unidadesCount + 1);
+     
+     for ($row = 2; $row <= 100; $row++) {
+
+         $sheet->getCell("D{$row}")->getDataValidation()
+               ->setType(DataValidation::TYPE_LIST)
+               ->setFormula1($categoriasRange)
+               ->setShowDropDown(true);
+
+         $sheet->getCell("E{$row}")->getDataValidation()
+               ->setType(DataValidation::TYPE_LIST)
+               ->setFormula1($marcasRange)
+               ->setShowDropDown(true);
+
+         $sheet->getCell("F{$row}")->getDataValidation()
+               ->setType(DataValidation::TYPE_LIST)
+               ->setFormula1($unidadesRange)
+               ->setShowDropDown(true);
+     }
+ }
+
+ public function registerEvents(): array
     {
-        $categorias = Categoria::where('estado', 'ACTIVO')
-                       ->orderBy('descripcion')
-                       ->pluck('descripcion')
-                       ->toArray();
-
-        $marcas     = Marca::where('estado', 'ACTIVO')
-                       ->orderBy('descripcion')
-                       ->pluck('descripcion')
-                       ->toArray();
-
-        $unidades_medida    =   DB::table('tablas_generales_detalles as tgd')
-                                ->where('tgd.tabla_general_id', 1)
-                                ->where('tgd.estado', 'ACTIVO')
-                                ->orderBy('tgd.descripcion')
-                                ->pluck('tgd.descripcion')
-                                ->toArray();
-
-        $categoriasLista        = implode(',', $categorias);
-        $marcasLista            = implode(',', $marcas);
-
-        $spreadsheet    =   $sheet->getParent();
-        $detallesSheet  =   $spreadsheet->getSheetByName('DETALLES');
-        
-        if (!$detallesSheet) {
-            $detallesSheet = $spreadsheet->createSheet();
-            $detallesSheet->setTitle('DETALLES');
-        }
-
-        $startRow = 2;
-        foreach ($unidades_medida as $index => $unidad) {
-            $detallesSheet->setCellValue("C" . ($startRow + $index), $unidad);
-        }
-        
-        
-        foreach (range(2, 100) as $row) {
-            $validation = $sheet->getCell("D$row")->getDataValidation();
-            $validation->setType(DataValidation::TYPE_LIST);
-            $validation->setErrorStyle(DataValidation::STYLE_STOP);
-            $validation->setAllowBlank(true);
-            $validation->setShowDropDown(true);
-            $validation->setFormula1('"' . $categoriasLista . '"');
-            $validation->setShowErrorMessage(true);
-        }
-
-        foreach (range(2, 100) as $row) {
-            $validation = $sheet->getCell("E$row")->getDataValidation();
-            $validation->setType(DataValidation::TYPE_LIST);
-            $validation->setErrorStyle(DataValidation::STYLE_STOP);
-            $validation->setAllowBlank(true);
-            $validation->setShowDropDown(true);
-            $validation->setFormula1('"' . $marcasLista . '"');
-            $validation->setShowErrorMessage(true);
-        }
-
-        foreach (range(2, 100) as $row) {
-            $validation = $sheet->getCell("F$row")->getDataValidation();
-            $validation->setType(DataValidation::TYPE_LIST);
-            $validation->setErrorStyle(DataValidation::STYLE_STOP);
-            $validation->setAllowBlank(true);
-            $validation->setShowDropDown(true);
-            
-            // Usar el rango de la columna Z para la validación
-            $validation->setFormula1('Z1:Z' . count($unidades_medida));
-            $validation->setShowErrorMessage(true);
-        }
-        
-        
+        return [
+            AfterSheet::class => function(AfterSheet $event) {
+                $this->afterSheet($event);
+            },
+        ];
     }
 
+
+  
     public function title(): string
     {
         return 'PRODUCTOS';
