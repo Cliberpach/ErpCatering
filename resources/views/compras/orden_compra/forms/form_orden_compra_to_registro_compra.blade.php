@@ -17,7 +17,7 @@
                     <label class="required_field" for="fecha_entrega" style="font-weight: bold;">FECHA ENTREGA</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">
-                            <img width="30" height="30" src="{{asset('icons/date/date2.png')}}" alt="coins"/>
+                            <img width="30" height="30" src="{{asset('img/empresa/img_empresa.jpeg')}}" alt="coins"/>
                         </span>
                         <input style="background:rgb(255, 255, 220);" value="<?php echo date('Y-m-d'); ?>" required type="date" name="fecha_entrega" id="fecha_entrega" class="form-control">
                     </div>
