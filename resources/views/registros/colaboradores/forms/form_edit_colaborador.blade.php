@@ -29,13 +29,13 @@
                         @if (!$colaborador->tipo_documento_id)
                             readonly
                         @endif
-                     value="{{$colaborador->nro_documento}}" 
-                     @if ($colaborador->tipo_documento_id == 1)
-                         maxlength='8'
-                     @endif
-                     @if ($colaborador->tipo_documento_id == 2)
-                        maxlength='20'
-                    @endif
+                        value="{{$colaborador->nro_documento}}" 
+                        @if ($colaborador->tipo_documento_id == 1)
+                            maxlength='8'
+                        @endif
+                        @if ($colaborador->tipo_documento_id == 2)
+                            maxlength='20'
+                        @endif
                      required id="nro_documento" name="nro_documento" type="text" class="form-control" placeholder="Nro de Documento" aria-label="Example text with button addon" aria-describedby="button-addon1">
                 </div>                 
                 <span class="nro_documento_error msgError"  style="color:red;"></span>

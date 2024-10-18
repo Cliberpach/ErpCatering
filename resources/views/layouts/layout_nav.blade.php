@@ -4,7 +4,11 @@
     <a href="javascript:void(0);">
         <img 
             style="height: 80px; width: 80px; object-fit: cover; border-radius: 50%;" 
-            src="{{ asset($empresa->img_ruta) }}" 
+            @if ($empresa->img_ruta)
+              src="{{asset($empresa->img_ruta)}}"
+            @else 
+              src="{{asset('img/img_default.png')}}"
+            @endif  
             id="img_nav_empresa" 
             class="img-fluid" 
             alt="logo" />
@@ -49,7 +53,7 @@
         @endcanany
 
 
-        @canany(['registros.colaborador','registros.cargo','registros.maquinaria','registros.proyecto','registros.almacen','registros.categoria','registros.marca','registros.producto'])
+        @canany(['registros.colaborador','registros.cargo','registros.maquinaria','registros.proyecto','registros.almacen','registros.categoria','registros.marca','registros.producto','registros.conductor'])
         <li class="nav-item nav-item-has-children">
           <a
             href="#0"
@@ -109,6 +113,11 @@
             <li>
               @can('registros.modalidad_pago')
                 <a class="@yield('modalidad_pago-active')" href="{{route('registros.modalidad_pago.index')}}">Modalidad Pago</a>
+              @endcan
+            </li>
+            <li>
+              @can('registros.conductor')
+                <a class="@yield('conductor-active')" href="{{route('registros.conductor.index')}}">Conductores</a>
               @endcan
             </li>
           </ul>
@@ -343,6 +352,11 @@
             <li>
               @can('herramientas.empresa')
                 <a class="@yield('empresa-active')" href="{{route('herramientas.empresa.index')}}">Empresa</a>
+              @endcan
+            </li>
+            <li>
+              @can('herramientas.configuracion')
+                <a class="@yield('configuracion-active')" href="{{route('herramientas.configuracion.index')}}">Configuracion</a>
               @endcan
             </li>
           </ul>

@@ -25,6 +25,7 @@ class PermisoSeeder extends Seeder
             'registros.marca',
             'registros.producto',
             'registros.modalidad_pago',
+            'registros.conductor',
             'jornal.registro_labor',
             //'jornal.consulta_labor',
             'trabajo_equipo.registro_tarea',
@@ -41,6 +42,7 @@ class PermisoSeeder extends Seeder
             'herramientas.roles',
             'herramientas.tabla_general',
             'herramientas.empresa',
+            'herramientas.configuracion',
             'consultas.personal',
             'consultas.maquinaria',
             'consultas.producto'

@@ -35,6 +35,8 @@
 
 <script>
 
+    const parametros    =   {eliminarCertificado:false};
+
     document.addEventListener('DOMContentLoaded',()=>{
         events();
     })
@@ -54,6 +56,16 @@
 
                 const inputCargarImg    =   document.querySelector('#img_empresa');
                 inputCargarImg.value    =   '';
+            }
+
+            if(e.target.classList.contains('btnDeleteCertificado')){
+
+                const inputCertificado          =   document.querySelector('#certificado');
+                inputCertificado.value          =   '';
+
+                document.querySelector('.certificado_previo').textContent   =   'SIN CERTIFICADO';
+                parametros.eliminarCertificado  =   true;
+
             }
         })
 
@@ -96,6 +108,15 @@
             } else {
                 document.getElementById('img_vista_previa').src = @json(asset('img/img_default.png'));
             }
+            
+        });
+
+        document.querySelector('#certificado').addEventListener('change', function(event) {
+            const file      =   event.target.files[0];
+
+            if (file) {
+                parametros.eliminarCertificado  =   true;
+            } 
             
         });
 
@@ -207,6 +228,7 @@
             try {
                 limpiarErroresValidacion('msgError');
                 const imgEmpresa                =   document.getElementById('img_empresa');
+                const inputCertificado          =   document.querySelector('#certificado');
                 const id                        =   @json($empresa->id);
                 let urlUpdateEmpresa            =   `{{ route('herramientas.empresa.update', ['id' => ':id']) }}`;
                 urlUpdateEmpresa                =   urlUpdateEmpresa.replace(':id', id);
@@ -214,9 +236,15 @@
                 const formActualizarEmpresa     =   document.querySelector('#formActualizarEmpresa');
                 const formData                  =   new FormData(formActualizarEmpresa);
 
-                if(imgEmpresa.files.length > 0){
-                    formData.append('img_empresa', imgEmpresa.files[0]);
-                }
+                formData.append('eliminarCertificado',parametros.eliminarCertificado);
+
+                // if(imgEmpresa.files.length > 0){
+                //     formData.append('img_empresa', imgEmpresa.files[0]);
+                // }
+
+                // if(inputCertificado.files.length > 0){
+                //     formData.append('certificado', inputCertificado.files[0]);
+                // }
 
                 const response  =   await fetch(urlUpdateEmpresa, {
                                         method: 'POST',
@@ -249,6 +277,14 @@
 
                     //======== ACTUALIZAR NOMBRE DE LA EMPRESA ========
                     document.querySelector('#nombre_nav_empresa').textContent   =   res.empresa.razon_social;
+                    
+                    //======= ACTUALIZANDO NOMBRE DEL CERTIFICADO ======
+                    document.querySelector('.certificado_previo').textContent  =    res.empresa.certificado_nombre;
+
+                    if(!res.empresa.certificado_ruta){
+                        document.querySelector('.certificado_previo').textContent  =    'SIN CERTIFICADO';
+                    }
+
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                     //window.location.reload();
                 }else{
@@ -257,7 +293,7 @@
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ACTUALIZAR PRODUCTO');
+                toastr.error(error,'ERROR EN LA PETICIÓN ACTUALIZAR DATOS DE EMPRESA');
             }finally{
                 Swal.close();
             }
@@ -276,81 +312,11 @@
         });
     }
 
-
-    function eliminarProducto(id){
-        toastr.clear();
-        let row             =   getRowById(dtProductos,id);
-        let message         =   '';
-        let tipo_documento  =   '';
-
-        message =   `Desea eliminar el producto: ${row.nombre}`;
-
-        const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-            confirmButton: "btn btn-success",
-            cancelButton: "btn btn-danger"
-        },
-        buttonsStyling: false
-        });
-        swalWithBootstrapButtons.fire({
-        title: message,
-        text: "Operación no reversible!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar!",
-        cancelButtonText: "No, cancelar!",
-        reverseButtons: true
-        }).then(async (result) => {
-        if (result.isConfirmed) {
-            
-            Swal.fire({
-                title: 'Cargando...',
-                html: 'Eliminando producto...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading(); 
-                }
-            });
-
-            try {
-                let urlDeleteProducto    =   `{{ route('registros.producto.destroy', ['id' => ':id']) }}`;
-                urlDeleteProducto        =   urlDeleteProducto.replace(':id', id);
-                const token              =   document.querySelector('input[name="_token"]').value;
-
-                const response  =   await fetch(urlDeleteProducto, {
-                                        method: 'DELETE',
-                                        headers: {
-                                            'X-CSRF-TOKEN': token 
-                                        }
-                                    });
-
-                const   res =   await response.json();
-
-                if(res.success){
-                    dtProductos.draw();
-                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PRODUCTO');
-                }
-
-            } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR PRODUCTO');
-            }finally{
-                Swal.close();
-            }
-
-        } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-        ) {
-            swalWithBootstrapButtons.fire({
-            title: "Operación cancelada",
-            text: "No se realizaron acciones",
-            icon: "error"
-            });
+    function pintarErroresValidacion(objErroresValidacion){
+        for (let clave in objErroresValidacion) {
+            const pError        =   document.querySelector(`.${clave}_error`);
+            pError.textContent  =   objErroresValidacion[clave][0];
         }
-        });
     }
-
 
 </script>

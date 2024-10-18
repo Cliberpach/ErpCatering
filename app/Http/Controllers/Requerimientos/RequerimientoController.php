@@ -43,6 +43,7 @@ class RequerimientoController extends Controller
                                     'r.supervisor_id'
                                 )
                                 ->where('r.estado','<>','ANULADO')
+                                ->where('r.supervisor_id','=',Auth::user()->colaborador_id)
                                 ->get();
 
         return DataTables::of($requerimientos)

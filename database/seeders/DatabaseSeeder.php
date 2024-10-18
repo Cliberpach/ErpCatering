@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         //     'colaborador_id'=>1
         // ]);
 
+        $this->call(ConfiguracionSeeder::class);
         $this->call(EmpresaSeeder::class);
         $this->call(AlmacenSeeder::class);
         $this->call(TablaGeneralSeeder::class);

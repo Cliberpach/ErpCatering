@@ -77,6 +77,14 @@ class RegistroLaborController extends Controller
             $proyecto_colaboradores              =   ProyectoPersonal::where('proyecto_id',$proyecto[0]->id)->get();
         
             //======= REGISTRAR DETALLE ========
+            //======= REGISTRANDO AL SUPERVISOR EN LA ASISTENCIA TMB ======
+            $registro_labor_detalle                     =   new RegistroLaborDetalle();
+            $registro_labor_detalle->proyecto_id        =   $proyecto[0]->id;
+            $registro_labor_detalle->supervisor_id      =   $colaborador[0]->id;
+            $registro_labor_detalle->colaborador_id     =   $colaborador[0]->id;
+            $registro_labor_detalle->registro_labor_id  =   $registro_labor->id;
+            $registro_labor_detalle->save();
+            //====== REGISTRANDO EQUIPO DE TRABAJO EN LA ASISTENCIA =======
             foreach ($proyecto_colaboradores as $proyecto_colaborador) {
                 $registro_labor_detalle                     =   new RegistroLaborDetalle();
                 $registro_labor_detalle->proyecto_id        =   $proyecto[0]->id;

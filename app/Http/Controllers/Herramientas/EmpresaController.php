@@ -24,7 +24,7 @@ class EmpresaController extends Controller
        
         DB::beginTransaction();
         try {
-
+            
             $empresa    =   Empresa::find($id);
             if(!$empresa){
                 throw new Exception("LA EMPRESA NO EXISTE EN LA BD");
@@ -63,8 +63,48 @@ class EmpresaController extends Controller
                 $empresa->update();
             }
 
+            //======= MANEJO DE ELIMINACIÓN DE CERTIFICADO =======
+            if($request->get('eliminarCertificado') == 'true'){
+                $ruta_certificado_previo =   $empresa->certificado_ruta;
+                if (File::exists($ruta_certificado_previo)) {
+                    File::delete($ruta_certificado_previo);
+                }
+                $empresa->certificado_nombre    =   null;
+                $empresa->certificado_ruta      =   null;
+                $empresa->update();
+            }
+            
+            //======== EN CASO SE ESTÉ ENVIANDO CERTIFICADO NUEVO ========
+            if($request->hasFile('certificado')){
+
+                $carpeta_destino    =   public_path('greenter/certificado');
+            
+                if (!File::exists($carpeta_destino)) {
+                    File::makeDirectory($carpeta_destino, 0755, true);
+                }
+
+                // //========= ELIMINAR CERTIFICADO PREVIO =======
+                // $ruta_certificado_previo =   $empresa->certificado_ruta;
+                // if (File::exists($ruta_certificado_previo)) {
+                //     File::delete($ruta_certificado_previo);
+                // }
+
+                //========== MANEJAR NUEVA IMAGEN ======
+                $file               =   $request->file('certificado');
+                $extension          =   $file->getClientOriginalExtension();
+                $fileName           =   'certificado.'.$extension;
+                $file->move($carpeta_destino, $fileName);
+
+                $empresa->certificado_nombre    =   $fileName;
+                $empresa->certificado_ruta      =   'greenter/certificado/'.$fileName;
+                $empresa->update();
+            }
+
+
             DB::commit();
-            return response()->json(['success'=>true,'message'=>"EMPRESA ACTUALIZADA",'empresa'=>$empresa]);
+            return response()->json(['success'=>true,
+                                    'message'=>"EMPRESA ACTUALIZADA",
+                                    'empresa'=>$empresa]);
 
         } catch (\Throwable $th) {
             DB::rollBack();

@@ -19,31 +19,31 @@
                           <div class="row mb-3">
                               <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                                   <strong class="text-primary">Nombre:</strong>
-                                  <span class="text-muted" id="spanNombre"></span>
+                                  <span class="text-muted" id="spanNombreShow"></span>
                               </div>
                               <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
                                   <strong class="text-primary">Fecha Inicio:</strong>
-                                  <span class="text-muted" id="spanFechaInicio"></span>
+                                  <span class="text-muted" id="spanFechaInicioShow"></span>
                               </div>
                               <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
                                   <strong class="text-primary">Fecha Fin:</strong>
-                                  <span class="text-muted" id="spanFechaFin"></span>
+                                  <span class="text-muted" id="spanFechaFinShow"></span>
                               </div>
                               <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
                                   <strong class="text-primary">Avance:</strong>
-                                  <span class="text-muted" id="spanAvance"></span>
+                                  <span class="text-muted" id="spanAvanceShow"></span>
                               </div>
                               <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
                                   <strong class="text-primary">Días faltantes:</strong>
-                                  <span class="text-muted" id="spanDiasFaltantes"></span>
+                                  <span class="text-muted" id="spanDiasFaltantesShow"></span>
                               </div>
                               <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
                                   <strong class="text-primary">Observación:</strong>
-                                  <span class="text-muted" id="spanObservacion"></span>
+                                  <span class="text-muted" id="spanObservacionShow"></span>
                               </div>
                               <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">                                    
                                 <strong class="text-primary">PROYECTO:</strong>
-                                <span class="text-muted" id="spanProyectoNombre"></span>
+                                <span class="text-muted" id="spanProyectoNombreShow"></span>
                             </div>
                           </div>
                       </div>
@@ -96,8 +96,7 @@
             const   res =   await response.json();
                                 
             if(res.success){
-
-                pintarTarea(res.tarea);
+                pintarTareaShow(res.tarea);
 
                 limpiarTabla('table_show_subtareas');
                 destruirDataTable(dtShowSubtareas);
@@ -158,22 +157,23 @@
         });
     }
 
-    function pintarTarea(tarea){
-      const spanNombre          = document.querySelector('#spanNombre');
-      const spanFechaInicio     = document.querySelector('#spanFechaInicio');
-      const spanFechaFin        = document.querySelector('#spanFechaFin');
-      const spanAvance          = document.querySelector('#spanAvance');
-      const spanDiasFaltantes   = document.querySelector('#spanDiasFaltantes');
-      const spanObservacion     = document.querySelector('#spanObservacion');
-      const spanProyectoNombre  = document.querySelector('#spanProyectoNombre');
+    function pintarTareaShow(tarea){
+        
+      const spanNombreShow          = document.querySelector('#spanNombreShow');
+      const spanFechaInicioShow     = document.querySelector('#spanFechaInicioShow');
+      const spanFechaFinShow        = document.querySelector('#spanFechaFinShow');
+      const spanAvanceShow          = document.querySelector('#spanAvanceShow');
+      const spanDiasFaltantesShow   = document.querySelector('#spanDiasFaltantesShow');
+      const spanObservacionShow     = document.querySelector('#spanObservacionShow');
+      const spanProyectoNombreShow  = document.querySelector('#spanProyectoNombreShow');
 
 
-      spanNombre.textContent          = tarea.nombre;
-      spanFechaInicio.textContent     = tarea.fecha_inicio;
-      spanFechaFin.textContent        = tarea.fecha_fin;
-      spanAvance.textContent          = tarea.avance;
-      spanDiasFaltantes.textContent   = tarea.dias_faltantes;
-      spanObservacion.textContent     = tarea.observacion?tarea.observacion:'';
-      spanProyectoNombre.textContent  = tarea.proyecto_nombre;
+      spanNombreShow.textContent          = tarea.nombre;
+      spanFechaInicioShow.textContent     = tarea.fecha_inicio;
+      spanFechaFinShow.textContent        = tarea.fecha_fin;
+      spanAvanceShow.textContent          = tarea.avance;
+      spanDiasFaltantesShow.textContent   = tarea.dias_faltantes;
+      spanObservacionShow.textContent     = tarea.observacion?tarea.observacion:'';
+      spanProyectoNombreShow.textContent  = tarea.proyecto_nombre;
     }
 </script>

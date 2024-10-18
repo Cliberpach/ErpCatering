@@ -21,6 +21,14 @@ return new class extends Migration
             $table->longText('img_ruta')->nullable();
             $table->string('img_nombre', 100)->nullable(); 
             $table->decimal('igv', 16, 2)->unsigned();
+
+            $table->string('usuario_sol', 100)->nullable(); 
+            $table->string('clave_sol', 100)->nullable(); 
+            $table->string('usuario_api_guias', 100)->nullable(); 
+            $table->string('clave_api_guias', 100)->nullable();
+            $table->longText('certificado_ruta')->nullable(); 
+            $table->longText('certificado_nombre')->nullable(); 
+
             $table->timestamps(); 
            
         });

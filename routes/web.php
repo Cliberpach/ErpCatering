@@ -1,4 +1,4 @@
-<?php
+onduct<?php
 
 use App\Http\Controllers\Compras\ProveedorController;
 use App\Http\Controllers\Consultas\CMaquinariaController;
@@ -11,6 +11,7 @@ use App\Http\Controllers\Jornales\RegistroLaborController;
 use App\Http\Controllers\Compras\CotizacionCompraController;
 use App\Http\Controllers\Compras\OrdenCompraController;
 use App\Http\Controllers\Compras\RegistroCompraController;
+use App\Http\Controllers\Herramientas\ConfiguracionController;
 use App\Http\Controllers\Logistica\RegistroSalidaController;
 use App\Http\Controllers\PlanProyecto\TareaController;
 use App\Http\Controllers\Registros\AlmacenController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\Registros\ColaboradorController;
 use App\Http\Controllers\Herramientas\UsuarioController;
 use App\Http\Controllers\Logistica\ListaRequerimientoController;
 use App\Http\Controllers\Notificaciones\NotificacionController;
+use App\Http\Controllers\Registros\ConductorController;
 use App\Http\Controllers\Requerimientos\RequerimientoController;
 use App\Http\Controllers\Registros\MaquinariaController;
 use App\Http\Controllers\Registros\MarcaController;
@@ -67,6 +69,18 @@ Route::group(['prefix' => 'colaboradores', 'middleware' => ['auth','checkCustomP
     Route::get('/getColaboradores', [ColaboradorController::class, 'getColaboradores'])->name('registros.colaborador.getColaboradores');
     Route::delete('/destroy/{id}', [ColaboradorController::class, 'destroy'])->name('registros.colaborador.destroy');
     Route::get('/getSupervisores', [ColaboradorController::class, 'getSupervisores'])->name('registros.colaborador.getSupervisores');
+
+});
+
+Route::group(['prefix' => 'conductores', 'middleware' => ['auth','checkCustomPermission:registros.conductor','notificacionMiddleware']], function () {
+     
+    Route::get('/index', [ConductorController::class, 'index'])->name('registros.conductor.index');
+    Route::get('/create', [ConductorController::class, 'create'])->name('registros.conductor.create');
+    Route::get('/edit/{id}', [ConductorController::class, 'edit'])->name('registros.conductor.edit');
+    Route::post('/store', [ConductorController::class, 'store'])->name('registros.conductor.store');
+    Route::put('/update/{id}', [ConductorController::class, 'update'])->name('registros.conductor.update');
+    Route::get('/getConductores', [ConductorController::class, 'getConductores'])->name('registros.conductor.getConductores');
+    Route::delete('/destroy/{id}', [ConductorController::class, 'destroy'])->name('registros.conductor.destroy');
 
 });
 
@@ -406,6 +420,18 @@ Route::group(['prefix' => 'empresa', 'middleware' => ['auth','notificacionMiddle
     Route::get('/index', [EmpresaController::class, 'index'])->name('herramientas.empresa.index');
     Route::get('/consultarDocumento', [EmpresaController::class, 'consultarDocumento'])->name('herramientas.empresa.consultarDocumento');
     Route::put('/{id}', [EmpresaController::class, 'update'])->name('herramientas.empresa.update');
+    // Route::put('/update/{id}', [RolController::class, 'update'])->name('herramientas.rol.update');
+    // Route::get('/getRoles', [RolController::class, 'getRoles'])->name('herramientas.rol.getRoles');
+    // Route::get('/edit/{id}', [RolController::class, 'edit'])->name('herramientas.rol.edit');
+    // Route::delete('/destroy/{id}', [RolController::class, 'destroy'])->name('herramientas.rol.destroy');
+
+});
+
+Route::group(['prefix' => 'configuracion', 'middleware' => ['auth','notificacionMiddleware']], function () {
+
+    Route::get('/index', [ConfiguracionController::class, 'index'])->name('herramientas.configuracion.index');
+    // Route::get('/consultarDocumento', [EmpresaController::class, 'consultarDocumento'])->name('herramientas.empresa.consultarDocumento');
+    Route::put('/ambiente_greenter/{id}', [ConfiguracionController::class, 'ambiente_greenter'])->name('herramientas.configuracion.ambiente_greenter');
     // Route::put('/update/{id}', [RolController::class, 'update'])->name('herramientas.rol.update');
     // Route::get('/getRoles', [RolController::class, 'getRoles'])->name('herramientas.rol.getRoles');
     // Route::get('/edit/{id}', [RolController::class, 'edit'])->name('herramientas.rol.edit');

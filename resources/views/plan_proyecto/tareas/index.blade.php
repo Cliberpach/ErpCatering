@@ -75,6 +75,7 @@
                 { data: 'fecha_inicio', name: 'fecha_inicio' },
                 { data: 'fecha_fin', name: 'fecha_fin' },
                 { data: 'avance', name: 'avance' },
+                { data: 'dias_trabajo', name: 'dias_trabajo' },
                 { data: 'dias_faltantes', name: 'dias_faltantes' },
                 {
                     data: null, 

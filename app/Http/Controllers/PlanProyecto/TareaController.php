@@ -9,7 +9,7 @@ use App\Models\PlanProyecto\Tarea;
 use App\Models\PlanProyecto\TareaDetalle;
 use App\Models\Registros\Proyecto;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;
@@ -32,7 +32,8 @@ class TareaController extends Controller
                         'pt.fecha_inicio', 
                         'pt.fecha_fin', 
                         DB::raw('CONCAT(pt.avance, "%") AS avance'),                   
-                        'pt.dias_faltantes', 
+                        'pt.dias_faltantes as dias_trabajo', 
+                        DB::raw('DATEDIFF(pt.fecha_fin, NOW()) AS dias_faltantes'),
                         'pt.observacion', 
                         'pt.estado'
                     )
