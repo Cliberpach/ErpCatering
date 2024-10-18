@@ -88,11 +88,8 @@ Route::group(['prefix' => 'colaboradores', 'middleware' => ['auth','checkCustomP
 Route::group(['prefix' => 'cargos', 'middleware' => ['auth','checkCustomPermission:registros.cargo','notificacionMiddleware']], function () {
 
     Route::get('/index', [CargoController::class, 'index'])->name('registros.cargo.index');
-    // Route::get('/create', [ColaboradorController::class, 'create'])->name('registros.colaborador.create');
-    // Route::get('/edit/{id}', [ColaboradorController::class, 'edit'])->name('registros.colaborador.edit');
     Route::post('/store', [CargoController::class, 'store'])->name('registros.cargo.store');
     Route::put('/update/{id}', [CargoController::class, 'update'])->name('registros.cargo.update');
-    // Route::get('/consultarDni/{dni}', [ColaboradorController::class, 'consultarDni'])->name('registros.colaborador.consultarDni');
     Route::get('/getCargos', [CargoController::class, 'getCargos'])->name('registros.cargo.getCargos');
     Route::delete('/destroy/{id}', [CargoController::class, 'destroy'])->name('registros.cargo.destroy');
 
@@ -207,13 +204,8 @@ Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermi
 
 Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','checkCustomPermission:herramientas.tabla_general','notificacionMiddleware']], function () {
 
-    // Route::get('/index', [TablaGeneralDetalle::class, 'index'])->name('registros.maquinaria.index');
-    // Route::get('/create', [MaquinariaController::class, 'create'])->name('registros.maquinaria.create');
     Route::post('/store', [TablaGeneralDetalleController::class, 'store'])->name('herramientas.tabla_general_detalle.store');
-    // Route::get('/edit/{id}', [MaquinariaController::class, 'edit'])->name('registros.maquinaria.edit');
-    // Route::put('/update/{id}', [MaquinariaController::class, 'update'])->name('registros.maquinaria.update');
     Route::get('/getListTablaGeneralDetalles/{id}', [TablaGeneralDetalleController::class, 'getListTablaGeneralDetalles'])->name('registros.tabla_general_detalle.getListTablaGeneralDetalles');
-    // Route::delete('/destroy/{id}', [MaquinariaController::class, 'destroy'])->name('registros.maquinaria.destroy');
 
 });
 
@@ -227,7 +219,6 @@ Route::group(['prefix' => 'jornales', 'middleware' => ['auth','checkCustomPermis
 
     Route::get('/index', [RegistroLaborController::class, 'index'])->name('jornales.registro_labor.index');
     Route::post('/store', [RegistroLaborController::class, 'store'])->name('jornales.registro_labor.store');
-    // Route::get('/edit/{id}', [ProyectoController::class, 'edit'])->name('registros.proyecto.edit');
     Route::put( '/finalizar/{id}', [RegistroLaborController::class, 'finalizar'])->name('jornales.registro_labor.finalizar');
     Route::get('/getRegistrosLabor', [RegistroLaborController::class, 'getRegistrosLabor'])->name('jornales.registro_labor.getRegistrosLabor');
     Route::delete('/destroy/{id}', [RegistroLaborController::class, 'destroy'])->name('jornales.registro_labor.destroy');
@@ -250,9 +241,6 @@ Route::group(['prefix' => 'trabajo_equipos', 'middleware' => ['auth','checkCusto
     Route::get('/create', [RegistroTareaController::class, 'create'])->name('trabajo_equipos.registro_tarea.create');
     Route::get('/getRegistrosTarea', [RegistroTareaController::class, 'getRegistrosTarea'])->name('trabajo_equipos.registro_tarea.getRegistrosTarea');
     Route::delete('/destroy/{id}', [RegistroTareaController::class, 'destroy'])->name('trabajo_equipos.registro_tarea.destroy');
-    //Route::get('/asistencias/{id}', [RegistroLaborController::class, 'asistenciasCreate'])->name('jornales.registro_labor.asistenciasCreate');
-    //Route::post('/marcarEntrada', [RegistroLaborController::class, 'marcarEntrada'])->name('jornales.registro_labor.marcarEntrada');
-    //Route::post('/marcarSalida', [RegistroLaborController::class, 'marcarSalida'])->name('jornales.registro_labor.marcarSalida');
 
 });
 
@@ -300,13 +288,7 @@ Route::group(['prefix' => 'lista_requerimientos', 'middleware' => ['auth','check
     Route::get('/show/{id}', [ListaRequerimientoController::class, 'show'])->name('logistica.lista_requerimientos.show');
     Route::get('/goToCotizacionCompra/{id}', [ListaRequerimientoController::class, 'goToCotizacionCompra'])->name('logistica.lista_requerimientos.goToCotizacionCompra');
     Route::post('/requerimientoToCotizacion', [ListaRequerimientoController::class, 'requerimientoToCotizacion'])->name('logistica.lista_requerimientos.requerimientoToCotizacion');
-    // Route::get('/getRequerimientos', [RequerimientoController::class, 'getRequerimientos'])->name('requerimientos.requerimientos.getRequerimientos');
-    // Route::put('/update/{id}', [RequerimientoController::class, 'update'])->name('requerimientos.requerimientos.update');
-    // Route::post('/store', [RequerimientoController::class, 'store'])->name('requerimientos.requerimientos.store')->middleware('checkRole:SUPERVISOR');
-    // Route::get('/edit/{id}', [RequerimientoController::class, 'edit'])->name('requerimientos.requerimientos.edit')->middleware('checkRole:SUPERVISOR');
-    // Route::delete('/destroy/{id}', [RequerimientoController::class, 'destroy'])->name('requerimientos.requerimientos.destroy');
-    // Route::get('/show/{id}', [RequerimientoController::class, 'show'])->name('requerimientos.requerimientos.show');
-
+  
 });
 
 //============= FIN LOGÍSTICA ===========
@@ -342,7 +324,6 @@ Route::group(['prefix' => 'registro_compra', 'middleware' => ['auth','checkCusto
 Route::group(['prefix' => 'orden_compra', 'middleware' => ['auth','checkCustomPermission:compras.orden_compra','notificacionMiddleware']], function () {
 
     Route::get('/index', [OrdenCompraController::class, 'index'])->name('compras.orden_compra.index');
-    // Route::post('/store', [RegistroCompraController::class, 'store'])->name('compras.registro_compra.store');
     Route::get('/create', [OrdenCompraController::class, 'create'])->name('compras.orden_compra.create');
     Route::get('/edit/{id}', [OrdenCompraController::class, 'edit'])->name('compras.orden_compra.edit');
     Route::put('/update/{id}', [OrdenCompraController::class, 'update'])->name('compras.orden_compra.update');
@@ -418,23 +399,14 @@ Route::group(['prefix' => 'empresa', 'middleware' => ['auth','notificacionMiddle
     Route::get('/index', [EmpresaController::class, 'index'])->name('herramientas.empresa.index');
     Route::get('/consultarDocumento', [EmpresaController::class, 'consultarDocumento'])->name('herramientas.empresa.consultarDocumento');
     Route::put('/{id}', [EmpresaController::class, 'update'])->name('herramientas.empresa.update');
-    // Route::put('/update/{id}', [RolController::class, 'update'])->name('herramientas.rol.update');
-    // Route::get('/getRoles', [RolController::class, 'getRoles'])->name('herramientas.rol.getRoles');
-    // Route::get('/edit/{id}', [RolController::class, 'edit'])->name('herramientas.rol.edit');
-    // Route::delete('/destroy/{id}', [RolController::class, 'destroy'])->name('herramientas.rol.destroy');
-
+    
 });
 
 Route::group(['prefix' => 'configuracion', 'middleware' => ['auth','notificacionMiddleware']], function () {
 
     Route::get('/index', [ConfiguracionController::class, 'index'])->name('herramientas.configuracion.index');
-    // Route::get('/consultarDocumento', [EmpresaController::class, 'consultarDocumento'])->name('herramientas.empresa.consultarDocumento');
     Route::put('/ambiente_greenter/{id}', [ConfiguracionController::class, 'ambiente_greenter'])->name('herramientas.configuracion.ambiente_greenter');
-    // Route::put('/update/{id}', [RolController::class, 'update'])->name('herramientas.rol.update');
-    // Route::get('/getRoles', [RolController::class, 'getRoles'])->name('herramientas.rol.getRoles');
-    // Route::get('/edit/{id}', [RolController::class, 'edit'])->name('herramientas.rol.edit');
-    // Route::delete('/destroy/{id}', [RolController::class, 'destroy'])->name('herramientas.rol.destroy');
-
+  
 });
 //======= FIN HERRAMIENTAS ==========
 
