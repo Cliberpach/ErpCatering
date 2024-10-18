@@ -72,22 +72,6 @@ Route::group(['prefix' => 'colaboradores', 'middleware' => ['auth','checkCustomP
 
 });
 
-Route::group(['prefix' => 'conductores', 'middleware' => ['auth','checkCustomPermission:registros.conductor','notificacionMiddleware']], function () {
-     
-    Route::get('/index', [ConductorController::class, 'index'])->name('registros.conductor.index');
-    Route::get('/create', [ConductorController::class, 'create'])->name('registros.conductor.create');
-    Route::get('/edit/{id}', [ConductorController::class, 'edit'])->name('registros.conductor.edit');
-    Route::post('/store', [ConductorController::class, 'store'])->name('registros.conductor.store');
-    Route::put('/update/{id}', [ConductorController::class, 'update'])->name('registros.conductor.update');
-    Route::get('/getConductores', [ConductorController::class, 'getConductores'])->name('registros.conductor.getConductores');
-    Route::delete('/destroy/{id}', [ConductorController::class, 'destroy'])->name('registros.conductor.destroy');
-
-});
-
-
-
-
-
 
 Route::group(['prefix' => 'cargos', 'middleware' => ['auth','checkCustomPermission:registros.cargo','notificacionMiddleware']], function () {
 
@@ -218,6 +202,18 @@ Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','
     // Route::put('/update/{id}', [MaquinariaController::class, 'update'])->name('registros.maquinaria.update');
     Route::get('/getListTablaGeneralDetalles/{id}', [TablaGeneralDetalleController::class, 'getListTablaGeneralDetalles'])->name('registros.tabla_general_detalle.getListTablaGeneralDetalles');
     // Route::delete('/destroy/{id}', [MaquinariaController::class, 'destroy'])->name('registros.maquinaria.destroy');
+
+});
+
+Route::group(['prefix' => 'conductores', 'middleware' => ['auth','checkCustomPermission:registros.conductor','notificacionMiddleware']], function () {
+     
+    Route::get('/index', [ConductorController::class, 'index'])->name('registros.conductor.index');
+    Route::get('/create', [ConductorController::class, 'create'])->name('registros.conductor.create');
+    Route::get('/edit/{id}', [ConductorController::class, 'edit'])->name('registros.conductor.edit');
+    Route::post('/store', [ConductorController::class, 'store'])->name('registros.conductor.store');
+    Route::put('/update/{id}', [ConductorController::class, 'update'])->name('registros.conductor.update');
+    Route::get('/getConductores', [ConductorController::class, 'getConductores'])->name('registros.conductor.getConductores');
+    Route::delete('/destroy/{id}', [ConductorController::class, 'destroy'])->name('registros.conductor.destroy');
 
 });
 
