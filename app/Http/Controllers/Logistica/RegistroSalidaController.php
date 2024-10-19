@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Kardex\KardexController;
 use App\Http\Requests\Logistica\RegistroSalida\RegistroSalidaStoreRequest;
 use App\Models\Herramientas\Empresa;
+use App\Models\Logistica\GuiaRemision;
 use App\Models\Logistica\RegistroSalida;
 use App\Models\Logistica\RegistroSalidaDetalle;
 use App\Models\Registros\Almacen;
@@ -175,6 +176,48 @@ class RegistroSalidaController extends Controller
                             inner join almacenes as ad on ad.id =  rs.almacen_destino_id
                             where rs.id = ?',[$registro_salida_id])[0];
 
+        //========== OBTENIENDO PROYECTOS DEL ALMACÉN ORIGEN Y DESTINO ========
+        $proyecto_origen            =   DB::select('select 
+                                        pr.id,
+                                        pr.nombre,
+                                        pr.departamento_nombre,
+                                        pr.provincia_nombre,
+                                        pr.distrito_nombre,
+                                        pr.ubigeo,
+                                        pr.direccion
+                                        from 
+                                        almacenes as a 
+                                        inner join proyectos as pr on pr.id = a.proyecto_id
+                                        where a.id = ?',
+                                        [$registro_salida->almacen_origen_id]);  
+
+        $proyecto_destino            =   DB::select('select 
+                                        pr.id,
+                                        pr.nombre,
+                                        pr.departamento_nombre,
+                                        pr.provincia_nombre,
+                                        pr.distrito_nombre,
+                                        pr.ubigeo,
+                                        pr.direccion
+                                        from 
+                                        almacenes as a 
+                                        inner join proyectos as pr on pr.id = a.proyecto_id
+                                        where a.id = ?',
+                                        [$registro_salida->almacen_destino_id]);
+                               
+        if(count($proyecto_origen) === 0){
+            Session::flash('registro_salida_error',"EL ALMACÉN DE ORIGEN NO ESTÁ ASOCIADO A UN PROYECTO");
+            return back();
+        }
+
+        if(count($proyecto_destino) === 0){
+            Session::flash('registro_salida_error',"EL ALMACÉN DE DESTINO NO ESTÁ ASOCIADO A UN PROYECTO");
+            return back();
+        }
+
+        $proyecto_origen            =   $proyecto_origen[0];
+        $proyecto_destino           =   $proyecto_destino[0];
+
         $registro_salida_detalle    =   DB::select('select 
                                         p.nombre as producto_nombre,
                                         c.descripcion as categoria_nombre,
@@ -189,8 +232,108 @@ class RegistroSalidaController extends Controller
                                         where rsd.registro_salida_id = ?',[$registro_salida_id]);
 
         return view('logistica.registro_salida.registro_salida_to_guia_remision',
-        compact('registro_salida','registro_salida_detalle','empresa','conductores','vehiculos'));
+        compact('registro_salida','registro_salida_detalle',
+        'empresa','conductores','vehiculos','proyecto_origen','proyecto_destino'));
 
+    }
+
+
+    /*
+    array:17 [ // app\Http\Controllers\Logistica\RegistroSalidaController.php:261
+        "_token"                    => "usfoukDIzcHXVkrS79Jvc4uC8JLuu8ICStDxvvFE"
+        "registro_salida"           => "RS-1"
+        "emisor"                    => "TU_EMPRESA"
+        "destinatario"              => "TU_EMPRESA"
+        "codigo_motivo_traslado"    => "04"                 --REQUEST
+        "serie"                     => "T001"               --REQUEST
+        "fecha_emision"             => "2024-10-19"         --REQUEST
+        "fecha_traslado"            => "2024-10-19"         --REQUEST
+        "unidad_medida_total"       => "KGM"                --REQUEST
+        "peso_total"                => "1"                  --REQUEST
+        "nro_bultos"                => "1"                  --REQUEST
+        "codigo_modo_traslado"      => "02"                 --REQUEST
+        "modo_traslado"             => "TRANSPORTE PRIVADO"
+        "conductor"                 => "1"                  --REQUEST
+        "vehiculo"                  => "1"                  --REQUEST
+        "table_registro_salida_to_guia_detalle_length" => "10"
+        "lstGuiaRemision" => "[{"producto_nombre":"CEMENTO ROJO MOCHICA X 45 KG","categoria_nombre":"CEMENTO","marca_nombre":"MOCHICA","producto_unidad_medida":"UNIDAD","cantidad":"20.00"}]"
+        "registro_salida_id"        => "1"  --VALIDACION COMPLEJA
+    ]
+    */ 
+    public function registroSalidaToGuiaRemision(Request $request){
+       
+        DB::beginTransaction();
+        try {
+
+            $registro_salida                    =   RegistroSalida::find($request->get('registro_salida_id'));
+            
+            $empresa                            =   Empresa::find(1);
+
+            //========== OBTENIENDO PROYECTOS DEL ALMACÉN ORIGEN Y DESTINO ========
+            $proyecto_origen            =   DB::select('select 
+                                            pr.ubigeo,
+                                            pr.direccion
+                                            from 
+                                            almacenes as a 
+                                            inner join proyectos as pr on pr.id = a.proyecto_id
+                                            where a.id = ?',
+                                            [$registro_salida->almacen_origen_id]);  
+
+            $proyecto_destino           =   DB::select('select 
+                                            pr.ubigeo,
+                                            pr.direccion
+                                            from 
+                                            almacenes as a 
+                                            inner join proyectos as pr on pr.id = a.proyecto_id
+                                            where a.id = ?',
+                                            [$registro_salida->almacen_destino_id]);
+
+            if(count($proyecto_origen) === 0){
+                throw new Exception("EL ALMACÉN DE ORIGEN NO ESTÁ ASOCIADO A UN PROYECTO");
+                return back();
+            }
+
+            if(count($proyecto_destino) === 0){
+                throw new Exception("EL ALMACÉN DE DESTINO NO ESTÁ ASOCIADO A UN PROYECTO");
+                return back();
+            }
+
+            $proyecto_origen            =   $proyecto_origen[0];
+            $proyecto_destino           =   $proyecto_destino[0];
+
+
+            $guia_remision                              =   new GuiaRemision();
+            $guia_remision->registro_salida_id          =   $request->get('registro_salida_id');
+            $guia_remision->conductor_id                =   $request->get('conductor');
+            $guia_remision->vehiculo_id                 =   $request->get('vehiculo');
+            $guia_remision->codigo_traslado             =   $request->get('codigo_motivo_traslado');
+            $guia_remision->modo_traslado               =   $request->get('codigo_modo_traslado');
+            $guia_remision->fecha_traslado              =   $request->get('fecha_traslado');
+            $guia_remision->peso_total                  =   $request->get('peso_total');
+            $guia_remision->unidad_peso_total           =   $request->get('unidad_medida_total');
+            $guia_remision->nro_bultos                  =   $request->get('nro_bultos');
+            $guia_remision->almacen_origen_id           =   $registro_salida->almacen_origen_id;
+            $guia_remision->almacen_destino_id          =   $registro_salida->almacen_destino_id;
+            $guia_remision->direccion_origen_nombre     =   $proyecto_origen->direccion;
+            $guia_remision->direccion_origen_ubigeo     =   $proyecto_origen->ubigeo;
+            $guia_remision->direccion_destino_nombre    =   $proyecto_destino->direccion;
+            $guia_remision->direccion_destino_ubigeo    =   $proyecto_destino->ubigeo;
+            $guia_remision->serie                       =   'T001';
+            $guia_remision->correlativo                 =   1;
+            $guia_remision->fecha_emision               =   $request->get('fecha_emision');
+            $guia_remision->empresa_emisora_id          =   $empresa->id;
+            $guia_remision->destinatario_tipo_documento =   6;  //==== RUC ====
+            $guia_remision->destinatario_nro_documento  =   $empresa->ruc;
+            $guia_remision->destinatario_razon_social   =   $empresa->razon_social;
+            $guia_remision->save();
+
+        
+            return response()->json(['success'=>true,'message'=>'GUÍA REMISIÓN GENERADA']);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
     }
 
     public function store(RegistroSalidaStoreRequest $request){

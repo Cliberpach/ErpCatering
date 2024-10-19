@@ -54,8 +54,8 @@ return new class extends Migration
             $table->foreign('empresa_emisora_id')->references('id')->on('empresas');
 
             $table->string('destinatario_tipo_documento');
-            $table->string('destintario_nro_documento');
-            $table->string('destintario_razon_social');
+            $table->string('destinatario_nro_documento');
+            $table->string('destinatario_razon_social');
 
             $table->longText('ticket')->nullable();
             $table->string('despatch_name', 200)->nullable();

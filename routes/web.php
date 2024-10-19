@@ -291,6 +291,7 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
     Route::get('/pdf/{id}', [RegistroSalidaController::class, 'pdf'])->name('logistica.registro_salida.pdf');
     Route::get('/getProductosByAlmacen', [ProductoController::class, 'getProductosByAlmacen'])->name('logistica.producto.getProductosByAlmacen');
     Route::get('/goToGuiaRemision/{id}', [RegistroSalidaController::class, 'goToGuiaRemision'])->name('logistica.registro_salida.goToGuiaRemision');
+    Route::post('/registroSalidaToGuiaRemision', [RegistroSalidaController::class, 'registroSalidaToGuiaRemision'])->name('logistica.registro_salida.registroSalidaToGuiaRemision');
 
 });
 

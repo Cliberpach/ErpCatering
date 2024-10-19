@@ -40,7 +40,7 @@
 
 <script>
     let dtProductos         =   null;
-    let dtGuiaDetalle     =   null;
+    let dtGuiaDetalle       =   null;
     const lstGuiaRemision   =   [];
 
     document.addEventListener('DOMContentLoaded',()=>{
@@ -347,16 +347,11 @@
         if (result.isConfirmed) {
 
             limpiarErroresValidacion('msgError');
-            const token                             =   document.querySelector('input[name="_token"]').value;
-            const formRegistroSalidaToGuiaRemision               =   document.querySelector('#formRegistroSalidaToGuiaRemision');
-            const formData                          =   new FormData(formRegistroSalidaToGuiaRemision);
-            const urlRegistrarSalida                =   @json(route('logistica.registro_salida.store'));
-
-            formData.append('lstGuiaRemision',JSON.stringify(lstGuiaRemision))
+       
 
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Registrando nueva salida...',
+                html: 'Generando guía de remisión...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -364,7 +359,17 @@
             });
 
             try {
-                const response  =   await fetch(urlRegistrarSalida, {
+
+                const token                             =   document.querySelector('input[name="_token"]').value;
+                const formRegistroSalidaToGuiaRemision  =   document.querySelector('#formRegistroSalidaToGuiaRemision');
+                const formData                          =   new FormData(formRegistroSalidaToGuiaRemision);
+                const urlRegistrarGuiaRemision          =   @json(route('logistica.registro_salida.registroSalidaToGuiaRemision'));
+
+                formData.append('lstGuiaRemision',JSON.stringify(lstGuiaRemision))
+                formData.append('registro_salida_id',@json($registro_salida->id))
+
+
+                const response  =   await fetch(urlRegistrarGuiaRemision, {
                                         method: 'POST',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -393,7 +398,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR SALIDA');
+                toastr.error(error,'ERROR EN LA PETICIÓN REGISTRAR GUÍA DE REMISIÓN');
                 Swal.close();
             }
           
