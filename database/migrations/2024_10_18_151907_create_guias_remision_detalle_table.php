@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('guias_remision_detalle', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('guia_remision_id')->nullable();
+            $table->unsignedBigInteger('guia_remision_id');
             $table->foreign('guia_remision_id')->references('id')->on('guias_remision');
             
-            $table->unsignedBigInteger('producto_id')->nullable();
+            $table->unsignedBigInteger('producto_id');
             $table->foreign('producto_id')->references('id')->on('productos');
             
             $table->decimal('cantidad',15,2)->unsigned();
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('codigo');
 
             $table->primary(['guia_remision_id','producto_id']);
-            
+
             $table->timestamps();
         });
     }
