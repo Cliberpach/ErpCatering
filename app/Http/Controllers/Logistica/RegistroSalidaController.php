@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Logistica;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Kardex\KardexController;
 use App\Http\Requests\Logistica\RegistroSalida\RegistroSalidaStoreRequest;
+use App\Models\Herramientas\Empresa;
 use App\Models\Logistica\RegistroSalida;
 use App\Models\Logistica\RegistroSalidaDetalle;
 use App\Models\Registros\Almacen;
 use App\Models\Registros\Categoria;
 use App\Models\Registros\Marca;
+use App\Models\Registros\Vehiculo;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -31,6 +33,10 @@ class RegistroSalidaController extends Controller
         $categorias     =   Categoria::where('estado','ACTIVO')->get();
         $marcas         =   Marca::where('estado','ACTIVO')->get();
         $proyecto_id    =   null;
+
+        $almacenes_origen   =   [];
+        $almacenes_destino  =   [];
+
 
         //======== VERIFICANDO SI EL USUARIO ES SUPERVISOR DE ALGÚN PROYECTO PENDIENTE O EN PROCESO ======
         $proyecto   =   DB::select('select
@@ -69,16 +75,55 @@ class RegistroSalidaController extends Controller
             $proyecto_id    =   $proyecto[0]->id;
         }
 
-        //======= OBTENIENDO ALMACENES DEL PROYECTO ACTUAL DEL USUARIO ========
-        $almacenes  =   DB::select('select 
-                        a.id,
-                        a.descripcion
-                        from almacenes as a
-                        where a.proyecto_id = ?',[$proyecto_id]);
-    
-        //$almacenes  =   Almacen::where('estado','ACTIVO')->get();
+        //======= OBTENIENDO ROL DEL USUARIO ======
+        $rol    =   DB::select('select 
+                    r.*
+                    from
+                    model_has_roles as mhr
+                    inner join roles as r on r.id = mhr.role_id
+                    where mhr.model_id = ?',[Auth::user()->id]);
 
-        return view('logistica.registro_salida.create',compact('categorias','marcas','almacenes'));
+        if(count($rol) === 0){
+            throw new Exception("EL USUARIO NO TIENE UN ROL ASIGNADO!!!");
+        }
+
+        $rol_nombre =   $rol[0]->name;
+
+        //======== OBTENIENDO ALMACENES PARA LOGÍSTICA ========
+        if($rol_nombre === 'LOGISTICA'){
+            $almacenes_origen   =   DB::select('select
+                                    a.id,
+                                    a.descripcion 
+                                    from almacenes as a
+                                    where 
+                                    a.id = 1 
+                                    and a.estado = "ACTIVO"');  
+
+            $almacenes_destino  =   DB::select('select 
+                                    a.id,
+                                    a.descripcion
+                                    from almacenes as a
+                                    where a.estado = "ACTIVO"');
+        }
+
+        //======= OBTENIENDO ALMACENES DEL PROYECTO ACTUAL DEL USUARIO PARA SUPERVISOR ========
+        if($rol_nombre === 'SUPERVISOR'){
+
+            $almacenes  =   DB::select('select 
+                            a.id,
+                            a.descripcion
+                            from almacenes as a
+                            where a.proyecto_id = ?
+                            and a.estado = "ACTIVO"',
+                            [$proyecto_id]);
+
+            $almacenes_origen       =   $almacenes;  
+            $almacenes_destino      =   $almacenes;  
+
+        }
+        
+        return view('logistica.registro_salida.create',
+        compact('categorias','marcas','almacenes_origen','almacenes_destino'));
     }
 
     public function getSalidas(Request $request){
@@ -100,6 +145,52 @@ class RegistroSalidaController extends Controller
 
         return DataTables::of($salidas)
                 ->make(true);
+    }
+
+    public function goToGuiaRemision($registro_salida_id){
+
+        $conductores    =   DB::select('select
+                            c.id,
+                            td.descripcion as tipo_documento_nombre,
+                            c.nro_documento,
+                            c.nombre,
+                            c.licencia,
+                            c.telefono 
+                            from conductores as c
+                            inner join tipos_documento as td on td.id = c.tipo_documento_id
+                            where c.estado = "ACTIVO"');
+
+        $vehiculos      =   Vehiculo::where('estado','ACTIVO')->get();
+
+        $empresa        =   Empresa::find(1);
+
+        $registro_salida =   DB::select('select
+                            rs.*,
+                            ao.descripcion as almacen_origen_nombre,
+                            ad.descripcion as almacen_destino_nombre,
+                            c.nombre as colaborador_nombre
+                            from registros_salida as rs
+                            inner join colaboradores as c on c.id = rs.colaborador_id
+                            inner join almacenes as ao on ao.id = rs.almacen_origen_id
+                            inner join almacenes as ad on ad.id =  rs.almacen_destino_id
+                            where rs.id = ?',[$registro_salida_id])[0];
+
+        $registro_salida_detalle    =   DB::select('select 
+                                        p.nombre as producto_nombre,
+                                        c.descripcion as categoria_nombre,
+                                        m.descripcion as marca_nombre,
+                                        rsd.cantidad,
+                                        tgd.descripcion as unidad_medida_nombre
+                                        from registros_salida_detalle as rsd    
+                                        inner join productos as p on p.id = rsd.producto_id
+                                        inner join categorias as c on c.id = p.categoria_id
+                                        inner join marcas as m on m.id = p.marca_id
+                                        inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
+                                        where rsd.registro_salida_id = ?',[$registro_salida_id]);
+
+        return view('logistica.registro_salida.registro_salida_to_guia_remision',
+        compact('registro_salida','registro_salida_detalle','empresa','conductores','vehiculos'));
+
     }
 
     public function store(RegistroSalidaStoreRequest $request){

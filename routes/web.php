@@ -28,6 +28,7 @@ use App\Http\Controllers\Registros\MarcaController;
 use App\Http\Controllers\Registros\ModalidadPagoController;
 use App\Http\Controllers\Registros\ProductoController;
 use App\Http\Controllers\Registros\ProyectoController;
+use App\Http\Controllers\Registros\VehiculoController;
 use App\Http\Controllers\TrabajoEquipo\RegistroTareaController;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Middleware\CheckCustomPermission;
@@ -67,6 +68,18 @@ Route::group(['prefix' => 'conductores', 'middleware' => ['auth','checkCustomPer
     Route::put('/update/{id}', [ConductorController::class, 'update'])->name('registros.conductor.update');
     Route::get('/getConductores', [ConductorController::class, 'getConductores'])->name('registros.conductor.getConductores');
     Route::delete('/destroy/{id}', [ConductorController::class, 'destroy'])->name('registros.conductor.destroy');
+
+});
+
+Route::group(['prefix' => 'vehiculos', 'middleware' => ['auth','checkCustomPermission:registros.vehiculo','notificacionMiddleware']], function () {
+     
+    Route::get('/index', [VehiculoController::class, 'index'])->name('registros.vehiculo.index');
+    Route::get('/create', [VehiculoController::class, 'create'])->name('registros.vehiculo.create');
+    Route::get('/edit/{id}', [VehiculoController::class, 'edit'])->name('registros.vehiculo.edit');
+    Route::post('/store', [VehiculoController::class, 'store'])->name('registros.vehiculo.store');
+    Route::put('/update/{id}', [VehiculoController::class, 'update'])->name('registros.vehiculo.update');
+    Route::get('/getVehiculos', [VehiculoController::class, 'getVehiculos'])->name('registros.vehiculo.getVehiculos');
+    Route::delete('/destroy/{id}', [VehiculoController::class, 'destroy'])->name('registros.vehiculo.destroy');
 
 });
 
@@ -277,6 +290,7 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
     Route::get('/show/{salida_id}', [RegistroSalidaController::class, 'show'])->name('logistica.registro_salida.show');
     Route::get('/pdf/{id}', [RegistroSalidaController::class, 'pdf'])->name('logistica.registro_salida.pdf');
     Route::get('/getProductosByAlmacen', [ProductoController::class, 'getProductosByAlmacen'])->name('logistica.producto.getProductosByAlmacen');
+    Route::get('/goToGuiaRemision/{id}', [RegistroSalidaController::class, 'goToGuiaRemision'])->name('logistica.registro_salida.goToGuiaRemision');
 
 });
 

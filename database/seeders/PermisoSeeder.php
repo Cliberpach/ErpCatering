@@ -26,6 +26,7 @@ class PermisoSeeder extends Seeder
             'registros.producto',
             'registros.modalidad_pago',
             'registros.conductor',
+            'registros.vehiculo',
             'jornal.registro_labor',
             //'jornal.consulta_labor',
             'trabajo_equipo.registro_tarea',

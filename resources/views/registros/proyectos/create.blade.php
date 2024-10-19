@@ -3,6 +3,11 @@
     REGISTRAR PROYECTO
 @endsection
 
+@section('registros-collapsed', '')
+@section('registros-expanded', 'true')
+@section('registros-show', 'show')
+@section('proyectos-active', 'active')
+
 @section('section-page')
 
 <div class="card-style settings-card-1 mb-30">
@@ -175,6 +180,83 @@
             const pError        =   document.querySelector(`.${clave}_error`);
             pError.textContent  =   objErroresValidacion[clave][0];
         }
+    }
+
+    function cambiarDepartamento(selectDepartamento){
+
+        let departamento_id   =   selectDepartamento.value;
+        const lstProvincias     =   @json($provincias);
+        const lstDistritos      =   @json($distritos);
+
+        let lstProvinciasFiltradas      =   [];
+        
+        if(departamento_id){
+            departamento_id = String(departamento_id).padStart(2, '0');
+
+            lstProvinciasFiltradas      =   lstProvincias.filter((provincia)=>{
+                return  provincia.departamento_id == departamento_id;
+            })   
+
+            $('#provincia').empty().trigger('change');
+
+            lstProvinciasFiltradas.forEach((provincia)=>{
+                $('#provincia').append(new Option(provincia.nombre, provincia.id, false, false));
+            })
+
+            $('#provincia').select2({
+                theme: "bootstrap-5",
+                placeholder: 'Seleccione una provincia',
+                width: '100%'
+            });
+
+            $('#provincia').trigger('change');
+        }
+
+        // console.log(departamento_id);
+        // console.log(lstProvincias)
+        // console.log(lstDistritos);
+
+        // console.log('PROVINCIAS FILTRADAS');
+        // console.log(lstProvinciasFiltradas)
+    }
+
+    function cambiarProvincia(selectProvincia){
+
+        let provincia_id        =   selectProvincia.value;
+        const lstDistritos      =   @json($distritos);
+
+        console.log('DISTRITOS');
+        console.log(lstDistritos);
+
+
+        let lstDistritosFiltrados      =   [];
+
+        if(provincia_id){
+            provincia_id = String(provincia_id).padStart(4, '0');
+
+            console.log('PROVINCIA ID');
+            console.log(provincia_id);
+
+            lstDistritosFiltrados      =   lstDistritos.filter((distrito)=>{
+                return  distrito.provincia_id == provincia_id;
+            })   
+
+            $('#distrito').empty().trigger('change');
+
+            lstDistritosFiltrados.forEach((distrito)=>{
+                $('#distrito').append(new Option(distrito.nombre, distrito.id, false, false));
+            })
+
+            $('#distrito').select2({
+                theme: "bootstrap-5",
+                placeholder: 'Seleccione un distrito',
+                width: '100%'
+            });
+        }
+
+
+        console.log('DISTRITOS FILTRADOS');
+        console.log(lstDistritosFiltrados)
     }
 
 </script>

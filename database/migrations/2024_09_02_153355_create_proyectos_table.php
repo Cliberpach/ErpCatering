@@ -25,6 +25,15 @@ return new class extends Migration
 
             $table->decimal('avance',16,2)->unsigned()->default(0);
             
+            $table->char('departamento_id', 2);
+            $table->char('provincia_id', 4);
+            $table->char('distrito_id', 6);
+
+            $table->string('departamento_nombre',140);
+            $table->string('provincia_nombre',140);
+            $table->string('distrito_nombre',140);
+            $table->string('ubigeo',20);
+
             $table->string('direccion',200);
 
             $table->enum('estado', ['PENDIENTE', 'EN PROCESO','FINALIZADO','ANULADO'])->default('PENDIENTE');

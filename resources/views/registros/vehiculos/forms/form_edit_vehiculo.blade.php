@@ -1,0 +1,38 @@
+<form action="" id="formActualizarVehiculo" method="post">    
+    <div class="row">
+        @csrf      
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
+            <label for="placa" class="required_field mb-2" style="font-weight: bold;">Placa</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">
+                    <img width="30" height="30" src="{{asset('img/icons/placa/placa1.png')}}" alt="coins"/>                   
+                </span>
+                <input value="{{$vehiculo->placa}}" required id="placa" minlength="6" maxlength="8"  name="placa" type="text" class="form-control" placeholder="N° PLACA" aria-label="Username" aria-describedby="basic-addon1">
+             </div>   
+             <span style="color:rgb(0, 89, 255); font-style: italic;">(6 - 8 CARACTERES)</span>                                
+            <span class="placa_error msgError"  style="color:red;"></span>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
+            <label for="modelo" class="required_field mb-2" style="font-weight: bold;">Modelo</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">
+                    <img width="30" height="30" src="{{asset('img/icons/etiqueta/etiqueta1.png')}}" alt="coins"/>                   
+                </span>
+                <input value="{{$vehiculo->modelo}}" required id="modelo" maxlength="100"  name="modelo" type="text" class="form-control" placeholder="Modelo" aria-label="Username" aria-describedby="basic-addon1">
+             </div>  
+             <span style="color:rgb(0, 89, 255); font-style: italic;">(100 CARACTERES)</span>                                                
+            <span class="modelo_error msgError"  style="color:red;"></span>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
+            <label for="marca" class="required_field mb-2" style="font-weight: bold;">Marca</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">
+                    <img width="30" height="30" src="{{asset('img/icons/etiqueta/etiqueta1.png')}}" alt="coins"/>                   
+                </span>
+                <input value="{{$vehiculo->marca}}" required id="marca" maxlength="100"  name="marca" type="text" class="form-control" placeholder="Marca" aria-label="Username" aria-describedby="basic-addon1">
+             </div>     
+             <span style="color:rgb(0, 89, 255); font-style: italic;">(100 CARACTERES)</span>                                                             
+            <span class="marca_error msgError"  style="color:red;"></span>
+        </div> 
+    </div>
+</form> 

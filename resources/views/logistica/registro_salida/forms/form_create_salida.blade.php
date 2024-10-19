@@ -6,7 +6,7 @@
             <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                 <label class="required_field" for="almacen_origen" style="font-weight: bold;">ORIGEN</label>
                 <select required data-placeholder="Seleccione una opción" name="almacen_origen" id="almacen_origen" class="select2_form" onchange="cambiarAlmacenOrigen()" >
-                    @foreach ($almacenes as $almacen)
+                    @foreach ($almacenes_origen as $almacen)
                         <option value="{{$almacen->id}}">{{$almacen->descripcion}}</option>
                     @endforeach
                 </select>
@@ -15,7 +15,7 @@
                 <label class="required_field" style="font-weight: bold;" for="almacen_destino">DESTINO</label>
                 <select required data-placeholder="Seleccione una opción" name="almacen_destino" id="almacen_destino" class="select2_form" onchange="cambiarAlmacenDestino(this.value)">
                     <option value=""></option>
-                    @foreach ($almacenes as $almacen)
+                    @foreach ($almacenes_destino as $almacen)
                         <option value="{{$almacen->id}}">{{$almacen->descripcion}}</option>
                     @endforeach
                 </select>

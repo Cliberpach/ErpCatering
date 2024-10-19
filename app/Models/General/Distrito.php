@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Herramientas;
+namespace App\Models\General;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Distrito extends Model
 {
     use HasFactory;
-    protected $table = 'distritos';
-
-    protected $guarded = [''];
+    protected $table    = 'distritos';
+    protected $guarded  = [''];
+    public $timestamps  = false;
 }

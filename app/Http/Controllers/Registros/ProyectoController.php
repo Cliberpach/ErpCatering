@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Registros\Proyecto\ProyectoAsignarSupervisorRequest;
 use App\Http\Requests\Registros\Proyecto\ProyectoStoreRequest;
 use App\Http\Requests\Registros\Proyecto\ProyectoUpdateRequest;
+use App\Models\General\Departamento;
+use App\Models\General\Distrito;
+use App\Models\General\Provincia;
 use App\Models\Registros\Almacen;
 use App\Models\Registros\Proyecto;
 use App\Models\Registros\ProyectoMaquinaria;
@@ -26,8 +29,11 @@ class ProyectoController extends Controller
     }
 
     public function create(){
+        $departamentos  =   Departamento::all();
+        $provincias     =   Provincia::all();
+        $distritos      =   Distrito::all();
         
-        return view('registros.proyectos.create');
+        return view('registros.proyectos.create',compact('departamentos','provincias','distritos'));
     }
 
     public function getProyectos(Request $request){
@@ -53,14 +59,35 @@ class ProyectoController extends Controller
         DB::beginTransaction();
         try {
 
-            $proyecto                   =   new Proyecto();
-            $proyecto->nombre           =   Str::upper($request->get('nombre'));
-            $proyecto->costo            =   $request->get('costo');
-            $proyecto->avance_costo     =   $request->get('avance_costo');
-            $proyecto->diferencia       =   $request->get('diferencia');
-            $proyecto->direccion        =   mb_strtoupper($request->get('direccion'), 'UTF-8');
+            $proyecto                       =   new Proyecto();
+            $proyecto->nombre               =   Str::upper($request->get('nombre'));
+            $proyecto->costo                =   $request->get('costo');
+            $proyecto->avance_costo         =   $request->get('avance_costo');
+            $proyecto->diferencia           =   $request->get('diferencia');
+            $proyecto->direccion            =   mb_strtoupper($request->get('direccion'), 'UTF-8');
+            $proyecto->departamento_id      =   $request->get('departamento');
+            $proyecto->provincia_id         =   $request->get('provincia');
+            $proyecto->distrito_id          =   $request->get('distrito');
+
+            $proyecto->departamento_nombre  =   DB::select('select d.nombre 
+                                                from departamentos as d
+                                                where d.id = ?',
+                                                [$request->get('departamento')])[0]->nombre;
+            
+            $proyecto->provincia_nombre     =   DB::select('select p.nombre 
+                                                from provincias as p
+                                                where p.id = ?',
+                                                [$request->get('provincia')])[0]->nombre;
+                                                
+            $proyecto->distrito_nombre      =   DB::select('select d.nombre 
+                                                from distritos as d
+                                                where d.id = ?',
+                                                [$request->get('distrito')])[0]->nombre;
+           
+            $proyecto->ubigeo               =   $request->get('distrito');  
             $proyecto->save();
 
+            
             DB::commit();
             return response()->json(['success'=>true,'message'=>'PROYECTO REGISTRADO']);
 

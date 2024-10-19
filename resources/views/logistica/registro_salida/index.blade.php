@@ -77,7 +77,8 @@
                     data: null, 
                     render: function(data, type, row) {
                         
-                        const urlPdf    = `{{ route('logistica.registro_salida.pdf', ':id') }}`.replace(':id', data.id);
+                        const urlPdf                = `{{ route('logistica.registro_salida.pdf', ':id') }}`.replace(':id', data.id);
+                        const urlGoToGuiaRemision   =   `{{route('logistica.registro_salida.goToGuiaRemision',':id')}}`.replace(':id',data.id);
 
                         return `
                             <div class="btn-group dropstart">
@@ -88,12 +89,17 @@
                                 
                                 <li>
                                     <a class="dropdown-item" href="${urlPdf}" target="_blank">
-                                        <i class="fa-solid fa-file-pdf"></i> PDF
+                                        <img width="20" height="20" src="{{asset('img/icons/pdf/pdf2.png')}}" alt="coins"/> PDF
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShow(${data.id});">
+                                        <img width="20" height="20" src="{{asset('img/icons/ver/ver1.png')}}" alt="coins"/> Ver
                                     </a>
                                 </li>
                                  <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShow(${data.id});">
-                                        <i class="fa-solid fa-eye"></i> Ver
+                                    <a class="dropdown-item" href="${urlGoToGuiaRemision}" >
+                                        <img width="20" height="20" src="{{asset('img/icons/transporte/transporte1.png')}}" alt="coins"/> Guía Remisión
                                     </a>
                                 </li>
                                

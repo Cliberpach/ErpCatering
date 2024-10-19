@@ -6,6 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\DB;
+
 class ProyectoStoreRequest extends FormRequest
 {
     /**
@@ -14,6 +16,27 @@ class ProyectoStoreRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation()
+    {
+        if ($this->input('departamento')) {
+            $this->merge([
+                'departamento' => str_pad($this->input('departamento'), 2, '0', STR_PAD_LEFT),
+            ]);
+        }
+
+        if ($this->input('provincia')) {
+            $this->merge([
+                'provincia' => str_pad($this->input('provincia'), 4, '0', STR_PAD_LEFT),
+            ]);
+        }
+
+        if ($this->input('distrito')) {
+            $this->merge([
+                'distrito' => str_pad($this->input('distrito'), 6, '0', STR_PAD_LEFT),
+            ]);
+        }
     }
 
     /**
@@ -50,6 +73,21 @@ class ProyectoStoreRequest extends FormRequest
                     }
                 }
             ],
+            'departamento' => [
+                'required',
+                'string',
+                Rule::exists('departamentos', 'id'),
+            ],
+            'provincia' => [
+                'required',
+                'string',
+                Rule::exists('provincias', 'id'),
+            ],
+            'distrito' => [
+                'required',
+                'string',
+                Rule::exists('distritos', 'id'),
+            ],
             'direccion' => [
                 'required',
                 'string',
@@ -78,6 +116,15 @@ class ProyectoStoreRequest extends FormRequest
             'diferencia.regex'      => 'El campo diferencia debe ser un número decimal con hasta dos decimales.',
             'diferencia.custom'     => 'La diferencia debe ser la resta entre costo y avance costo.',
         
+            'departamento.required' => 'El campo departamento es obligatorio.',
+            'departamento.exists'   => 'El departamento no existe en la tabla departamentos.',
+
+            'provincia.required'    => 'El campo provincia es obligatorio.',
+            'provincia.exists'      => 'La provincia no existe en la tabla provincias.',
+
+            'distrito.required'     => 'El campo distrito es obligatorio.',
+            'distrito.exists'       => 'El distrito no existe en la tabla distritos.',
+
             'direccion.required'   => 'El campo direccion es obligatorio.',
             'direccion.max'        => 'El campo direccion no puede tener más de 100 caracteres.'
         ];

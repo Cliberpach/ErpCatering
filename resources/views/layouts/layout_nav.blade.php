@@ -120,6 +120,11 @@
                 <a class="@yield('conductor-active')" href="{{route('registros.conductor.index')}}">Conductores</a>
               @endcan
             </li>
+            <li>
+              @can('registros.vehiculo')
+                <a class="@yield('vehiculo-active')" href="{{route('registros.vehiculo.index')}}">Vehículos</a>
+              @endcan
+            </li>
           </ul>
         </li>
         @endcanany

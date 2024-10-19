@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Models\Herramientas;
+namespace App\Models\Registros;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Departamento extends Model
+class Vehiculo extends Model
 {
     use HasFactory;
-    protected $table = 'departamentos';
+    protected $table = 'vehiculos';
 
     protected $guarded = [''];
 }

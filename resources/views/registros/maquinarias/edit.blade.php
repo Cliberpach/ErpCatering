@@ -86,10 +86,7 @@
         if (result.isConfirmed) {
 
             limpiarErroresValidacion('msgError');
-            const token                     =   document.querySelector('input[name="_token"]').value;
-            const formActualizarMaquinaria  =   document.querySelector('#formActualizarMaquinaria');
-            const formData                  =   new FormData(formActualizarMaquinaria);
-
+           
             Swal.fire({
                 title: 'Cargando...',
                 html: 'Actualizando maquinaria...',
@@ -100,9 +97,12 @@
             });
 
             try {
-                const id                    =   @json($maquinaria->id);
-                let urlUpdateMaquinaria     =   `{{ route('registros.maquinaria.update', ['id' => ':id']) }}`;
-                urlUpdateMaquinaria         =   urlUpdateMaquinaria.replace(':id', id);
+                const token                     =   document.querySelector('input[name="_token"]').value;
+                const formActualizarMaquinaria  =   document.querySelector('#formActualizarMaquinaria');
+                const formData                  =   new FormData(formActualizarMaquinaria);
+                const id                        =   @json($maquinaria->id);
+                let urlUpdateMaquinaria         =   `{{ route('registros.maquinaria.update', ['id' => ':id']) }}`;
+                urlUpdateMaquinaria             =   urlUpdateMaquinaria.replace(':id', id);
 
                 const response  =   await fetch(urlUpdateMaquinaria, {
                                         method: 'POST',

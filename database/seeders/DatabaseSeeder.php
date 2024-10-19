@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use App\Models\Registros\Colaborador;
 
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -24,6 +25,9 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call(ConfiguracionSeeder::class);
+        $this->call(DepartamentoSeeder::class);
+        $this->call(ProvinciaSeeder::class);
+        $this->call(DistritoSeeder::class);
         $this->call(EmpresaSeeder::class);
         $this->call(AlmacenSeeder::class);
         $this->call(TablaGeneralSeeder::class);

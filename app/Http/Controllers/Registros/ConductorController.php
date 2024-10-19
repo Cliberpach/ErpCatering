@@ -55,12 +55,12 @@ class ConductorController extends Controller
 
     /*
     array:6 [ // app\Http\Controllers\Registros\ConductorController.php:26
-        "_token" => "aamvFabq3HuzkI0aW08dE5FhpYaK1tnmCZAfssq3"
-        "tipo_documento" => "1"
-        "nro_documento" => "75608753"
-        "nombre" => "LUIS DANIEL ALVA LUJAN"
-        "licencia" => "4124sad"
-        "telefono" => "945356916"
+        "_token"            => "aamvFabq3HuzkI0aW08dE5FhpYaK1tnmCZAfssq3"
+        "tipo_documento"    => "1"
+        "nro_documento"     => "75608753"
+        "nombre"            => "LUIS DANIEL ALVA LUJAN"
+        "licencia"          => "4124sad"
+        "telefono"          => "945356916"
     ]
     */
     public function store(Request $request){
