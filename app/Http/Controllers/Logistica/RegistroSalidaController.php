@@ -7,6 +7,7 @@ use App\Http\Controllers\Kardex\KardexController;
 use App\Http\Requests\Logistica\RegistroSalida\RegistroSalidaStoreRequest;
 use App\Models\Herramientas\Empresa;
 use App\Models\Logistica\GuiaRemision;
+use App\Models\Logistica\GuiaRemisionDetalle;
 use App\Models\Logistica\RegistroSalida;
 use App\Models\Logistica\RegistroSalidaDetalle;
 use App\Models\Registros\Almacen;
@@ -133,13 +134,15 @@ class RegistroSalidaController extends Controller
                         ->join('almacenes as ao', 'ao.id', '=', 'rs.almacen_origen_id')
                         ->join('almacenes as ad', 'ad.id', '=', 'rs.almacen_destino_id')
                         ->select(
-                        DB::raw('CONCAT("RS-", rs.id) as simbolo'), 
+                            DB::raw('CONCAT("RS-", rs.id) as simbolo'), 
                             'rs.id', 
                             'c.nombre as colaborador_nombre',
                             'rs.estado',
                             'ao.descripcion as almacen_origen_nombre',
                             'ad.descripcion as almacen_destino_nombre',
-                            'rs.created_at as fecha_registro'
+                            'rs.created_at as fecha_registro',
+                            'rs.guia_remision_id',
+                            DB::raw('CONCAT("GR-", rs.guia_remision_id) as simbolo_guia_remision')
                         )
                         ->where('rs.estado','<>','ANULADO')
                         ->get();
@@ -261,12 +264,39 @@ class RegistroSalidaController extends Controller
     ]
     */ 
     public function registroSalidaToGuiaRemision(Request $request){
-       
+
         DB::beginTransaction();
         try {
-
-            $registro_salida                    =   RegistroSalida::find($request->get('registro_salida_id'));
             
+
+            //======= VALIDACION  DE GUÍA ACTIVA EN LA EMPRESA =======
+            $res            =   GuiaRemisionController::isActive();
+            $correlativo    =   null;  
+            $serie          =   null;
+            if(!$res->success){
+                throw new Exception($res->message);
+            }else{
+                $correlativo    =   GuiaRemisionController::getCorrelativo()->correlativo;
+                $serie          =   GuiaRemisionController::getCorrelativo()->serie;
+            }
+
+            
+            $registro_salida            =   RegistroSalida::find($request->get('registro_salida_id'));
+            $registro_salida_detalle    =   DB::select('select 
+                                            p.id as producto_id,
+                                            p.nombre as producto_nombre,
+                                            c.descripcion as categoria_nombre,
+                                            m.descripcion as marca_nombre,
+                                            rsd.cantidad,
+                                            tgd.descripcion as unidad_medida_nombre
+                                            from registros_salida_detalle as rsd    
+                                            inner join productos as p on p.id = rsd.producto_id
+                                            inner join categorias as c on c.id = p.categoria_id
+                                            inner join marcas as m on m.id = p.marca_id
+                                            inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
+                                            where rsd.registro_salida_id = ?',
+                                            [$request->get('registro_salida_id')]);
+
             $empresa                            =   Empresa::find(1);
 
             //========== OBTENIENDO PROYECTOS DEL ALMACÉN ORIGEN Y DESTINO ========
@@ -303,7 +333,7 @@ class RegistroSalidaController extends Controller
 
 
             $guia_remision                              =   new GuiaRemision();
-            $guia_remision->registro_salida_id          =   $request->get('registro_salida_id');
+            //$guia_remision->registro_salida_id        =   $request->get('registro_salida_id');
             $guia_remision->conductor_id                =   $request->get('conductor');
             $guia_remision->vehiculo_id                 =   $request->get('vehiculo');
             $guia_remision->codigo_traslado             =   $request->get('codigo_motivo_traslado');
@@ -318,8 +348,8 @@ class RegistroSalidaController extends Controller
             $guia_remision->direccion_origen_ubigeo     =   $proyecto_origen->ubigeo;
             $guia_remision->direccion_destino_nombre    =   $proyecto_destino->direccion;
             $guia_remision->direccion_destino_ubigeo    =   $proyecto_destino->ubigeo;
-            $guia_remision->serie                       =   'T001';
-            $guia_remision->correlativo                 =   1;
+            $guia_remision->serie                       =   $serie;
+            $guia_remision->correlativo                 =   $correlativo;
             $guia_remision->fecha_emision               =   $request->get('fecha_emision');
             $guia_remision->empresa_emisora_id          =   $empresa->id;
             $guia_remision->destinatario_tipo_documento =   6;  //==== RUC ====
@@ -327,7 +357,22 @@ class RegistroSalidaController extends Controller
             $guia_remision->destinatario_razon_social   =   $empresa->razon_social;
             $guia_remision->save();
 
+            foreach ($registro_salida_detalle as $item) {
+                $guia_detalle   =   new GuiaRemisionDetalle();
+                $guia_detalle->guia_remision_id =   $guia_remision->id;
+                $guia_detalle->producto_id      =   $item->producto_id;
+                $guia_detalle->cantidad         =   $item->cantidad;
+                $guia_detalle->unidad           =   $item->unidad_medida_nombre;
+                $guia_detalle->descripcion      =   $item->marca_nombre.'-'.$item->producto_nombre;
+                $guia_detalle->codigo           =   str_pad($item->producto_id, 8, '0', STR_PAD_LEFT);
+                $guia_detalle->save();
+            }
+            
+            //======== ENLANZANDO LA GUÍA CON EL REGISTRO DE SALIDA ======
+            $registro_salida->guia_remision_id  =   $guia_remision->id;
+            $registro_salida->update();
         
+            DB::commit();
             return response()->json(['success'=>true,'message'=>'GUÍA REMISIÓN GENERADA']);
 
         } catch (\Throwable $th) {

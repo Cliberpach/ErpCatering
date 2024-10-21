@@ -18,7 +18,7 @@ class SharedStore
 
         return (new Company())
             ->setRuc($empresa->ruc)
-            ->setNombreComercial($empresa->razon_social_abreviada)
+            ->setNombreComercial($empresa->razon_social)
             ->setRazonSocial($empresa->razon_social)
             ->setAddress((new Address())
                 ->setUbigueo($empresa->ubigeo)
@@ -26,10 +26,10 @@ class SharedStore
                 ->setProvincia($empresa->provincia)
                 ->setDepartamento($empresa->departamento)
                 ->setUrbanizacion($empresa->urbanizacion)
-                ->setCodLocal($empresa->cod_local)
-                ->setDireccion($empresa->direccion_fiscal))
+                ->setCodLocal($empresa->codigo_local)
+                ->setDireccion($empresa->direccion))
             ->setEmail($empresa->correo)
-            ->setTelephone($empresa->celular);
+            ->setTelephone($empresa->telefono);
     }
 
     public function getClientPerson(): Client

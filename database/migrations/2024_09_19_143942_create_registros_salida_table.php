@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('registros_salida', function (Blueprint $table) {
             $table->id();
 
+            $table->unsignedBigInteger('guia_remision_id')->nullable();
+            $table->foreign('guia_remision_id')->references('id')->on('guias_remision');
+            
             $table->unsignedBigInteger('colaborador_id');
             $table->foreign('colaborador_id')->references('id')->on('colaboradores');
 

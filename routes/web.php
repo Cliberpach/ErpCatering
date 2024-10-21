@@ -19,6 +19,7 @@ use App\Http\Controllers\Registros\CargoController;
 use App\Http\Controllers\Registros\CategoriaController;
 use App\Http\Controllers\Registros\ColaboradorController;
 use App\Http\Controllers\Herramientas\UsuarioController;
+use App\Http\Controllers\Logistica\GuiaRemisionController;
 use App\Http\Controllers\Logistica\ListaRequerimientoController;
 use App\Http\Controllers\Notificaciones\NotificacionController;
 use App\Http\Controllers\Registros\ConductorController;
@@ -292,6 +293,21 @@ Route::group(['prefix' => 'registro_salida', 'middleware' => ['auth','checkCusto
     Route::get('/getProductosByAlmacen', [ProductoController::class, 'getProductosByAlmacen'])->name('logistica.producto.getProductosByAlmacen');
     Route::get('/goToGuiaRemision/{id}', [RegistroSalidaController::class, 'goToGuiaRemision'])->name('logistica.registro_salida.goToGuiaRemision');
     Route::post('/registroSalidaToGuiaRemision', [RegistroSalidaController::class, 'registroSalidaToGuiaRemision'])->name('logistica.registro_salida.registroSalidaToGuiaRemision');
+
+});
+
+Route::group(['prefix' => 'guias_remision', 'middleware' => ['auth','checkCustomPermission:logistica.guias_remision','notificacionMiddleware']], function () {
+
+    Route::get('/index', [GuiaRemisionController::class, 'index'])->name('logistica.guias_remision.index');
+    // Route::get('/create', [RegistroSalidaController::class, 'create'])->name('logistica.registro_salida.create');
+    Route::get('/getGuiasRemision', [GuiaRemisionController::class, 'getGuiasRemision'])->name('logistica.guias_remision.getGuiasRemision');
+    // Route::get('/validarCantidad/{almacen_id}/{producto_id}/{cantidad}', [RegistroSalidaController::class, 'validarCantidad'])->name('logistica.registro_salida.validarCantidad');
+    // Route::post('/store', [RegistroSalidaController::class, 'store'])->name('logistica.registro_salida.store');
+    // Route::get('/show/{salida_id}', [RegistroSalidaController::class, 'show'])->name('logistica.registro_salida.show');
+    Route::get('/pdf/{id}', [GuiaRemisionController::class, 'pdf'])->name('logistica.guias_remision.pdf');
+    // Route::get('/getProductosByAlmacen', [ProductoController::class, 'getProductosByAlmacen'])->name('logistica.producto.getProductosByAlmacen');
+    // Route::get('/goToGuiaRemision/{id}', [RegistroSalidaController::class, 'goToGuiaRemision'])->name('logistica.registro_salida.goToGuiaRemision');
+    Route::post('/send_sunat', [GuiaRemisionController::class, 'send_sunat'])->name('logistica.guias_remision.send_sunat');
 
 });
 

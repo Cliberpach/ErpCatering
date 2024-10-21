@@ -2,6 +2,7 @@
     <thead>
       <tr>
         <th scope="col">#</th>
+        <th scope="col">GUÍA</th>
         <th scope="col">COLABORADOR</th>
         <th scope="col">ORIGEN</th>
         <th scope="col">DESTINO</th>

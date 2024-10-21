@@ -14,6 +14,7 @@ class TablaGeneralSeeder extends Seeder
      */
     public function run(): void
     {
+
         //========= TABLA UNIDADES DE MEDIDA =====
         $tabla_general_unidades_medida          =   new TablaGeneral();
         $tabla_general_unidades_medida->nombre  =   'UNIDADES DE MEDIDA';
@@ -124,6 +125,6 @@ class TablaGeneralSeeder extends Seeder
             $item->tabla_general_id = $tabla_general_unidades_medida->id; 
             $item->save();
         }
- 
+        
     }
 }

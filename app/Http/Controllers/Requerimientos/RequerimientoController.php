@@ -55,7 +55,7 @@ class RequerimientoController extends Controller
         $proyecto   =   DB::select('select * from proyectos as pr
                         where pr.estado != "FINALIZADO" 
                         and pr.estado != "ANULADO"
-                        and pr.supervisor_id = ?',[Auth::user()->id]);
+                        and pr.supervisor_id = ?',[Auth::user()->colaborador_id]);
 
         if(count($proyecto) === 0){
             Session::flash('requerimiento_error','NO TIENES UN PROYECTO ASIGNADO!!!');

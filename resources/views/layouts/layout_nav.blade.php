@@ -247,6 +247,12 @@
                 <a class="@yield('lista_requerimientos-active')" href="{{route('logistica.lista_requerimientos.index')}}">Lista Requerimientos</a>
               @endcan
             </li>
+
+            <li>
+              @can('logistica.guias_remision')
+                <a class="@yield('guias_remision-active')" href="{{route('logistica.guias_remision.index')}}">Guías Remisión</a>
+              @endcan
+            </li>
             
           </ul>
         </li>

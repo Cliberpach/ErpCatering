@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Registros;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Registros\Conductor\ConductorStoreRequest;
+use App\Http\Requests\Registros\Conductor\ConductorUpdateRequest;
 use App\Models\Herramientas\TipoDocumento;
 use App\Models\Registros\Cargo;
 use App\Models\Registros\Conductor;
@@ -23,7 +25,7 @@ class ConductorController extends Controller
                     ->join('tipos_documento as td','td.id','co.tipo_documento_id')
                     ->select(
                         'co.id',
-                        'co.nombre',
+                        'co.nombre_completo as nombre',
                         'td.descripcion as tipo_documento',
                         'co.nro_documento',
                         'co.telefono',
@@ -54,23 +56,27 @@ class ConductorController extends Controller
     }
 
     /*
-    array:6 [ // app\Http\Controllers\Registros\ConductorController.php:26
-        "_token"            => "aamvFabq3HuzkI0aW08dE5FhpYaK1tnmCZAfssq3"
-        "tipo_documento"    => "1"
-        "nro_documento"     => "75608753"
-        "nombre"            => "LUIS DANIEL ALVA LUJAN"
-        "licencia"          => "4124sad"
-        "telefono"          => "945356916"
+    array:7 [ // app\Http\Controllers\Registros\ConductorController.php:67
+    "_token"            => "40VPBenxpHS6nf6bF8zTNjfnxCLwLU3OGy5CRd1c"
+    "tipo_documento"    => "1"
+    "nro_documento"     => "80239830"
+    "nombre"            => "CLIBER LESTER"
+    "apellido"          => "PACHECO PERINANGO"
+    "licencia"          => "4124sad"
+    "telefono"          => "974585471"
     ]
     */
-    public function store(Request $request){
+    public function store(ConductorStoreRequest $request){
+        
         DB::beginTransaction();
         try {
 
             $conductor                      =   new Conductor();
             $conductor->tipo_documento_id   =   $request->get('tipo_documento');
             $conductor->nro_documento       =   $request->get('nro_documento');
-            $conductor->nombre              =   $request->get('nombre');
+            $conductor->nombre_completo     =   mb_strtoupper($request->get('nombre') . ' ' . $request->get('apellido'));
+            $conductor->nombres             =   mb_strtoupper($request->get('nombre'));
+            $conductor->apellidos           =   mb_strtoupper($request->get('apellido'));
             $conductor->telefono            =   $request->get('telefono');
             $conductor->licencia            =   $request->get('licencia');
             $conductor->save();
@@ -83,22 +89,25 @@ class ConductorController extends Controller
     }
 
     /*
-    array:6 [ // app\Http\Controllers\Registros\ConductorController.php:88
-        "_token"            => "aamvFabq3HuzkI0aW08dE5FhpYaK1tnmCZAfssq3"
+    array:7 [ // app\Http\Controllers\Registros\ConductorController.php:67
+        "_token"            => "40VPBenxpHS6nf6bF8zTNjfnxCLwLU3OGy5CRd1c"
         "tipo_documento"    => "1"
-        "nro_documento"     => "75654124"
-        "nombre"            => "LUIS DANIEL ALVA LUJAN"
-        "licencia"          => "as213a"
-        "telefono"          => "945356916"
+        "nro_documento"     => "80239830"
+        "nombre"            => "CLIBER LESTER"
+        "apellido"          => "PACHECO PERINANGO"
+        "licencia"          => "4124sad"
+        "telefono"          => "974585471"
     ]
     */
-    public function update(Request $request,$id){
+    public function update(ConductorUpdateRequest $request,$id){
         DB::beginTransaction();
         try {
             $conductor                      =   Conductor::find($id);
             $conductor->tipo_documento_id   =   $request->get('tipo_documento');
             $conductor->nro_documento       =   $request->get('nro_documento');
-            $conductor->nombre              =   $request->get('nombre');
+            $conductor->nombre_completo     =   mb_strtoupper($request->get('nombre') . ' ' . $request->get('apellido'));
+            $conductor->nombres             =   mb_strtoupper($request->get('nombre'));
+            $conductor->apellidos           =   mb_strtoupper($request->get('apellido'));
             $conductor->telefono            =   $request->get('telefono');
             $conductor->licencia            =   $request->get('licencia');
             $conductor->update();

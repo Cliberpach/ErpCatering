@@ -34,6 +34,7 @@ class PermisoSeeder extends Seeder
             'requerimientos.requerimientos',
             'logistica.registro_salida',
             'logistica.lista_requerimientos',
+            'logistica.guias_remision',
             'compras.cotizacion_compra',
             'compras.registro_compra',
             'compras.orden_compra',

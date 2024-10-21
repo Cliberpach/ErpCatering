@@ -112,7 +112,7 @@
                 <span class="razon_social_error msgError"  style="color:red;"></span>
             </div> 
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 mb-3">
-                <label for="peso_total" class="required_field" style="font-weight: bold;">OBSERVACIÓN</label>
+                <label for="peso_total" style="font-weight: bold;">OBSERVACIÓN</label>
                 <div class="input-group">
                     <span class="input-group-text" id="basic-addon1">
                         <img width="30" height="30" src="{{asset('img/icons/texto/texto1.gif')}}" alt="coins"/>

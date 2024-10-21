@@ -69,6 +69,13 @@
                         $(td).css('font-weight', 'bold');
                     }
                 },
+                {
+                    data: 'simbolo_guia_remision',
+                    name: 'simbolo_guia_remision',
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).css('font-weight', 'bold');
+                    }
+                },
                 { data: 'colaborador_nombre', name: 'colaborador_nombre' },
                 { data: 'almacen_origen_nombre', name: 'almacen_origen_nombre' },
                 { data: 'almacen_destino_nombre', name: 'almacen_destino_nombre' },
@@ -80,32 +87,36 @@
                         const urlPdf                = `{{ route('logistica.registro_salida.pdf', ':id') }}`.replace(':id', data.id);
                         const urlGoToGuiaRemision   =   `{{route('logistica.registro_salida.goToGuiaRemision',':id')}}`.replace(':id',data.id);
 
-                        return `
-                            <div class="btn-group dropstart">
-                            <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-grip"></i>
-                            </button>
-                            <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
-                                
-                                <li>
-                                    <a class="dropdown-item" href="${urlPdf}" target="_blank">
-                                        <img width="20" height="20" src="{{asset('img/icons/pdf/pdf2.png')}}" alt="coins"/> PDF
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShow(${data.id});">
-                                        <img width="20" height="20" src="{{asset('img/icons/ver/ver1.png')}}" alt="coins"/> Ver
-                                    </a>
-                                </li>
-                                 <li>
-                                    <a class="dropdown-item" href="${urlGoToGuiaRemision}" >
-                                        <img width="20" height="20" src="{{asset('img/icons/transporte/transporte1.png')}}" alt="coins"/> Guía Remisión
-                                    </a>
-                                </li>
-                               
-                            </ul>
-                            </div>
-                        `;
+                        let acciones    =   `
+                                                <div class="btn-group dropstart">
+                                                <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fa-solid fa-grip"></i>
+                                                </button>
+                                                <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
+                                                    
+                                                    <li>
+                                                        <a class="dropdown-item" href="${urlPdf}" target="_blank">
+                                                            <img width="20" height="20" src="{{asset('img/icons/pdf/pdf2.png')}}" alt="coins"/> PDF
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShow(${data.id});">
+                                                            <img width="20" height="20" src="{{asset('img/icons/ver/ver1.png')}}" alt="coins"/> Ver
+                                                        </a>
+                                                    </li>
+                                            `;
+
+                            if(!data.guia_remision_id){
+                                acciones    +=  `<li>
+                                                    <a class="dropdown-item" href="${urlGoToGuiaRemision}" >
+                                                        <img width="20" height="20" src="{{asset('img/icons/transporte/transporte1.png')}}" alt="coins"/> Guía Remisión
+                                                    </a>
+                                                </li>`;
+                            }
+
+                            acciones    +=  `</ul></div>`;
+
+                        return  acciones; 
                     },
                     name: 'actions', 
                     orderable: false, 

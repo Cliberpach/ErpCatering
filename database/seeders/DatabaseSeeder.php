@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MarcaSeeder::class);
         $this->call(ProductoSeeder::class);
         $this->call(TipoGastoSeeder::class);
+        $this->call(TipoComprobanteSunatSeeder::class);
 
     }
 }

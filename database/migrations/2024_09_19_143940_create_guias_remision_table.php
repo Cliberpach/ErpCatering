@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('guias_remision', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('registro_salida_id')->nullable();
-            $table->foreign('registro_salida_id')->references('id')->on('registros_salida');
+            // $table->unsignedBigInteger('registro_salida_id')->nullable();
+            // $table->foreign('registro_salida_id')->references('id')->on('registros_salida');
             
             $table->unsignedBigInteger('conductor_id');
             $table->foreign('conductor_id')->references('id')->on('conductores');
@@ -24,7 +24,11 @@ return new class extends Migration
             $table->foreign('vehiculo_id')->references('id')->on('vehiculos');
             
             $table->string('codigo_traslado');
+            $table->string('motivo_traslado', 255)->default('TRASLADO ENTRE ESTABLECIMIENTOS DE LA MISMA EMPRESA');
+
             $table->string('modo_traslado');
+            $table->string('modo_traslado_descripcion', 255)->default('TRANSPORTE PRIVADO');
+
             $table->dateTime('fecha_traslado');
             $table->decimal('peso_total',15,2)->unsigned();
             $table->string('unidad_peso_total');

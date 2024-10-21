@@ -258,9 +258,13 @@
     }
 
     function setDatosDni(data){
-        const nombre_completo   =   `${data.nombres} ${data.apellido_paterno} ${data.apellido_materno}`;
+        const nombres           =   data.nombres;
+        const apellidos         =   `${data.apellido_paterno} ${data.apellido_materno}`;
+        //const nombre_completo   =   `${data.nombres} ${data.apellido_paterno} ${data.apellido_materno}`;
 
-        document.querySelector('#nombre').value     =   nombre_completo;
+        document.querySelector('#nombre').value         =   nombres;
+        document.querySelector('#apellido').value       =   apellidos;
+
     }
 
 </script>

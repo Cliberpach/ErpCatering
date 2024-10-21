@@ -16,6 +16,7 @@ use Greenter\Report\XmlUtils;
 use Greenter\See;
 use App\Greenter\data\SharedStore;
 use Exception;
+use Illuminate\Support\Facades\File;
 
 final class Util
 {
@@ -85,11 +86,41 @@ final class Util
         return $see;
     }
 
+
+    public function setCredencialesBetaApi($greenter_config){
+
+        $greenter_config->ruc                  =   "20161515648";
+        $greenter_config->certificado_ruta     =   'greenter/certificado/certificado_test.pem';
+        $greenter_config->usuario_sol          =   "MODDATOS";
+        $greenter_config->clave_sol            =   "MODDATOS";
+        $greenter_config->usuario_api_guias    =   "test-85e5b0ae-255c-4891-a595-0b98c65c9854";
+        $greenter_config->clave_api_guias      =   "test-Hty/M6QshYvPgItX2P0+Kw==";
+
+        return $greenter_config;
+
+    }
+
+    /*
+        {#1624 // app\Greenter\Utils\Util.php:90
+            +"id": 1
+            +"nombre": "AMBIENTE GREENTER"
+            +"propiedad": "BETA"
+            +"estado": "ACTIVO"
+            +"created_at": "2024-10-21 17:04:46"
+            +"updated_at": "2024-10-21 17:04:46"
+            +"ruc": "20161515648"
+            +"certificado_ruta": "greenter/certificado/certificado_test.pem"
+            +"usuario_sol": "MODDATOS"
+            +"clave_sol": "MODDATOS"
+            +"usuario_api_guias": "9e8eaf55-cf1d-4bf0-9837-0c3d897c08d5"
+            +"clave_api_guias": "3xSHGqcy5mglRIJzxx6eZw=="
+        }
+    */ 
     public function getSeeApi($greenter_config)
     {
         $ruc    =   $greenter_config->ruc;
 
-        if($greenter_config->modo === "BETA"){
+        if($greenter_config->propiedad === "BETA"){
             $api = new \Greenter\Api([
                 'auth' => 'https://gre-test.nubefact.com/v1',
                 'cpe' => 'https://gre-test.nubefact.com/v1',
@@ -98,17 +129,17 @@ final class Util
             $ruc    =   "20161515648";   
         }
 
-        if($greenter_config->modo === "PRODUCCION"){
+        if($greenter_config->propiedad === "PRODUCCION"){
             $see = new \Greenter\Api([
                 'auth' => 'https://api-seguridad.sunat.gob.pe/v1',
                 'cpe' => 'https://api-cpe.sunat.gob.pe/v1',
             ]);
         }
        
-        $certificadoPath    =   storage_path('app/public/' . $greenter_config->ruta_certificado);   
+        $certificadoPath = public_path($greenter_config->certificado_ruta);
 
-        if(!file_exists($certificadoPath)){
-            throw new Exception('No existe el certificado,debe registrar uno en Mantenimiento/Empresas');
+        if (!File::exists($certificadoPath)) {
+            throw new Exception('No existe el certificado, debe registrar uno en Herramientas/Empresas');
         }
 
         $certificate    =    file_get_contents($certificadoPath);
@@ -130,8 +161,8 @@ final class Util
                 'debug' => true,
                 'cache' => false,
             ])
-            ->setApiCredentials($greenter_config->id_api_guia_remision, $greenter_config->clave_api_guia_remision)
-            ->setClaveSOL($ruc, $greenter_config->sol_user, $greenter_config->sol_pass)
+            ->setApiCredentials($greenter_config->usuario_api_guias, $greenter_config->clave_api_guias)
+            ->setClaveSOL($ruc, $greenter_config->usuario_sol, $greenter_config->clave_sol)
             ->setCertificate($certificate);
 
 
@@ -227,7 +258,7 @@ HTML;
                 $fileDir    =   public_path('storage/greenter/resumenes/xml');
             }
             if($tipo_comprobante == 'GUIA REMISION'){
-                $fileDir    =   public_path('storage/greenter/guías_remisión/xml');
+                $fileDir    =   public_path('greenter/guias_remision/xml');
             }
             if($tipo_comprobante == 127){   //======== FACTURA =====
                 $fileDir    =   public_path('storage/greenter/facturas/xml');
