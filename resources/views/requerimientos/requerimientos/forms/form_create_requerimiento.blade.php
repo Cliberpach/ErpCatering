@@ -27,6 +27,7 @@
                     <option value="{{$proveedor->id}}">{{$proveedor->tipo_documento_descripcion.':'.$proveedor->nro_documento.'-'.$proveedor->nombre}}</option>
                 @endforeach
             </select>
+            <span class="proveedor_error msgError"  style="color:red;"></span>       
         </div>
         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mb-3">
             <label for="fecha_atencion" style="font-weight: bold;" class="required_field">FECHA ATENCIÓN</label>
@@ -35,7 +36,8 @@
                     <i class="fa-solid fa-calendar-days"></i>
                 </span>
                 <input required name="fecha_atencion" id="fecha_atencion" type="date" class="form-control"  aria-label="Username" aria-describedby="basic-addon1">
-            </div>        
+            </div> 
+            <span class="fecha_atencion_error msgError"  style="color:red;"></span>       
         </div>
     </div>
 

@@ -26,6 +26,8 @@ return new class extends Migration
             $table->unsignedBigInteger('orden_compra_id')->nullable(); 
             $table->foreign('orden_compra_id')->references('id')->on('ordenes_compra'); 
 
+            $table->enum('tipo', ['SIMPLE', 'COMPUESTA'])->default('SIMPLE');
+
             $table->enum('estado', ['PENDIENTE', 'ANULADO', 'FACTURADO','CON ORDEN COMPRA'])->default('PENDIENTE');
             $table->timestamps();
         });

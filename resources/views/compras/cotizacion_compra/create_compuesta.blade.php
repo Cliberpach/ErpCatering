@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 @section('title-page')
-    REGISTRAR COTIZACIÓN DE COMPUESTA
+    REGISTRAR COTIZACIÓN DE COMPRA COMPUESTA
 @endsection
 
 @section('compras-collapsed', '')
@@ -59,35 +59,85 @@
 
         document.querySelector('#formRegistrarCotizacionCompuesta').addEventListener('submit',(e)=>{
             e.preventDefault();
-            const validacion    =   validacionRegistrarCotizacionCompra();
+            const validacion    =   validacionRegistrarCotizacionCompraCompuesta();
             if(validacion){
-                registrarCotizacionCompra();
+                registrarCotizacionCompraCompuesta();
             }
         })
 
         document.addEventListener('change',(e)=>{
             if(e.target.classList.contains('chkRequerimientoDetalle')){
+
+                mostrarAnimacion1();
                 const index     =   e.target.getAttribute('data-index');
                 const   fila    =   lstRequerimientoDetalle[index];
                 console.log(fila);
 
-                //======= MARCADO - AGREGAR =====
+                toastr.clear();
+
+                if(!fila){
+                    toastr.danger('NO SE ENCONTRÓ LA FILA EN LA TABLA DETALLES DEL REQUERIMIENTO');
+                    return;
+                }
+
                 if(e.target.checked){
 
-                    lstCotizacionCompra.push(fila);
-                    limpiarTabla('table_compra_detalle');
-                    destruirDataTableCompraDetalle();
-                    pintarTableCompraDetalle(lstCotizacionCompra);
-                    iniciarDataTableCompraDetalle();
+                    //======= MARCADO - AGREGAR =====
+                    agregarProducto(fila);
+
+                }else{
+
+                    //======== RETIRAR =======
+                    console.log('DESMARCADO');
+                    eliminarProducto(fila);
 
                 }
+
+                limpiarTabla('table_compra_detalle');
+                destruirDataTableCompraDetalle();
+                pintarTableCompraDetalle(lstCotizacionCompra);
+                iniciarDataTableCompraDetalle();
+
+                ocultarAnimacion1();
             }
         })
 
         document.addEventListener('click',(e)=>{
+
             if (e.target.closest('.btnVolver')) {
                 const rutaIndex         =   '{{route('compras.cotizacion_compra.index')}}';
                 window.location.href    =   rutaIndex;
+            }
+
+            if(e.target.classList.contains('btnDeleteItem')){
+
+                mostrarAnimacion1();
+                toastr.clear();
+                const index   =   e.target.getAttribute('data-id');
+                
+                if(!index){
+                    toastr.error('NO EXISTE EL INDICE DEL DETALLE DE LA COTIZACIÓN');
+                    return;
+                }
+
+                if(lstCotizacionCompra.length < index){
+                    toastr.error('NO EXISTE EL INDICE DEL DETALLE DE LA COTIZACIÓN');
+                    return; 
+                }
+
+                lstCotizacionCompra.splice(index,1);
+
+                limpiarTabla('table_compra_detalle');
+                destruirDataTableCompraDetalle();
+                pintarTableCompraDetalle(lstCotizacionCompra);
+                iniciarDataTableCompraDetalle();
+
+                destruirDataTable(dtRequerimientoDetalle);
+                limpiarTabla('table_compuesta_requerimiento_detalle');
+                pintarTableRequerimientoDetalle(lstRequerimientoDetalle);
+                iniciarDataTableRequerimientoDetalle();
+                ocultarAnimacion1();
+
             }
 
             if (e.target.closest('.btnAgregarProducto')) {
@@ -149,7 +199,6 @@
                 
                 $('#table_compuesta_requerimientos tbody').off('click').on('click', 'tr', function () {
                     var dataId = $(this).data('id');
-                    console.log('Fila clickeada con ID:', dataId);
                     getRequerimientoDetalle(dataId);
 
                 });
@@ -301,42 +350,110 @@
         return true;
     }
 
-    function validacionRegistrarCotizacionCompra(){
+    function validacionRegistrarCotizacionCompraCompuesta(){
         if(lstCotizacionCompra.length === 0){
-            toastr.error('EL DETALLE DE LA COMPRA ESTÁ VACÍO!!!');
+            toastr.error('EL DETALLE DE LA COTIZACIÓN ESTÁ VACÍO!!!');
             return false;
         }
         return true;
     }
 
-    function agregarProducto(producto,cantidad){
-        producto.cantidad   =   cantidad;
-
-        const indiceProducto    =   lstCotizacionCompra.findIndex((p)=>{
-            return p.producto_id == producto.producto_id;
+    function agregarProducto(producto_agregar){
+        
+        //========== COMPROBANDO SI EXISTE EL PRODUCTO EN EL LISTADO =====
+        const existeProducto =   lstCotizacionCompra.findIndex((item)=>{
+            return item.producto_id == producto_agregar.producto_id 
         })
 
-        if(indiceProducto !== -1){
-            toastr.error('EL PRODUCTO YA EXISTE EN EL DETALLE');
-            return;
+        if(existeProducto !== -1){
+
+            //====== EN CASO YA EXISTA EL PRODUCTO, COMPROBAR SI EXISTE EL REQUERIMIENTO =====
+            const indiceExisteRequerimiento   = lstCotizacionCompra[existeProducto].requerimientos.findIndex((requerimiento_id)=>{
+                return requerimiento_id == producto_agregar.requerimiento_id;
+            })
+
+
+            if(indiceExisteRequerimiento !== -1){
+                //====== EN CASO YA EXISTA ======
+                toastr.danger('YA EXISTE EL PRODUCTO DE ESTE REQUERIMIENTO EN EL DETALLE!!');
+                return;
+            }else{
+
+                console.log('indice existe req',indiceExisteRequerimiento);
+                //======== EN CASO EL PRODUCTO SEA DE UN REQUERIMIENTO NUEVO, SUMAR CANTIDAD ======
+                lstCotizacionCompra[existeProducto].cantidad +=  parseFloat(producto_agregar.cantidad);
+                lstCotizacionCompra[existeProducto].requerimientos.push(producto_agregar.requerimiento_id);
+            
+                toastr.success('PRODUCTO AGREGADO!!!','CANTIDAD ACUMULADA');
+            }
+
+        }else{
+
+            //======= EL PRODUCTO ES NUEVO =======
+            const producto_nuevo    =   {   producto_id:producto_agregar.producto_id,
+                                            producto_nombre:producto_agregar.producto_nombre,
+                                            producto_unidad_medida:producto_agregar.producto_unidad_medida,
+                                            marca_nombre:producto_agregar.marca_nombre,
+                                            categoria_nombre:producto_agregar.categoria_nombre,
+                                            cantidad:parseFloat(producto_agregar.cantidad),
+                                            requerimientos:[producto_agregar.requerimiento_id]
+                                        }
+
+            lstCotizacionCompra.push(producto_nuevo);
+
+            toastr.success('PRODUCTO NUEVO AGREGADO!!!');
         }
 
-        lstCotizacionCompra.push(producto);
-        limpiarTabla('table_compra_detalle');
-        destruirDataTableCompraDetalle();
-        pintarTableCompraDetalle(lstCotizacionCompra);
-        iniciarDataTableCompraDetalle();
-        toastr.info('PRODUCTO AGREGADO AL DETALLE');
+
+    }
+
+    function eliminarProducto(producto_eliminar){
+           
+        //======= COMPROBAR SI EXISTE EL PRODUCTO Y EL REQUERIMIENTO =======
+        const indiceExisteProducto =   lstCotizacionCompra.findIndex((item)=>{
+                return item.producto_id ==   producto_eliminar.producto_id;
+        })
+
+        console.log('INDICE EXISTE PRODUCTO');
+        console.log(indiceExisteProducto);
+
+        if(indiceExisteProducto === -1){
+
+            toastr.danger('NO EXISTE EL PRODUCTO EN EL DETALLE DE LA COTIZACIÓN!!!');
+            return;
+
+        }else{
+
+            //========= COMPROBAR SI EXISTE EL REQUERIMIENTO ========
+            const indiceExisteRequerimiento =   lstCotizacionCompra[indiceExisteProducto].requerimientos.findIndex((requerimiento_id)=>{
+                return requerimiento_id == producto_eliminar.requerimiento_id;
+            })
+
+            if(indiceExisteRequerimiento === -1){
+                toastr.danger('NO EXISTE EL REQUERIMIENTO EN EL DETALLE DE LA COTIZACIÓN!!!');
+                return;
+            }else{
+
+                //========= ELIMINANDO REQUERIMIENTO ========
+                lstCotizacionCompra[indiceExisteProducto].requerimientos.splice(indiceExisteRequerimiento,1);
+                lstCotizacionCompra[indiceExisteProducto].cantidad  -=  parseFloat(producto_eliminar.cantidad);
+
+                //====== EN CASO SE QUEDE SIN REQUERIMIENTOS, ELIMINAR PRODUCTO =======
+                const cantidad_requerimientos = lstCotizacionCompra[indiceExisteProducto].requerimientos.length;
+                cantidad_requerimientos === 0?lstCotizacionCompra.splice(indiceExisteProducto,1):null;
+
+            }
+        }
+
     }
 
     function pintarTableCompraDetalle(lstItems){
         let filas   =   ``;
-        lstItems.forEach((producto)=>{
+        lstItems.forEach((producto,index)=>{
             filas   +=  `<tr>
                             <th>
                                 <div style="display:flex;justify-content:center;gap:5px;">
-                                    <i class="fas fa-edit btn btn-warning btnEditItem" data-producto-id="${producto.producto_id}"></i>
-                                    <i class="fas fa-trash-alt btn btn-danger btnDeleteItem" data-producto-id="${producto.producto_id}"></i>
+                                    <i class="fas fa-trash-alt btn btn-danger btnDeleteItem" data-id="${index}"></i>
                                 </div>
                             </th>
                             <td>${producto.producto_nombre}</td>
@@ -383,7 +500,7 @@
     }
 
 
-    function registrarCotizacionCompra(){
+    function registrarCotizacionCompraCompuesta(){
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -392,8 +509,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA REGISTRAR LA COTIZACIÓN?",
-        text: "Cotización de compra!",
+        title: "DESEA REGISTRAR LA COTIZACIÓN COMPUESTA?",
+        text: "Se marcarán los requerimientos con esta cotización!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "SÍ, REGISTRAR!",
@@ -402,10 +519,10 @@
         }).then(async (result) => {
         if (result.isConfirmed) {
             limpiarErroresValidacion('msgError');
-            const token                             =   document.querySelector('input[name="_token"]').value;
-            const formRegistrarCotizacionCompuesta     =   document.querySelector('#formRegistrarCotizacionCompuesta');
-            const formData                          =   new FormData();
-            const urlRegistrarCotizacionCompra      =   @json(route('compras.cotizacion_compra.store'));
+            const token                                     =   document.querySelector('input[name="_token"]').value;
+            const formRegistrarCotizacionCompuesta          =   document.querySelector('#formRegistrarCotizacionCompuesta');
+            const formData                                  =   new FormData();
+            const urlRegistrarCotizacionCompraCompuesta     =   @json(route('compras.cotizacion_compra.storeCompuesta'));
 
             formData.append('lstCotizacionCompra',JSON.stringify(lstCotizacionCompra));
             formData.append('proyecto_id',@json($proyecto->proyecto_id));
@@ -422,7 +539,7 @@
             });
 
             try {
-                const response  =   await fetch(urlRegistrarCotizacionCompra, {
+                const response  =   await fetch(urlRegistrarCotizacionCompraCompuesta, {
                                         method: 'POST',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -495,7 +612,7 @@
             if(res.success){
                 destruirDataTable(dtRequerimientoDetalle);
                 limpiarTabla('table_compuesta_requerimiento_detalle');
-                pintarTableRequerimientoDetalle(res.requerimiento_detalle)
+                pintarTableRequerimientoDetalle(res.requerimiento_detalle);
                 iniciarDataTableRequerimientoDetalle();
                 lstRequerimientoDetalle =   res.requerimiento_detalle;
                 toastr.info('DETALLE OBTENIDO');
@@ -514,9 +631,27 @@
         let filas   =   ``;
 
         lstItems.forEach((item,index)=>{
+
+            let marcado =   '';
+
+            //========= COMPROBAR SI ESTE PRODUCTO Y REQ YA FUE AGREGADO AL DETALLE DE LA COTIZACIÓN =======
+            const indiceExisteProducto  =   lstCotizacionCompra.findIndex((producto)=>{
+                return producto.producto_id == item.producto_id;
+            })
+
+            if(indiceExisteProducto !== -1){
+                const indiceExisteRequerimiento =   lstCotizacionCompra[indiceExisteProducto].requerimientos.findIndex((requerimiento_id)=>{
+                    return requerimiento_id == item.requerimiento_id;
+                })
+
+                if(indiceExisteRequerimiento !== -1){
+                    marcado =   'checked';
+                }
+            }
+
             filas   +=  `<tr>
                             <td>
-                                <input type="checkbox" class="form-check-input chkRequerimientoDetalle" data-index="${index}">    
+                                <input ${marcado} type="checkbox" class="form-check-input chkRequerimientoDetalle" data-index="${index}">    
                             </td>
                             <td>
                                 ${item.producto_nombre}

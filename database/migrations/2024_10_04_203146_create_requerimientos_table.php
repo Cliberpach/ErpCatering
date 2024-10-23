@@ -24,6 +24,8 @@ return new class extends Migration
             $table->foreign('proveedor_id')->references('id')->on('proveedores');
 
             $table->unsignedBigInteger('cotizacion_compra_id')->nullable();
+            $table->foreign('cotizacion_compra_id')->references('id')->on('cotizacion_compra');
+
 
             $table->unsignedBigInteger('orden_compra_id')->nullable();
             $table->string('factura_atencion')->nullable();

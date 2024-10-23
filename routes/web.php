@@ -343,6 +343,7 @@ Route::group(['prefix' => 'cotizacion_compra', 'middleware' => ['auth','checkCus
     Route::get('/createCompuesta', [CotizacionCompraController::class, 'createCompuesta'])->name('compras.cotizacion_compra.createCompuesta');
     Route::get('/getRequerimientos', [CotizacionCompraController::class, 'getRequerimientos'])->name('compras.cotizacion_compra.getRequerimientos');
     Route::get('/getRequerimientoDetalle/{requerimiento_id}', [CotizacionCompraController::class, 'getRequerimientoDetalle'])->name('compras.cotizacion_compra.getRequerimientoDetalle');
+    Route::post('/storeCompuesta', [CotizacionCompraController::class, 'storeCompuesta'])->name('compras.cotizacion_compra.storeCompuesta');
 
 });
 

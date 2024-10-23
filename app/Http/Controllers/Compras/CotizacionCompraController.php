@@ -32,23 +32,33 @@ class CotizacionCompraController extends Controller
 
     public function getCotizacionesCompra(Request $request){
 
-        $cotizaciones_compra    =   DB::table('cotizacion_compra as cc')
-                                    ->leftJoin('requerimientos as r','r.cotizacion_compra_id','=','cc.id')
-                                    ->leftJoin('colaboradores as c', 'c.id', '=', 'cc.colaborador_id')
-                                    ->leftJoin('colaboradores as cs','cs.id','=','cc.supervisor_id')
-                                    ->join('proyectos as pr','pr.id','=','cc.proyecto_id')
-                                    ->select(
-                                        DB::raw('CONCAT("CO-", cc.id) as simbolo'), 
-                                        'cc.id', 
-                                        'c.nombre as colaborador_nombre',
-                                        'cc.estado',
-                                        'cc.created_at as fecha_registro',
-                                        'r.id as requerimiento_id',
-                                        'pr.nombre as proyecto_nombre',
-                                        DB::raw('CONCAT("RQ-", r.id) as simbolo_requerimiento'),
-                                        DB::raw('COALESCE(cs.nombre, c.nombre) as supervisor_nombre')                                     )
-                                    ->where('cc.estado','<>','ANULADO')
-                                    ->get();
+        $cotizaciones_compra = DB::table('cotizacion_compra as cc')
+        ->leftJoin('colaboradores as c', 'c.id', '=', 'cc.colaborador_id')
+        ->leftJoin('colaboradores as cs', 'cs.id', '=', 'cc.supervisor_id')
+        ->join('proyectos as pr', 'pr.id', '=', 'cc.proyecto_id')
+        ->leftJoin('requerimientos as r', function($join) {
+            $join->on('r.cotizacion_compra_id', '=', 'cc.id')
+                 ->where('cc.tipo', '=', 'SIMPLE');
+        })
+    
+        ->select(
+            DB::raw('CONCAT("CO-", cc.id) as simbolo'),
+            'cc.id',
+            'c.nombre as colaborador_nombre',
+            'cc.estado',
+            'cc.created_at as fecha_registro',
+            'pr.nombre as proyecto_nombre',
+            'cc.tipo',
+            DB::raw('COALESCE(cs.nombre, c.nombre) as supervisor_nombre'),
+            
+            DB::raw('IF(cc.tipo = "SIMPLE", r.id, NULL) as requerimiento_id'),
+            DB::raw('IF(cc.tipo = "SIMPLE", CONCAT("RQ-", r.id), "COMPUESTA") as simbolo_requerimiento')
+        )
+        ->where('cc.estado', '<>', 'ANULADO')
+        ->get();
+    
+    
+    
 
         return DataTables::of($cotizaciones_compra)
                 ->make(true);
@@ -73,7 +83,7 @@ class CotizacionCompraController extends Controller
                                     'r.estado',
                                     'r.supervisor_id'
                                 )
-                                ->where('r.estado','<>','ANULADO')
+                                ->where('r.estado','=','PENDIENTE')
                                 ->get();
 
         return DataTables::of($requerimientos)
@@ -145,43 +155,6 @@ class CotizacionCompraController extends Controller
         compact('categorias','marcas','proyecto','colaborador_registrador'));
     }
 
-    public function createCompuesta(){
-
-        //======== VERIFICANDO QUE FORME PARTE DE UN PROYECTO ==========
-        $proyecto   =   DB::select('select 
-          pr.id as proyecto_id,
-          pr.nombre as proyecto_nombre
-          from proyecto_personal as pp
-          inner join proyectos as pr on pr.id = pp.proyecto_id
-          where pp.colaborador_id = ?',
-          [Auth::user()->colaborador_id]); 
-
-        if(count($proyecto) === 0){
-            Session::flash('cotizacion_compra_error',"DEBES FORMAR PARTE DE UN PROYECTO PARA REALIZAR COTIZACIONES");
-            return back();
-        }
-
-        $proyecto   =   $proyecto[0];
-
-        $colaborador_registrador    =   DB::select('select 
-                                        co.id as colaborador_id,
-                                        co.nombre as colaborador_nombre
-                                        from 
-                                        colaboradores as co
-                                        where co.id = ?',
-                                        [Auth::user()->colaborador_id]);
-
-        if(count($colaborador_registrador) === 0){
-            Session::flash('cotizacion_compra_error',"NO SE ENCUENTRA EL COLABORADOR EN LA BD");
-            return back();
-        }
-                                                                
-        $colaborador_registrador    =   $colaborador_registrador[0];
-
-        return view('compras.cotizacion_compra.create_compuesta',
-        compact('proyecto','colaborador_registrador'));
-    }
-
     public function edit($id){
         $cotizacion_compra_detalle  =   DB::select('select 
                                         ccd.producto_id,
@@ -217,6 +190,7 @@ class CotizacionCompraController extends Controller
         
         DB::beginTransaction();
         try {
+
             $lstCotizacionCompraDetalle =   json_decode($request->get('lstCotizacionCompra'));
             if(count($lstCotizacionCompraDetalle) === 0){
                 throw new Exception("EL DETALLE DE LA COTIZACIÓN DE COMPRA ESTÁ VACÍO");
@@ -776,6 +750,216 @@ class CotizacionCompraController extends Controller
                 throw new Exception("LA PERSONA DE CONTACTO NO ES SUPERVISOR NI FORMA PARTE DEL PERSONAL DEL PROYECTO");
             }  
         }
+    }
+
+    public function createCompuesta(){
+
+        //======== VERIFICANDO QUE FORME PARTE DE UN PROYECTO ==========
+        $proyecto   =   DB::select('select 
+                        pr.id as proyecto_id,
+                        pr.nombre as proyecto_nombre
+                        from proyecto_personal as pp
+                        inner join proyectos as pr on pr.id = pp.proyecto_id
+                        where pp.colaborador_id = ?',
+                        [Auth::user()->colaborador_id]); 
+
+        if(count($proyecto) === 0){
+            Session::flash('cotizacion_compra_error',"DEBES FORMAR PARTE DE UN PROYECTO PARA REALIZAR COTIZACIONES");
+            return back();
+        }
+
+        $proyecto   =   $proyecto[0];
+
+        $colaborador_registrador    =   DB::select('select 
+                                        co.id as colaborador_id,
+                                        co.nombre as colaborador_nombre
+                                        from 
+                                        colaboradores as co
+                                        where co.id = ?',
+                                        [Auth::user()->colaborador_id]);
+
+        if(count($colaborador_registrador) === 0){
+            Session::flash('cotizacion_compra_error',"NO SE ENCUENTRA EL COLABORADOR EN LA BD");
+            return back();
+        }
+                                                                
+        $colaborador_registrador    =   $colaborador_registrador[0];
+
+        return view('compras.cotizacion_compra.create_compuesta',
+        compact('proyecto','colaborador_registrador'));
+    }
+
+
+    /*
+    array:3 [ // app\Http\Controllers\Compras\CotizacionCompraController.php:782
+        "lstCotizacionCompra" => "[{"producto_id":1,"producto_nombre":"CEMENTO ROJO MOCHICA X 45 KG","producto_unidad_medida":"UNIDAD","marca_nombre":"MOCHICA","categoria_nombre":"CEMENTO","cantidad":200,"requerimientos":[2]},{"producto_id":3,"producto_nombre":"TUBOS PLASTICOS","producto_unidad_medida":"UNIDAD","marca_nombre":"EUROTUBO","categoria_nombre":"TUBOS","cantidad":110,"requerimientos":[2,1]}]"
+        "proyecto_id"                   => "2"  --VALIDACIÓN COMPLEJA
+        "colaborador_registrador_id"    => "2"  --VALIDACIÓN COMPLEJA
+    ]
+    */ 
+    public function storeCompuesta(Request $request){
+        DB::beginTransaction();
+        try {
+            
+            CotizacionCompraController::validacionComplejaStoreCompuesta($request);
+
+            $lstCotizacionCompraDetalle =   json_decode($request->get('lstCotizacionCompra'));
+
+            //========= GRABANDO =========
+            $cotizacion_compra                  =   new CotizacionCompra();
+            $cotizacion_compra->colaborador_id  =   $request->get('colaborador_registrador_id');
+            $cotizacion_compra->proyecto_id     =   $request->get('proyecto_id');
+            $cotizacion_compra->tipo            =   'COMPUESTA';
+            $cotizacion_compra->save();
+
+            $requerimientosCotizar = [];
+            foreach ($lstCotizacionCompraDetalle as $item) {
+                
+                //========== AGREGAR A LA LISTA DE REQUERIMIENTOS POR COTIZAR =======
+                foreach ($item->requerimientos as $requerimiento_id) {
+                    if (!in_array($requerimiento_id, $requerimientosCotizar)) {
+                        $requerimientosCotizar[] = $requerimiento_id;
+                    }
+                }
+
+                //====== GRABAR DETALLE DE LA COTIZACIÓN COMPUESTA ======
+                $cotizacion_compra_detalle                          =   new CotizacionCompraDetalle();
+                $cotizacion_compra_detalle->cotizacion_compra_id    =   $cotizacion_compra->id;
+                $cotizacion_compra_detalle->producto_id             =   $item->producto_id;
+                $cotizacion_compra_detalle->cantidad                =   $item->cantidad;
+                $cotizacion_compra_detalle->save();
+            }
+
+            //======= ACTUALIZANDO ESTADO DE LOS REQUERIMIENTOS A COTIZADOS ========
+            foreach ($requerimientosCotizar as $requerimiento_id) {
+                $requerimiento                          =   Requerimiento::find($requerimiento_id);
+                $requerimiento->estado                  =   'COTIZADO';
+                $requerimiento->cotizacion_compra_id    =   $cotizacion_compra->id;
+                $requerimiento->update();
+            }
+
+            
+            DB::commit();
+            return response()->json(['success'=>true,
+            'message'=>"COTIZACIÓN DE COMPRA COMPUESTA REGISTRADA",
+            'cid'=>$cotizacion_compra->id]);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+        }
+    }
+
+    public static function validacionComplejaStoreCompuesta($request){
+
+        //====== VALIDANDO EL PROYECTO =======
+        $proyecto   =   DB::select('select 
+                        pr.id,
+                        pr.estado
+                        from proyectos as pr
+                        where pr.id = ?',[$request->get('proyecto_id')]);
+
+        if(count($proyecto) === 0){
+            throw new Exception("EL PROYECTO NO EXISTE EN LA BD");
+        }
+
+        if($proyecto[0]->estado === 'ANULADO' || $proyecto[0]->estado === 'FINALIZADO'){
+            throw new Exception("EL PROYECTO DEL COLABORADOR REGISTRADOR ESTÁ"." ".$proyecto[0]->estado);
+        }
+
+        //========= VALIDANDO AL COLABORADOR REGISTRADOR =======
+        $colaborador_registrador    =   DB::select('select 
+                                        c.id,
+                                        c.estado
+                                        from colaboradores as c
+                                        where c.id = ?',
+                                        [$request->get('colaborador_registrador_id')]);
+
+        if(count($colaborador_registrador) === 0){
+            throw new Exception("EL COLABORADOR REGISTRADOR NO EXISTE EN LA BD");
+        }
+
+        if($colaborador_registrador[0]->estado !== "ACTIVO"){
+            throw new Exception("EL COLABORADOR REGISTRADOR ESTÁ"." ".$colaborador_registrador[0]->estado);
+        }
+
+
+        //========= VALIDANDO QUE EL COLABORADOR PERTENECE AL PROYECTO ========
+        //======== COMO EQUIPO ========
+        $pertenece_proyecto_equipo    = DB::select('select 
+                                        p.proyecto_id,
+                                        p.colaborador_id
+                                        from proyecto_personal as p
+                                        where 
+                                        p.proyecto_id = ? 
+                                        and p.colaborador_id = ?',
+                                        [$request->get('proyecto_id'),
+                                        $request->get('colaborador_registrador_id')]);
+                                        
+        if(count($pertenece_proyecto_equipo) === 0){
+
+            //========= COMO SUPERVISOR ========
+            $es_supervisor  =   DB::select('select 
+                                pr.id
+                                from proyectos as pr 
+                                where pr.id = ? 
+                                and pr.supervisor_id = ?',
+                                [$request->get('proyecto_id'),
+                                $request->get('colaborador_registrador_id')]);
+
+            if(count($es_supervisor) === 0){
+                throw new Exception("EL COLABORADOR REGISTRADOR NO PERTENECE AL PROYECTO!!!");
+            }
+        }
+
+        //========== VALIDANDO LST COTIZACIÓN COMPRA DETALLE =========
+        $lstCotizacionCompraDetalle =   json_decode($request->get('lstCotizacionCompra'));
+
+        if(count($lstCotizacionCompraDetalle) === 0){
+            throw new Exception("EL DETALLE DE LA COTIZACIÓN DE COMPRA ESTÁ VACÍO");
+        }
+
+        //======== VERIFICANDO QUE CADA PRODUCTO PERTENEZCA AL REQUERIMIENTO INDICADO =========
+        $requerimientosValidados = [];
+        foreach ($lstCotizacionCompraDetalle as $producto) {
+
+            foreach ($producto->requerimientos as $requerimiento_id) {
+
+                //====== VALIDANDO REQUERIMIENTOS SELECCIONADOS ======
+                if (!in_array($requerimiento_id, $requerimientosValidados)) {
+                    $requerimiento =        DB::select('select 
+                                            r.id,
+                                            r.estado
+                                            from 
+                                            requerimientos as r
+                                            where r.id = ?', [$requerimiento_id]);
+
+                    if(count($requerimiento) === 0){
+                        throw new Exception("EL REQUERIMIENTO: RQ-".$requerimiento_id.", NO EXISTE EN LA BD");
+                    }
+
+                    if($requerimiento[0]->estado !== 'PENDIENTE'){
+                        throw new Exception("EL REQUERIMIENTO:"." "."RQ-".$requerimiento_id.", "."ESTÁ"." ".$requerimiento[0]->estado);
+                    }
+                    
+                    $requerimientosValidados[] = $requerimiento_id;
+                }
+
+                //========= VALIDANDO PRODUCTO EN EL REQUERIMIENTO ========
+                $existe_producto_en_requerimiento   =   DB::table('requerimiento_detalle as rd')
+                                                        ->where('requerimiento_id', $requerimiento_id)
+                                                        ->where('producto_id', $producto->producto_id)
+                                                        ->exists();
+
+                if(!$existe_producto_en_requerimiento){
+                    throw new Exception("NO EXISTE EL PRODUCTO:"." ".$producto->producto_nombre.
+                    ", EN EL REQUERIMIENTO:"." "."RQ-".$requerimiento_id);
+                }
+
+            }
+           
+        }
+        
     }
 
    

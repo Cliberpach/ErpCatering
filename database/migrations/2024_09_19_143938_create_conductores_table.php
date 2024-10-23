@@ -19,7 +19,10 @@ return new class extends Migration
 
             $table->string('nro_documento',20)->unique();
 
-            $table->string('nombre',150);
+            $table->string('nombre_completo',200);
+            $table->string('nombres',160);
+            $table->string('apellidos',160);
+
             $table->string('telefono',20);
             $table->string('licencia',10);
             

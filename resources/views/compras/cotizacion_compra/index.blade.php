@@ -101,7 +101,7 @@
                                                 <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
                                             `;
                         
-                        if(data.estado === "PENDIENTE"){
+                        if(data.estado === "PENDIENTE" && data.tipo === 'SIMPLE'){
                             acciones    +=  `<li>
                                                 <a class="dropdown-item" href="${urlOrdenCompra}">
                                                     <i class="fa-solid fa-cart-shopping"></i> Orden compra
@@ -115,13 +115,17 @@
                                             <a class="dropdown-item" href="${urlPdf}" target="_blank">
                                                 <i class="fa-solid fa-file-pdf"></i> PDF
                                             </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="${urlEdit}">
-                                                <i class="fa-solid fa-file-pen"></i> Editar
-                                            </a>
-                                        </li>
-                                        <li>
+                                        </li>`;
+
+                        if(data.tipo === 'SIMPLE'){
+                            acciones    +=  `<li>
+                                                <a class="dropdown-item" href="${urlEdit}">
+                                                    <i class="fa-solid fa-file-pen"></i> Editar
+                                                </a>
+                                            </li>`;
+                        }
+
+                        acciones    +=  ` <li>
                                             <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarCotizacionCompra(${data.id})">
                                                 <i class="fa-solid fa-trash"></i> Eliminar
                                             </a>

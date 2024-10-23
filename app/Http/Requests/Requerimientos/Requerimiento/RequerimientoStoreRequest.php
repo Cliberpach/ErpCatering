@@ -5,6 +5,7 @@ namespace App\Http\Requests\Requerimientos\Requerimiento;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class RequerimientoStoreRequest extends FormRequest
 {
@@ -24,9 +25,15 @@ class RequerimientoStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'supervisor_id' => ['required', 'exists:colaboradores,id'], 
-            'proyecto_id'   => ['required', 'exists:proyectos,id'], 
-            'fecha_atencion' => ['required', 'date', 'after_or_equal:today']
+            'supervisor_id'     =>  ['required', 'exists:colaboradores,id'], 
+            'proyecto_id'       =>  ['required', 'exists:proyectos,id'], 
+            'fecha_atencion'    =>  ['required', 'date', 'after_or_equal:today'],
+            'proveedor'         =>  [
+                                        'nullable', 
+                                        Rule::exists('proveedores', 'id')->where(function ($query) {
+                                            $query->where('estado', 'activo');
+                                        })
+                                    ]
         ];
     }
 
@@ -42,6 +49,8 @@ class RequerimientoStoreRequest extends FormRequest
             'fecha_atencion.required'       => 'La fecha de atención es obligatoria.',
             'fecha_atencion.date'           => 'La fecha de atención debe ser una fecha válida.',
             'fecha_atencion.after_or_equal' => 'La fecha de atención debe ser hoy o una fecha futura.',
+        
+            'proveedor.exists'              => 'El proveedor seleccionado no existe o no está activo.'
         ];
     }
 
