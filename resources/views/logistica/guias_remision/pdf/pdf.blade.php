@@ -124,6 +124,13 @@
                     {{$guia_remision->serie.'-'.$guia_remision->correlativo}}
                 </td>
             </tr>
+            <tr>
+                <td style="margin: 0; padding: 0;">
+                    @if ($guia_remision->ruta_qr)
+                        <img style="height:70px;object-fit:cover;" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($guia_remision->ruta_qr))) }}" alt="Logo">
+                    @endif
+                </td>
+            </tr>
         </table>
         
 

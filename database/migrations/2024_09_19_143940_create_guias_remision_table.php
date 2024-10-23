@@ -61,7 +61,11 @@ return new class extends Migration
             $table->string('destinatario_nro_documento');
             $table->string('destinatario_razon_social');
 
-            $table->longText('ticket')->nullable();
+            $table->boolean('result_success')->default(false);
+            $table->string('result_ticket',300)->nullable();
+            $table->longText('result_error')->nullable();
+
+
             $table->string('despatch_name', 200)->nullable();
             $table->string('response_success', 10)->nullable();
             $table->string('response_code', 10)->nullable();
@@ -77,7 +81,7 @@ return new class extends Migration
             $table->string('response_error_code', 10)->nullable();
             $table->longText('response_error_message')->nullable();
 
-            $table->enum('estado', ['PENDIENTE', 'ANULADO','ACEPTADO','ENVIADO','ACEPTADO CON ERRORES','RECHAZADO'])
+            $table->enum('estado', ['PENDIENTE', 'ANULADO','ACEPTADO','ENVIADO','ACEPTADO CON ERRORES','RECHAZADO','EN PROCESO'])
             ->default('PENDIENTE');
 
             $table->timestamps();

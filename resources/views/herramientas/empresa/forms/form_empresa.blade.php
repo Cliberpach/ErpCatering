@@ -143,6 +143,36 @@
                             </div>
                             <span class="certificado_error msgError"  style="color:red;"></span>
                         </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+                            <label for="nro_inicio" class="required_field" style="font-weight: bold;">N° INICIO</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <img width="30" height="30" src="{{asset('img/icons/hash/hash2.png')}}" alt="coins"/>
+                                </span>
+                                <input value="{{$empresa->nro_inicio}}" value="" maxlength="100" type="text" name="nro_inicio" id="nro_inicio" class="form-control inputEnteroPositivo">
+                            </div>
+                            <span class="nro_inicio_error msgError"  style="color:red;"></span>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+                            <label for="serie" style="font-weight: bold;">SERIE</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <img width="30" height="30" src="{{asset('img/icons/hash/hash2.png')}}" alt="coins"/>
+                                </span>
+                                <input disabled value="{{$empresa->serie}}" value="" maxlength="100" type="text" name="serie" id="serie" class="form-control">
+                            </div>
+                            <span class="serie_error msgError"  style="color:red;"></span>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+                            <label for="estado" style="font-weight: bold;">ESTADO</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <img width="30" height="30" src="{{asset('img/icons/estado/estado1.png')}}" alt="coins"/>
+                                </span>
+                                <input disabled value="{{ $empresa->iniciado == 1 ? 'INICIADO' : 'SIN INICIAR' }}" maxlength="100" type="text" name="estado" id="estado" class="form-control">
+                            </div>
+                            <span class="estado_error msgError"  style="color:red;"></span>
+                        </div>
                     </div>
                 </div>
             </div>

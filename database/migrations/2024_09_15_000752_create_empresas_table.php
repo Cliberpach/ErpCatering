@@ -22,6 +22,14 @@ return new class extends Migration
             $table->string('img_nombre', 100)->nullable(); 
             $table->decimal('igv', 16, 2)->unsigned();
 
+            $table->string('ubigeo', 20)->nullable(); 
+            $table->string('departamento', 160)->nullable(); 
+            $table->string('provincia', 160)->nullable(); 
+            $table->string('distrito', 160)->nullable(); 
+            $table->string('urbanizacion', 160)->nullable(); 
+            $table->string('codigo_local', 10)->default('0000'); 
+
+
             $table->string('usuario_sol', 100)->nullable(); 
             $table->string('clave_sol', 100)->nullable(); 
             $table->string('usuario_api_guias', 100)->nullable(); 

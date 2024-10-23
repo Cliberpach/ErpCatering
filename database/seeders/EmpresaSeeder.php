@@ -24,8 +24,8 @@ class EmpresaSeeder extends Seeder
         $empresa->igv               =   18;
         $empresa->usuario_sol       =   'MODDATOS';
         $empresa->clave_sol         =   'MODDATOS';
-        $empresa->usuario_api_guias =   '9e8eaf55-cf1d-4bf0-9837-0c3d897c08d5';
-        $empresa->clave_api_guias   =   '3xSHGqcy5mglRIJzxx6eZw==';
+        $empresa->usuario_api_guias =   'test-85e5b0ae-255c-4891-a595-0b98c65c9854';
+        $empresa->clave_api_guias   =   'test-Hty/M6QshYvPgItX2P0+Kw==';
         $empresa->save();
 
     }

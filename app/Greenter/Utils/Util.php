@@ -236,7 +236,7 @@ HTML;
                 $fileDir    =   public_path('storage/greenter/resumenes/cdr');
             }
             if($tipo_comprobante == 'GUIA REMISION'){
-                $fileDir    =   public_path('storage/greenter/guías_remisión/cdr');
+                $fileDir    =   public_path('greenter/guias_remision/cdr');
             }
             if($tipo_comprobante == 127){  //======== FACTURA ====
                 $fileDir    =   public_path('storage/greenter/facturas/cdr');

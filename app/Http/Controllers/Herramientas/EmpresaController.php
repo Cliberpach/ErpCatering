@@ -14,12 +14,36 @@ use Illuminate\Http\Request;
 class EmpresaController extends Controller
 {
     public function index(){
-        $empresa    =   DB::select('select * from empresas as e
+        $empresa    =   DB::select('select 
+                        e.*,
+                        ef.nro_inicio,
+                        ef.serie,
+                        ef.simbolo,
+                        ef.iniciado
+                        from empresas as e
+                        inner join empresas_facturacion as ef on ef.empresa_id = e.id
                         where e.id = ?',[1])[0];
 
         return view('herramientas.empresa.index',compact('empresa'));
     }
 
+
+    /*
+    array:12 [ // app\Http\Controllers\Herramientas\EmpresaController.php:31
+        "_token"            => "tInvgUDtxQpMGIlEK8yCExIUVchcjLebTSRO4FLA"
+        "ruc"               => "20161515648"
+        "razon_social"      => "TU_EMPRESA"
+        "direccion"         => "TU DIRECCION #123"
+        "telefono"          => "945124574"
+        "correo"            => "tucorreo@gmail.com"
+        "usuario_sol"       => "MODDATOS"
+        "clave_sol"         => "MODDATOS"
+        "usuario_api_guias"     => "test-85e5b0ae-255c-4891-a595-0b98c65c9854"
+        "clave_api_guias"       => "test-Hty/M6QshYvPgItX2P0+Kw=="
+        "nro_inicio"            => "1"
+        "eliminarCertificado"   => "false"
+    ]
+    */
     public function update($id,EmpresaUpdateRequest $request){
        
         DB::beginTransaction();
@@ -30,11 +54,15 @@ class EmpresaController extends Controller
                 throw new Exception("LA EMPRESA NO EXISTE EN LA BD");
             }
 
-            $empresa->ruc           =   $request->get('ruc');
-            $empresa->razon_social  =   mb_strtoupper($request->get('razon_social'), 'UTF-8');
-            $empresa->direccion     =   mb_strtoupper($request->get('direccion'), 'UTF-8');
-            $empresa->telefono      =   $request->get('telefono');
-            $empresa->correo        =   mb_strtoupper($request->get('correo'), 'UTF-8');
+            $empresa->ruc                   =   $request->get('ruc');
+            $empresa->razon_social          =   mb_strtoupper($request->get('razon_social'), 'UTF-8');
+            $empresa->direccion             =   mb_strtoupper($request->get('direccion'), 'UTF-8');
+            $empresa->telefono              =   $request->get('telefono');
+            $empresa->correo                =   mb_strtoupper($request->get('correo'), 'UTF-8');
+            $empresa->usuario_sol           =   $request->get('usuario_sol');
+            $empresa->clave_sol             =   $request->get('clave_sol');
+            $empresa->usuario_api_guias     =   $request->get('usuario_api_guias');
+            $empresa->clave_api_guias       =   $request->get('clave_api_guias');
             $empresa->update();
 
             //======== EN CASO SE ESTÉ ENVIANDO IMAGEN NUEVA ========
@@ -100,6 +128,13 @@ class EmpresaController extends Controller
                 $empresa->update();
             }
 
+            //========= GRABADO DE DATOS DE FACTURACIÓN GUÍA REMISIÓN ======
+            $data = [
+                'nro_inicio'            => $request->get('nro_inicio'),
+                'updated_at'            => now()
+            ];
+            
+            DB::table('empresas_facturacion')->where('id', $id)->update($data);
 
             DB::commit();
             return response()->json(['success'=>true,

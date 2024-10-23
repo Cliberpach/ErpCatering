@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Herramientas\EmpresaFacturacion;
 use App\Models\Herramientas\TipoDocumento;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -45,6 +46,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductoSeeder::class);
         $this->call(TipoGastoSeeder::class);
         $this->call(TipoComprobanteSunatSeeder::class);
+        $this->call(EmpresaFacturacionSeeder::class);
 
     }
 }

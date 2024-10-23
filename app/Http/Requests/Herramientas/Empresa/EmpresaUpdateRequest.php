@@ -30,6 +30,8 @@ class EmpresaUpdateRequest extends FormRequest
             'telefono'      => 'nullable|string|max:20|regex:/^\+?[0-9\s\-]*$/',
             'correo'        => 'nullable|email|max:100',
 
+            'nro_inicio'        => 'required|integer|gt:0',
+
             'usuario_sol'       => 'nullable|string|max:100',
             'clave_sol'         => 'nullable|string|max:100',
             'usuario_api_guias' => 'nullable|string|max:100',
@@ -55,6 +57,10 @@ class EmpresaUpdateRequest extends FormRequest
             
             'correo.email'          => 'El correo debe tener un formato válido.',
             'correo.max'            => 'El correo no puede exceder de 100 caracteres.',
+
+            'nro_inicio.required'    => 'El campo número de inicio es obligatorio.', 
+            'nro_inicio.integer'     => 'El número de inicio debe ser un entero.',
+            'nro_inicio.gt'          => 'El número de inicio debe ser mayor a 0.',
 
             'usuario_sol.max'       => 'El campo USUARIO SOL no debe exceder los 100 caracteres.',
             'clave_sol.max'         => 'El campo CLAVE SOL no debe exceder los 100 caracteres.',

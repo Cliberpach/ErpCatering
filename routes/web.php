@@ -308,6 +308,7 @@ Route::group(['prefix' => 'guias_remision', 'middleware' => ['auth','checkCustom
     // Route::get('/getProductosByAlmacen', [ProductoController::class, 'getProductosByAlmacen'])->name('logistica.producto.getProductosByAlmacen');
     // Route::get('/goToGuiaRemision/{id}', [RegistroSalidaController::class, 'goToGuiaRemision'])->name('logistica.registro_salida.goToGuiaRemision');
     Route::post('/send_sunat', [GuiaRemisionController::class, 'send_sunat'])->name('logistica.guias_remision.send_sunat');
+    Route::post('/consulta_sunat', [GuiaRemisionController::class, 'consulta_sunat'])->name('logistica.guias_remision.consulta_sunat');
 
 });
 
@@ -339,6 +340,10 @@ Route::group(['prefix' => 'cotizacion_compra', 'middleware' => ['auth','checkCus
     Route::get('/goToOrdenCompra/{id}', [CotizacionCompraController::class, 'goToOrdenCompra'])->name('compras.cotizacion_compra.goToOrdenCompra');
     Route::post('/cotizacionToOrden', [CotizacionCompraController::class, 'cotizacionToOrden'])->name('compras.cotizacion_compra.cotizacionToOrden');
 
+    Route::get('/createCompuesta', [CotizacionCompraController::class, 'createCompuesta'])->name('compras.cotizacion_compra.createCompuesta');
+    Route::get('/getRequerimientos', [CotizacionCompraController::class, 'getRequerimientos'])->name('compras.cotizacion_compra.getRequerimientos');
+    Route::get('/getRequerimientoDetalle/{requerimiento_id}', [CotizacionCompraController::class, 'getRequerimientoDetalle'])->name('compras.cotizacion_compra.getRequerimientoDetalle');
+
 });
 
 Route::group(['prefix' => 'registro_compra', 'middleware' => ['auth','checkCustomPermission:compras.registro_compra','notificacionMiddleware']], function () {
@@ -368,14 +373,14 @@ Route::group(['prefix' => 'orden_compra', 'middleware' => ['auth','checkCustomPe
 
 Route::group(['prefix' => 'proveedores', 'middleware' => 'auth','notificacionMiddleware'], function () {
     Route::get('/index', [ProveedorController::class, 'index'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.index');
-    Route::post('/store', [ProveedorController::class, 'store'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.store');
+    Route::post('/store', [ProveedorController::class, 'store'])->name('compras.proveedor.store');
     Route::get('/create', [ProveedorController::class, 'create'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.create');
     Route::get('/edit/{id}', [ProveedorController::class, 'edit'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.edit');
     Route::put('/update/{id}', [ProveedorController::class, 'update'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.update');
     Route::delete('/destroy/{id}', [ProveedorController::class, 'destroy'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.destroy');
     Route::get('/getProveedores', [ProveedorController::class, 'getProveedores'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.getProveedores');
     Route::get('/consultarDocumento', [ProveedorController::class, 'consultarDocumento'])->name('compras.proveedor.consultarDocumento');
-    Route::get('/getListProveedores', [ProveedorController::class, 'getListProveedores'])->middleware('checkCustomPermission:compras.proveedor')->name('compras.proveedor.getListProveedores');
+    Route::get('/getListProveedores', [ProveedorController::class, 'getListProveedores'])->name('compras.proveedor.getListProveedores');
 });
 
 //====== FIN COMPRAS =========

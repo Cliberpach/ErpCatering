@@ -78,7 +78,7 @@ class ConductorController extends Controller
             $conductor->nombres             =   mb_strtoupper($request->get('nombre'));
             $conductor->apellidos           =   mb_strtoupper($request->get('apellido'));
             $conductor->telefono            =   $request->get('telefono');
-            $conductor->licencia            =   $request->get('licencia');
+            $conductor->licencia            =   mb_strtoupper($request->get('licencia'));
             $conductor->save();
 
             DB::commit();
@@ -109,7 +109,7 @@ class ConductorController extends Controller
             $conductor->nombres             =   mb_strtoupper($request->get('nombre'));
             $conductor->apellidos           =   mb_strtoupper($request->get('apellido'));
             $conductor->telefono            =   $request->get('telefono');
-            $conductor->licencia            =   $request->get('licencia');
+            $conductor->licencia            =   mb_strtoupper($request->get('licencia'));
             $conductor->update();
 
             DB::commit();

@@ -9,7 +9,7 @@
                 </span>
                 <input value="{{$vehiculo->placa}}" required id="placa" minlength="6" maxlength="8"  name="placa" type="text" class="form-control" placeholder="N° PLACA" aria-label="Username" aria-describedby="basic-addon1">
              </div>   
-             <span style="color:rgb(0, 89, 255); font-style: italic;">(6 - 8 CARACTERES)</span>                                
+             <span style="color:rgb(0, 89, 255); font-style: italic;">(6 - 8 CARACTERES ALFANUMÉRICOS)</span>                                
             <span class="placa_error msgError"  style="color:red;"></span>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">

@@ -30,6 +30,12 @@ class VehiculoStoreRequest extends FormRequest
                 'string',
                 'min:6',
                 'max:8',
+                'regex:/^[A-Za-z0-9]+$/', 
+                function($attribute, $value, $fail) {
+                    if (preg_match('/^0+$/', $value)) {
+                        $fail('La placa no puede contener solo ceros.');
+                    }
+                },
                 Rule::unique('vehiculos')->where(function ($query) {
                     return $query->where('estado', 'ACTIVO'); 
                 })
@@ -42,11 +48,12 @@ class VehiculoStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'placa.required'    => 'El campo "placa" es obligatorio.',
-            'placa.string'      => 'El campo "placa" debe ser una cadena de texto.',
-            'placa.min'         => 'El campo "placa" debe tener al menos 6 caracteres.',
-            'placa.max'         => 'El campo "placa" no debe exceder los 8 caracteres.',
-            'placa.unique'      => 'La placa ya está registrada para un vehículo con estado ACTIVO.',
+            'placa.regex'           => 'La placa solo puede contener letras y números; sin espacios,guiones,etc.',
+            'placa.unique'          => 'Esta placa ya está registrada para un vehículo activo.',
+            'placa.min'             => 'La placa debe tener al menos 6 caracteres.',
+            'placa.max'             => 'La placa no puede tener más de 8 caracteres.',
+            'placa.required'        => 'El campo de la placa es obligatorio.',
+            'placa.custom_ceros'    => 'La placa no puede contener solo ceros.',
 
             'modelo.required'   => 'El campo "modelo" es obligatorio.',
             'modelo.string'     => 'El campo "modelo" debe ser una cadena de texto.',

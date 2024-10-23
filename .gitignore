@@ -3,6 +3,7 @@
 /public/hot
 /public/storage
 /public/img/asistencia_entrada
+/public/greenter/guias_remision
 /storage/*.key
 /vendor
 .env

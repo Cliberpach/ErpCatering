@@ -27,13 +27,19 @@ class VehiculoUpdateRequest extends FormRequest
         $vehiculoId = $this->route('id');
 
         return [
-            'placa'     => [
+           'placa'     => [
                 'required',
                 'string',
                 'min:6',
                 'max:8',
-                Rule::unique('vehiculos')->ignore($vehiculoId)->where(function ($query) {
-                    return $query->where('estado', 'ACTIVO');
+                'regex:/^[A-Za-z0-9]+$/', 
+                function($attribute, $value, $fail) {
+                    if (preg_match('/^0+$/', $value)) {
+                        $fail('La placa no puede contener solo ceros.');
+                    }
+                },
+                Rule::unique('vehiculos')->where(function ($query) {
+                    return $query->where('estado', 'ACTIVO'); 
                 })
             ],
             'modelo'    => 'required|string|max:100',
@@ -44,11 +50,13 @@ class VehiculoUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'placa.required'    => 'La placa es obligatoria.',
-            'placa.string'      => 'La placa debe ser una cadena de texto.',
-            'placa.min'         => 'La placa debe tener al menos 6 caracteres.',
-            'placa.max'         => 'La placa no debe exceder 8 caracteres.',
-            'placa.unique'      => 'La placa ya está registrada para un vehículo con estado ACTIVO.',
+            'placa.regex'           => 'La placa solo puede contener letras y números; sin espacios,guiones,etc.',
+            'placa.unique'          => 'Esta placa ya está registrada para un vehículo activo.',
+            'placa.min'             => 'La placa debe tener al menos 6 caracteres.',
+            'placa.max'             => 'La placa no puede tener más de 8 caracteres.',
+            'placa.required'        => 'El campo de la placa es obligatorio.',
+            'placa.custom_ceros'    => 'La placa no puede contener solo ceros.',
+
             
             'modelo.required'   => 'El modelo es obligatorio.',
             'modelo.string'     => 'El modelo debe ser una cadena de texto.',

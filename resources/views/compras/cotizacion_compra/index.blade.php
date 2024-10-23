@@ -20,9 +20,9 @@
             <button class="btn btn-primary" onclick="goToRegistrarCotizacionCompra()">
                 <i class="fa-solid fa-plus"></i> NUEVO
             </button>
-            {{-- <button class="btn btn-dark" style="margin-left:6px;" onclick="goToRegistrarCotizacionCompra()">
+            <button class="btn btn-dark" style="margin-left:6px;" onclick="goToRegistrarCotizacionCompraCompuesta()">
                 <i class="fa-solid fa-plus"></i> COMPUESTA
-            </button> --}}
+            </button> 
         </div>
     </div>
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -163,6 +163,10 @@
 
     function goToRegistrarCotizacionCompra(){
         window.location.href = @json(route('compras.cotizacion_compra.create'));
+    }
+
+    function goToRegistrarCotizacionCompraCompuesta(){
+        window.location.href = @json(route('compras.cotizacion_compra.createCompuesta'));
     }
 
 

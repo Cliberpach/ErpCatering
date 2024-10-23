@@ -96,7 +96,7 @@
             <div class="col-12 mt-3 mb-3">
                 <div class="card">
                     <div class="card-header" style="background-color: rgb(0, 102, 255);font-weight:bold;color:white;">
-                    DETALLE DE LA COMPRA
+                    DETALLE DE LA COTIZACIÓN
                     </div>
                     <div class="card-body">
 

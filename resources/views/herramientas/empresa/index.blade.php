@@ -268,8 +268,9 @@
                 if(res.success){
 
                     //========== GENERANDO VALOR DE TIEMPO ÚNICO PARA LA CACHÉ =======
+                    const img_ruta_empresa  =   res.empresa.img_ruta?res.empresa.img_ruta:'img/img_default.png';
                     const timestamp     =   new Date().getTime();
-                    const imgUrl        =   `${@json(asset(''))}${res.empresa.img_ruta}?t=${timestamp}`;
+                    const imgUrl        =   `${@json(asset(''))}${img_ruta_empresa}?t=${timestamp}`;
 
                     //========= ACTUALIZAR LA IMAGEN SIN PROBLEMAS DE CACHÉ ========
                     const imgElement    =   document.querySelector('#img_nav_empresa');

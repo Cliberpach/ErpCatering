@@ -149,6 +149,18 @@ function getRowById(dtTabla,registro_id) {
     return rowData;
 }
 
+//======== OBTENER FILA POR EL INDEX DEL DATATABLE ========
+function getRowByIndex(dtTabla, index) {
+    
+    if (index < 0 || index >= dtTabla.rows().count()) {
+        return null; 
+    }
+
+    let data = dtTabla.rows().data();
+    
+    return data[index];
+}
+
 //======= LIMPIAR ERRORES DE VALIDACIÓN ========
 function limpiarErroresValidacion(error_clase){
     const lstEtiquetasErrors    =   document.querySelectorAll(`.${error_clase}`);

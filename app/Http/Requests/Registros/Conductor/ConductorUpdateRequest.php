@@ -41,6 +41,12 @@ class ConductorUpdateRequest extends FormRequest
                 'string',
                 'min:9',
                 'max:10',
+                'regex:/^[A-Za-z0-9]+$/', // Solo letras y números
+                function($attribute, $value, $fail) {
+                    if (preg_match('/^0+$/', $value)) {
+                        $fail('La licencia no puede contener solo ceros.');
+                    }
+                },
                 Rule::unique('conductores')->where(function ($query) {
                     return $query->where('estado', 'ACTIVO');
                 })->ignore($conductorId), 
@@ -64,6 +70,7 @@ class ConductorUpdateRequest extends FormRequest
             'apellido.required'             => 'El apellido es obligatorio.',
             'apellido.max'                  => 'El apellido no puede exceder los 150 caracteres.',
             
+            'licencia.regex'                => 'La licencia solo puede contener letras y números, sin espacios ni caracteres especiales.',
             'licencia.required'             => 'La licencia es obligatoria.',
             'licencia.min'                  => 'La licencia debe tener al menos 9 caracteres.',
             'licencia.max'                  => 'La licencia no puede exceder los 10 caracteres.',

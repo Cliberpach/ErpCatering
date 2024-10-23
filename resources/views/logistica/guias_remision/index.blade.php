@@ -81,7 +81,7 @@
                 { data: 'peso_total', name: 'peso_total' },
                 { data: 'nro_bultos', name: 'nro_bultos' },
                 { data: 'serie', name: 'serie' },
-                { data: 'ticket', name: 'ticket' },
+                { data: 'result_ticket', name: 'result_ticket' },
                 { data: 'estado', name: 'estado' },
                 {
                     data: null, 
@@ -104,6 +104,11 @@
                                 <li>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="sendSunat(${data.id});">
                                         <img width="20" height="20" src="{{asset('img/icons/enviar/enviar1.png')}}" alt="coins"/> Sunat
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="consultaSunat(${data.id});">
+                                        <img width="20" height="20" src="{{asset('img/icons/estado/estado1.png')}}" alt="coins"/> Consultar
                                     </a>
                                 </li>
                             </ul>
@@ -139,6 +144,87 @@
         });
     }
 
+    function consultaSunat(guia_remision_id){
+
+        const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+        },
+        buttonsStyling: false
+        });
+        swalWithBootstrapButtons.fire({
+        title: "Desea consultar la guía de remisión en Sunat?",
+        text: "Operación no reversible!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, consultar!",
+        cancelButtonText: "No, cancelar!",
+        reverseButtons: true
+        }).then(async (result) => {
+        if (result.isConfirmed) {
+            
+        
+            try {
+
+                toastr.clear();
+                const token                 =   document.querySelector('input[name="_token"]').value;
+                const urlSendSunat          =   `{{ route('logistica.guias_remision.consulta_sunat') }}`;
+
+                const formData              =   new FormData();
+                formData.append('guia_remision_id',guia_remision_id);
+
+                mostrarAnimacion1();
+
+                const response = await fetch(urlSendSunat, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': token // Token CSRF para proteger la solicitud
+                                    },
+                                    body: formData
+                                });
+
+                const   res =   await response.json();
+                                    
+                if(res.success){
+                    dtGuiasRemision.draw();
+                    toastr.success(res.message, 'OPERACIÓN COMPLETADA', {
+                        closeButton: true,  
+                        timeOut: 0,         
+                        extendedTimeOut: 0, 
+                        escapeHtml: false
+                    });
+
+                }else{
+                    dtGuiasRemision.draw();
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR', {
+                        closeButton: true,  
+                        timeOut: 0,         
+                        extendedTimeOut: 0, 
+                        escapeHtml: false
+                    });
+                }
+
+            } catch (error) {
+                toastr.error(error,'ERROR EN LA PETICIÓN VER SALIDA');
+            }finally{
+                ocultarAnimacion1();
+            }
+
+        } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+        ) {
+            swalWithBootstrapButtons.fire({
+            title: "Operación cancelada",
+            text: "No se realizaron acciones",
+            icon: "error"
+            });
+        }
+        });
+
+    }
+
     function sendSunat(guia_remision_id){
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -159,43 +245,40 @@
         if (result.isConfirmed) {
             
         
-        try {
+            try {
 
-            toastr.clear();
-            const token                 =   document.querySelector('input[name="_token"]').value;
-            const urlSendSunat          =   `{{ route('logistica.guias_remision.send_sunat') }}`;
+                toastr.clear();
+                const token                 =   document.querySelector('input[name="_token"]').value;
+                const urlSendSunat          =   `{{ route('logistica.guias_remision.send_sunat') }}`;
 
-            const formData              =   new FormData();
-            formData.append('guia_remision_id',guia_remision_id);
+                const formData              =   new FormData();
+                formData.append('guia_remision_id',guia_remision_id);
 
-            mostrarAnimacion1();
+                mostrarAnimacion1();
 
-            const response = await fetch(urlSendSunat, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': token // Token CSRF para proteger la solicitud
-                                },
-                                body: formData
-                            });
+                const response = await fetch(urlSendSunat, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': token // Token CSRF para proteger la solicitud
+                                    },
+                                    body: formData
+                                });
 
-            const   res =   await response.json();
-                                
-            if(res.success){
-                dtGuiasRemision.draw();
-                toastr.success(res.message,'OPERACIÓN COMPLETADA');
-            }else{
-                toastr.error(res.message,'ERROR EN EL SERVIDOR');
+                const   res =   await response.json();
+                                    
+                if(res.success){
+                    dtGuiasRemision.draw();
+                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
+                }else{
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR');
+                }
+
+                
+            } catch (error) {
+                toastr.error(error,'ERROR EN LA PETICIÓN VER SALIDA');
+            }finally{
+                ocultarAnimacion1();
             }
-
-              
-        } catch (error) {
-            toastr.error(error,'ERROR EN LA PETICIÓN VER SALIDA');
-        }finally{
-            ocultarAnimacion1();
-        }
-
-
-
 
         } else if (
             /* Read more about handling dismissals below */

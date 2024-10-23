@@ -40,7 +40,7 @@
                     </span>
                     <input required id="apellido" maxlength="150"  name="apellido" type="text" class="form-control" placeholder="Apellidos" aria-label="Username" aria-describedby="basic-addon1">
                 </div>       
-                <span style="color:rgb(0, 89, 255); font-style: italic;">(150 LONGITUD MÁXIMA)</span>                 
+                <span style="color:rgb(0, 89, 255); font-style: italic;display:block;">(150 LONGITUD MÁXIMA)</span>                 
                 <span class="apellido_error msgError"  style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
@@ -51,7 +51,7 @@
                     </span>
                     <input minlength="9" maxlength="10" required id="licencia" name="licencia" type="text" class="form-control" placeholder="Licencia" aria-label="Username" aria-describedby="basic-addon1">
                 </div>            
-                <span style="color:rgb(0, 89, 255); font-style: italic;">(9 - 10 CARACTERES)</span>      
+                <span style="color:rgb(0, 89, 255); font-style: italic;display:block;">(9 - 10 CARACTERES ALFANUMÉRICOS)</span>      
                 <span class="licencia_error msgError"  style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
@@ -62,7 +62,7 @@
                     </span>
                     <input maxlength="20"  id="telefono" name="telefono" type="text" class="form-control" placeholder="Teléfono" aria-label="Username" aria-describedby="basic-addon1">
                 </div> 
-                <span style="color:rgb(0, 89, 255); font-style: italic;">(20 LONGITUD MÁXIMA)</span>                                 
+                <span style="color:rgb(0, 89, 255); font-style: italic;display:block;">(20 LONGITUD MÁXIMA)</span>                                 
                 <span class="telefono_error msgError"  style="color:red;"></span>
             </div>
     </div>
