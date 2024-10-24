@@ -72,8 +72,11 @@ class RegistroCompraController extends Controller
 
         $almacenes      =   Almacen::where('estado','ACTIVO')->get();
 
+        $bancos             =   DB::select('select * from bancos as b
+                                where b.estado = "ACTIVO"');
+
         return view('compras.registro_compra.create',
-        compact('categorias','marcas','proveedores','almacenes','tipos_documento'));
+        compact('categorias','marcas','proveedores','almacenes','tipos_documento','bancos'));
     }
 
     public function store(RegistroCompraStoreRequest $request){

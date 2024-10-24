@@ -24,8 +24,9 @@ class RolSeeder extends Seeder
         $user   =   User::find(1);
         $user->assignRole($adminRole);
 
+
         //========= ROL SUPERVISOR ======
-        $prefixes = ['registros', 'jornal', 'trabajo_equipo', 'requerimientos', 'plan_proyecto', 'consultas'];
+        $prefixes = ['jornal','logistica', 'trabajo_equipo', 'requerimientos', 'plan_proyecto', 'consultas'];
         $permissions_supervisor = Permission::all()->filter(function ($permission) use ($prefixes) {
             foreach ($prefixes as $prefix) {
                 if (str_starts_with($permission->name, $prefix)) {
@@ -39,8 +40,8 @@ class RolSeeder extends Seeder
 
         
         //======== ROL LOGÍSTICA =======
-        $prefixes = ['registros', 'logistica', 'compras'];
-        $permissions = Permission::all()->filter(function ($permission) use ($prefixes) {
+        $prefixes       = ['registros', 'logistica', 'compras'];
+        $permissions    = Permission::all()->filter(function ($permission) use ($prefixes) {
             foreach ($prefixes as $prefix) {
                 if (str_starts_with($permission->name, $prefix)) {
                     return true;
@@ -50,5 +51,20 @@ class RolSeeder extends Seeder
         });
         $logisticaRole = Role::create(['name' => 'LOGISTICA']);
         $logisticaRole->givePermissionTo($permissions);
+
+        //======= ROL FINANZAS ========
+        $prefixes       = ['finanzas'];
+        $permissions    = Permission::all()->filter(function ($permission) use ($prefixes) {
+            foreach ($prefixes as $prefix) {
+                if (str_starts_with($permission->name, $prefix)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        $logisticaRole = Role::create(['name' => 'FINANZAS']);
+        $logisticaRole->givePermissionTo($permissions);
+
+
     }
 }

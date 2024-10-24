@@ -53,7 +53,9 @@ return new class extends Migration
             $table->decimal('monto_igv_soles',16,4)->unsigned();
             $table->decimal('total_soles',16,4)->unsigned();
 
-            $table->enum('estado', ['PENDIENTE', 'ANULADO', 'FACTURADO'])->default('PENDIENTE');
+            $table->enum('estado', ['PENDIENTE', 'ANULADO','CON ORDEN PAGO', 'FACTURADO'])
+            ->default('PENDIENTE');
+            
             $table->timestamps();
         });
     }

@@ -21,6 +21,7 @@ class ProveedorController extends Controller
     public function getProveedores(){
         $proveedores = DB::table('proveedores as pr')
                         ->join('tipos_documento as td', 'td.id', '=', 'pr.tipo_documento_id')
+                        ->leftJoin('bancos as b', 'b.id', '=', 'pr.banco_id')
                         ->select(
                             'pr.id', 
                             'td.descripcion as tipo_documento_descripcion',
@@ -29,7 +30,11 @@ class ProveedorController extends Controller
                             'pr.direccion',
                             'pr.telefono',
                             'pr.correo',
-                            'pr.estado'
+                            'pr.estado',
+                            'b.nombre as banco_nombre',
+                            'pr.nro_cuenta',
+                            'pr.cci',
+                            'pr.nro_cuenta_detraccion'
                         )
                         ->where('pr.estado','ACTIVO')
                         ->get();
@@ -45,19 +50,45 @@ class ProveedorController extends Controller
                                 where td.estado = "ACTIVO"
                                 and td.id <> "3" ');
 
-        return view('compras.proveedores.create',compact('tipos_documento'));
+        $bancos             =   DB::select('select * from bancos as b
+                                where b.estado = "ACTIVO"');
+
+        return view('compras.proveedores.create',
+        compact('tipos_documento','bancos'));
     }
 
+
+    /*
+    array:11 [ // app\Http\Controllers\Compras\ProveedorController.php:57
+        "_token"            => "vIEl6FeSyG6BGHQs3ipq4uWmeqymdP7JB4y5DFwc"
+        "tipo_documento"    => "1"
+        "nro_documento"     => "75608753"
+        "nombre"            => "LUIS DANIEL ALVA LUJAN"
+        "banco"             => "2"
+        "nro_cuenta"        => "41241251251"
+        "cci"               => "41241241434"
+        "cuenta_detraccion" => "151251255414"
+        "direccion"         => "av magnolias 321"
+        "telefono"          => "974585471"
+        "correo"            => "EVA@GMAIL.COM"
+    ]
+    */
     public function store(ProveedorStoreRequest $request){
+       
         DB::beginTransaction();
         try {
-            $proveedor                      =   new Proveedor();
-            $proveedor->tipo_documento_id   =   $request->get('tipo_documento');
-            $proveedor->nro_documento       =   $request->get('nro_documento');
-            $proveedor->nombre              =   $request->get('nombre');
-            $proveedor->direccion           =   $request->get('direccion');
-            $proveedor->telefono            =   $request->get('telefono');
-            $proveedor->correo              =   $request->get('correo');
+
+            $proveedor                          =   new Proveedor();
+            $proveedor->tipo_documento_id       =   $request->get('tipo_documento');
+            $proveedor->nro_documento           =   $request->get('nro_documento');
+            $proveedor->nombre                  =   $request->get('nombre');
+            $proveedor->direccion               =   $request->get('direccion');
+            $proveedor->telefono                =   $request->get('telefono');
+            $proveedor->correo                  =   $request->get('correo');
+            $proveedor->banco_id                =   $request->get('banco');
+            $proveedor->nro_cuenta              =   $request->get('nro_cuenta');
+            $proveedor->cci                     =   $request->get('cci');
+            $proveedor->nro_cuenta_detraccion   =   $request->get('cuenta_detraccion');
             $proveedor->save();
 
             DB::commit();
@@ -77,6 +108,9 @@ class ProveedorController extends Controller
 
         $proveedor  =   Proveedor::find($id);
 
+        $bancos             =   DB::select('select * from bancos as b
+                                where b.estado = "ACTIVO"');
+
         if(!$proveedor){
             dd('EL PROVEEDOR NO EXISTE EN LA BD');
         }
@@ -84,19 +118,41 @@ class ProveedorController extends Controller
             dd('PROVEEDOR ANULADO');
         }
 
-        return view('compras.proveedores.edit',compact('proveedor','tipos_documento'));
+        return view('compras.proveedores.edit',
+        compact('proveedor','tipos_documento','bancos'));
     }
 
+
+    /*
+    array:11 [ // app\Http\Controllers\Compras\ProveedorController.php:122
+        "_token"            => "vIEl6FeSyG6BGHQs3ipq4uWmeqymdP7JB4y5DFwc"
+        "tipo_documento"    => "1"
+        "nro_documento"     => "75608753"
+        "nombre"            => "LUIS DANIEL ALVA LUJAN"
+        "banco"             => "2"
+        "nro_cuenta"        => "41241251251"
+        "cci"               => "412412414342"
+        "cuenta_detraccion" => "151251255414"
+        "direccion"         => "av magnolias 321"
+        "telefono"          => "974585471"
+        "correo"            => "EVA@GMAIL.COM"
+    ]
+  */ 
     public function update($id,ProveedorUpdateRequest $request){
+      
         DB::beginTransaction();
         try {
-            $proveedor                      =   Proveedor::find($id);
-            $proveedor->tipo_documento_id   =   $request->get('tipo_documento');
-            $proveedor->nro_documento       =   $request->get('nro_documento');
-            $proveedor->nombre              =   $request->get('nombre');
-            $proveedor->direccion           =   $request->get('direccion');
-            $proveedor->telefono            =   $request->get('telefono');
-            $proveedor->correo              =   $request->get('correo');
+            $proveedor                          =   Proveedor::find($id);
+            $proveedor->tipo_documento_id       =   $request->get('tipo_documento');
+            $proveedor->nro_documento           =   $request->get('nro_documento');
+            $proveedor->nombre                  =   $request->get('nombre');
+            $proveedor->direccion               =   $request->get('direccion');
+            $proveedor->telefono                =   $request->get('telefono');
+            $proveedor->correo                  =   $request->get('correo');
+            $proveedor->banco_id                =   $request->get('banco');
+            $proveedor->nro_cuenta              =   $request->get('nro_cuenta');
+            $proveedor->cci                     =   $request->get('cci');
+            $proveedor->nro_cuenta_detraccion   =   $request->get('cuenta_detraccion');
             $proveedor->update();
 
             DB::commit();

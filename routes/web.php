@@ -11,6 +11,8 @@ use App\Http\Controllers\Jornales\RegistroLaborController;
 use App\Http\Controllers\Compras\CotizacionCompraController;
 use App\Http\Controllers\Compras\OrdenCompraController;
 use App\Http\Controllers\Compras\RegistroCompraController;
+use App\Http\Controllers\Finanzas\ListaOrdenCompraController;
+use App\Http\Controllers\Finanzas\OrdenPagoController;
 use App\Http\Controllers\Herramientas\ConfiguracionController;
 use App\Http\Controllers\Logistica\RegistroSalidaController;
 use App\Http\Controllers\PlanProyecto\TareaController;
@@ -324,6 +326,25 @@ Route::group(['prefix' => 'lista_requerimientos', 'middleware' => ['auth','check
 });
 
 //============= FIN LOGÍSTICA ===========
+
+
+//======= INICIO FINANZAS =============
+
+Route::group(['prefix' => 'lista_orden_compra', 'middleware' => ['auth','checkCustomPermission:finanzas.orden_pago','notificacionMiddleware']], function () {
+
+    Route::get('/index', [ListaOrdenCompraController::class, 'index'])->name('finanzas.lista_orden_compra.index');
+    // Route::post('/generarCotizacion', [ListaRequerimientoController::class, 'generarCotizacion'])->name('logistica.lista_requerimientos.generarCotizacion');
+    Route::get('/getOrdenesCompra', [ListaOrdenCompraController::class, 'getOrdenesCompra'])->name('finanzas.lista_orden_compra.getOrdenesCompra');
+    //Route::get('/show/{id}', [ListaRequerimientoController::class, 'show'])->name('logistica.lista_requerimientos.show');
+    // Route::get('/goToCotizacionCompra/{id}', [ListaRequerimientoController::class, 'goToCotizacionCompra'])->name('logistica.lista_requerimientos.goToCotizacionCompra');
+    // Route::post('/requerimientoToCotizacion', [ListaRequerimientoController::class, 'requerimientoToCotizacion'])->name('logistica.lista_requerimientos.requerimientoToCotizacion');
+    Route::get('/show/{id}', [OrdenCompraController::class, 'show'])->name('finanzas.lista_orden_compra.show');
+    Route::get('/pdf/{id}', [OrdenCompraController::class, 'pdf'])->name('finanzas.lista_orden_compra.pdf');
+    Route::get('/ordenCompraToOrdenPagoCreate/{id}', [ListaOrdenCompraController::class, 'ordenCompraToOrdenPagoCreate'])->name('finanzas.lista_orden_compra.ordenCompraToOrdenPagoCreate');
+
+});
+
+//========= FIN FINANZAS =============
 
 
 //======== INICIO COMPRAS =======

@@ -40,6 +40,56 @@
             </div>
             <span class="nombre_error msgError"  style="color:red;"></span>
         </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+            <label for="banco" style="font-weight: bold;">BANCO</label>
+            <select name="banco" required class="form-select select2_form" id="banco" data-placeholder="Seleccionar">
+                <option></option>
+                @foreach ($bancos as $banco)
+                    <option 
+                        @if ($banco->id === $proveedor->banco_id) selected  @endif 
+                    value="{{$banco->id}}">{{$banco->nombre}}</option>
+                @endforeach
+            </select>
+            <span class="banco_error msgError"  style="color:red;"></span>
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+            <label for="nro_cuenta" style="font-weight: bold;">N° CUENTA</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fa-solid fa-credit-card"></i>
+                </span>
+                <input value="{{$proveedor->nro_cuenta}}" maxlength="40" id="nro_cuenta" name="nro_cuenta" type="text" class="form-control inputEnteroPositivo" placeholder="N° CUENTA" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <span style="color:blue; font-style:italic;display:block;">SOLO NÚMEROS (9999999900302) ENTRE 10 - 40 DÍGITOS</span>
+            <span class="nro_cuenta_error msgError"  style="color:red;"></span>
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+            <label for="cci" style="font-weight: bold;">CCI</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fa-solid fa-credit-card"></i>
+                </span>
+                <input value="{{$proveedor->cci}}" maxlength="40" id="cci" name="cci" type="text" class="form-control inputEnteroPositivo" placeholder="CCI" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <span style="color:blue; font-style:italic;display:block;">SOLO NÚMEROS (9999999900302) ENTRE 10 - 40 DÍGITOS</span>
+            <span class="cci_error msgError"  style="color:red;"></span>
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-3">
+            <label for="cuenta_detraccion" style="font-weight: bold;" >N° CUENTA DETRACCIÓN</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fa-solid fa-credit-card"></i>
+                </span>
+                <input value="{{$proveedor->nro_cuenta_detraccion}}" maxlength="40" id="cuenta_detraccion" name="cuenta_detraccion" type="text" class="form-control inputEnteroPositivo" placeholder="N° CUENTA DETRACCIÓN" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <span style="color:blue; font-style:italic;display:block;">SOLO NÚMEROS (9999999900302) ENTRE 10 - 40 DÍGITOS</span>
+            <span class="cuenta_detraccion_error msgError"  style="color:red;"></span>
+        </div>
+        
         
         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 mb-2">
             <label for="direccion" style="font-weight: bold;" >DIRECCIÓN</label>

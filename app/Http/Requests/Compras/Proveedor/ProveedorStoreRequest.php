@@ -5,6 +5,9 @@ namespace App\Http\Requests\Compras\Proveedor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+
+
 class ProveedorStoreRequest extends FormRequest
 {
     /**
@@ -49,6 +52,33 @@ class ProveedorStoreRequest extends FormRequest
                 'regex:/^[0-9]+$/'
             ],
             'correo' => 'nullable|email|max:150',
+           'banco' => [
+                'nullable',
+                'string',
+                Rule::exists('bancos', 'id')->where('estado', 'ACTIVO')
+           ],
+           'nro_cuenta' => [
+                'nullable',
+                'string',
+                'min:10',                    
+                'max:40',
+                'regex:/^\d+$/'               
+            ],
+           'cci' => [
+                'nullable',                  
+                'string',  
+                'min:10',                                  
+                'max:40',                   
+                'regex:/^\d+$/',           
+            ],
+            'cuenta_detraccion' => [
+                'nullable',                 
+                'string',                  
+                'min:10',                   
+                'max:40',                   
+                'regex:/^\d+$/'           
+            ],
+
         ];
 
         return $rules;
@@ -73,6 +103,21 @@ class ProveedorStoreRequest extends FormRequest
             
             'correo.email'              => 'El correo electrónico debe tener un formato válido.',
             'correo.max'                => 'El correo electrónico no puede exceder de 150 caracteres.',
+            
+            'banco.exists'              => 'El banco seleccionado no es válido o no está activo.',
+        
+            'nro_cuenta.min'            => 'El número de cuenta debe tener al menos 10 caracteres.',
+            'nro_cuenta.max'            => 'El número de cuenta no debe tener más de 40 caracteres.',
+            'nro_cuenta.regex'          => 'El número de cuenta debe contener solo números .',
+
+            'cci.min'                   => 'El CCI debe tener al menos 10 caracteres.',
+            'cci.max'                   => 'El CCI no debe tener más de 40 caracteres.',
+            'cci.regex'                 => 'El CCI solo debe contener números.',
+
+            'cuenta_detraccion.min'         => 'La cuenta de detracción debe tener al menos 10 caracteres.',
+            'cuenta_detraccion.max'         => 'La cuenta de detracción no debe tener más de 40 caracteres.',
+            'cuenta_detraccion.regex'       => 'La cuenta de detracción solo debe contener números.',
+
         ];
     }
 

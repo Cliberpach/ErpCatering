@@ -55,9 +55,22 @@
                 { data: 'tipo_documento_descripcion', name: 'tipo_documento_descripcion' },
                 { data: 'nro_documento', name: 'nro_documento' },
                 { data: 'nombre', name: 'nombre' },
-                { data: 'direccion', name: 'direccion' },
+                {
+                    data: 'direccion',
+                    name: 'direccion',
+                    render: function(data) {
+                        if (!data) {
+                            return ''; 
+                        }
+                        return `<div style="overflow-x: auto; ">${data}</div>`;
+                    }
+                },
                 { data: 'telefono', name: 'telefono' },
                 { data: 'correo', name: 'correo' },
+                { data: 'banco_nombre', name: 'banco_nombre' },
+                { data: 'nro_cuenta', name: 'nro_cuenta' },
+                { data: 'cci', name: 'cci' },
+                { data: 'nro_cuenta_detraccion', name: 'nro_cuenta_detraccion' },
                 {
                     data: null, 
                     render: function(data, type, row) {

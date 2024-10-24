@@ -1,18 +1,15 @@
 @extends('layouts.layout')
 @section('title-page')
-    GENERAR REGISTRO DE COMPRA
+    GENERAR ORDEN DE PAGO
 @endsection
 
-@section('compras-collapsed', '')
-@section('compras-expanded', 'true')
-@section('compras-show', 'show')
-@section('orden_compra-active', 'active')
+@section('finanzas-collapsed', '')
+@section('finanzas-expanded', 'true')
+@section('finanzas-show', 'show')
+@section('lista_orden_compra-active', 'active')
 
 @section('section-page')
-
-@include('compras.registro_compra.modals.modal_productos')
-@include('compras.registro_compra.modals.modal_edit_item')
-@include('reutilizables.modals.proveedores.mdl_create_proveedor')
+@include('reutilizables.lightbox.lightbox')
 
 
 <div class="card-style settings-card-1 mb-30">
@@ -20,7 +17,7 @@
       <h6>Datos del registro de compra <i class="fa-solid fa-toolbox"></i></h6>
     </div>
     <div class="card-body">
-        @include('compras.orden_compra.forms.form_orden_compra_to_registro_compra')
+        @include('finanzas.lista_ordenes_compra.forms.form_orden_compra_to_orden_pago_create')
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
@@ -29,7 +26,7 @@
             <button class="btn btn-danger btnVolver" style="margin-right:5px;" type="button">
                 <i class="fa-solid fa-door-open"></i> VOLVER
             </button>
-            <button class="btn btn-primary" type="submit" form="formOrdenCompraToRegistroCompra">
+            <button class="btn btn-primary" type="submit" form="formOrdenCompraToOrdenPago">
                 <i class="fa-solid fa-floppy-disk"></i> REGISTRAR
             </button>
         </div>
@@ -42,26 +39,55 @@
 <script>
     let dtProductos         =   null;
     let dtCompraDetalle     =   null;
+    let dtImagenesPago      =   null;
     const lstCompra         =   [];
+    const lstImagenesPago   =   [];
 
     document.addEventListener('DOMContentLoaded',()=>{
-        
+
+        console.log('a')
         iniciarDataTableProductos();
         iniciarDataTableCompraDetalle();
+        iniciarDataTableImagenesPago();
         //getTipoCambio();
         cargarProductosPrevios();
         iniciarSelect2();
-
        
 
         events();
     })
 
     function events(){
-        eventsMdlEditItem();
-        eventsMdlCreateProveedor();
 
-        document.querySelector('#formOrdenCompraToRegistroCompra').addEventListener('submit',(e)=>{
+        document.querySelector('#btnAgregarImagenPago').addEventListener('click',(e)=>{
+            
+            const inputFileImage    =   document.querySelector('#inputFileImgPago');
+            toastr.clear();
+
+            if(inputFileImage.files.length === 0){
+                inputFileImage.focus();
+                toastr.error('DEBE CARGAR UNA IMAGEN PARA PODER AGREGARLA!!!');
+                return;
+            }else{
+
+                const validacionImgPago =   validarImagenPago(inputFileImage.files[0]);
+
+                if(validacionImgPago){
+                    agregarImagenPago(inputFileImage.files[0]);
+                    destruirDataTable(dtImagenesPago);
+                    limpiarTabla('table_imagenes_pago');
+                    pintarTableImagenesPago(lstImagenesPago);
+                    iniciarDataTableImagenesPago();
+                }else{
+                    inputFileImage.focus();
+                }
+                inputFileImage.value    =   '';
+   
+            }
+            
+        })
+
+        document.querySelector('#formOrdenCompraToOrdenPago').addEventListener('submit',(e)=>{
             e.preventDefault();
             const validacion    =   validacionordenCompraToRegistroCompra();
             if(validacion){
@@ -103,6 +129,44 @@
 
     }
 
+    function agregarImagenPago(imgPago) {
+        lstImagenesPago.push(imgPago);
+    }
+
+    function validarImagenPago(imgPago){
+        let validacion  =   true;
+
+        const indiceExisteImgPago   =   lstImagenesPago.findIndex((img)=>{
+            return img.name == imgPago.name;
+        })
+
+        if(indiceExisteImgPago !== -1){
+            validacion  =   false;
+            toastr.error(`LA IMAGEN: ${imgPago.name} YA FUE AGREGADA!!!`);
+        }
+
+        return validacion;
+    }
+
+    function pintarTableImagenesPago(lstImgs){
+
+        const tbody =   document.querySelector('#table_imagenes_pago tbody');
+        let filas   =   ``;
+
+        lstImgs.forEach((img,index)=>{
+            const imgUrl = URL.createObjectURL(img);
+            filas   +=  `<tr>
+                            <td><i class="fa-solid fa-trash-can btn btn-danger"></i></td>
+                            <td>
+                                <img class="imgShowLightBox" src="${imgUrl}" alt="Imagen ${index + 1}" style="max-width:100px;height: 100px;object-fit:contain;cursor:pointer;">
+                            </td>
+                            <td>${img.name}</td>
+                        </tr>`;
+        })
+
+        tbody.innerHTML =   filas;
+    }
+
     function iniciarSelect2(){
         $( '.select2_form' ).select2( {
             theme: "bootstrap-5",
@@ -112,7 +176,7 @@
         } );
     }
 
-    
+ 
 
     function iniciarDataTableProductos(){
         const urlGetProductos   =   @json(route('registros.producto.getProductos'));
@@ -140,6 +204,32 @@
                 
                 $(row).attr('onclick', 'seleccionarProducto(' + data.id + ')');
             },
+            language: {
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron resultados",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "aria": {
+                    "sortAscending": ": activar para ordenar la columna de manera ascendente",
+                    "sortDescending": ": activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
+    }
+
+    function iniciarDataTableImagenesPago(){
+        dtImagenesPago  =   new DataTable('#table_imagenes_pago',{
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
@@ -315,6 +405,7 @@
     }
 
     function cargarProductosPrevios(){
+
         const orden_compra_detalle  =   @json($orden_compra_detalle);
         const orden_compra          =   @json($orden_compra);
 
@@ -325,8 +416,6 @@
             item.producto_nombre        =   ocd.producto_nombre;
             item.categoria_nombre       =   ocd.categoria_nombre;
             item.marca_nombre           =   ocd.marca_nombre;  
-            item.almacen_nombre         =   'CENTRAL';
-            item.almacen_id             =   1;
             item.producto_unidad_medida =   ocd.producto_unidad_medida;
             
             if(orden_compra.moneda === 'PEN'){
@@ -347,7 +436,7 @@
 
         })
 
-        limpiarTabla('table_orden_compra_to_registro_compra');
+        limpiarTabla('table_orden_pago_detalle');
         destruirDataTableCompraDetalle();
         pintarTableCompraDetalle(lstCompra);
         iniciarDataTableCompraDetalle();
@@ -356,38 +445,22 @@
 
     function pintarTableCompraDetalle(lstItems){
         let filas       =   ``;
-        const almacenes =   @json($almacenes);
+        const almacenes =   [];
         
-        let opcionesAlmacen = '';
-        almacenes.forEach(almacen => {
-            opcionesAlmacen += `<option value="${almacen.id}">${almacen.descripcion}</option>`;
-        });
-
+      
         lstItems.forEach((producto,index)=>{
             filas   +=  `<tr>
-                            <th>
-                                <div style="display:flex;justify-content:center;gap:5px;">
-                                    <div class="input-group mb-3">
-                                        <select data-id="${index}" onchange="setAlmacenItemCompra(this)" name="almacen" data-placeholder="Seleccionar" class="almacenItemCompra select2_form">
-                                            ${opcionesAlmacen}
-                                        </select>
-                                    </div>
-                                </div>
-                            </th>
                             <td>${producto.producto_nombre}</td>
-                            <td>${producto.categoria_nombre}</td>
-                            <td>${producto.marca_nombre}</td>
                             <td>${producto.producto_unidad_medida}</td>
-                            <td>${producto.precio}</td>
                             <td>${producto.cantidad}</td>
+                            <td>${producto.precio}</td>
                             <td>${Number(producto.total).toFixed(2)}</td>
                         </tr>`;
         })
 
 
-        const tbody =   document.querySelector('#table_orden_compra_to_registro_compra tbody');
+        const tbody =   document.querySelector('#table_orden_pago_detalle tbody');
         tbody.innerHTML =   filas;
-
 
     }
 
@@ -445,8 +518,8 @@
 
             limpiarErroresValidacion('msgError');
             const token                             =   document.querySelector('input[name="_token"]').value;
-            const formOrdenCompraToRegistroCompra   =   document.querySelector('#formOrdenCompraToRegistroCompra');
-            const formData                          =   new FormData(formOrdenCompraToRegistroCompra);
+            const formOrdenCompraToOrdenPago   =   document.querySelector('#formOrdenCompraToOrdenPago');
+            const formData                          =   new FormData(formOrdenCompraToOrdenPago);
             const urlOrdenCompraToRegistrarCompra   =   @json(route('compras.orden_compra.ordenCompraToRegistroCompra'));
 
             formData.append('lstCompra',JSON.stringify(lstCompra));

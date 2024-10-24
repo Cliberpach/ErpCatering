@@ -83,6 +83,11 @@ class RequerimientoController extends Controller
                                 where td.estado = "ACTIVO"
                                 and td.id <> "3" ');
 
+        $bancos             =   DB::select('select * from bancos as b
+                                where b.estado = "ACTIVO"');
+
+        
+
         $colaborador    =   DB::select('select * from colaboradores as c
                             where c.id = ?',[Auth::user()->colaborador_id]);
 
@@ -93,7 +98,8 @@ class RequerimientoController extends Controller
         $colaborador    =   $colaborador[0];
 
         return view('requerimientos.requerimientos.create',
-        compact('categorias','marcas','proveedores','tipos_documento','proyecto','colaborador'));
+        compact('categorias','marcas','proveedores','tipos_documento','proyecto','colaborador',
+        'bancos'));
 
     }
 

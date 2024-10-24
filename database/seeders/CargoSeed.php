@@ -26,6 +26,10 @@ class CargoSeed extends Seeder
         $cargo_1->save();
 
         $cargo_1                =   new Cargo();
+        $cargo_1->descripcion   =   'FINANZAS';
+        $cargo_1->save();
+
+        $cargo_1                =   new Cargo();
         $cargo_1->descripcion   =   'OPERARIO';
         $cargo_1->save();
 
