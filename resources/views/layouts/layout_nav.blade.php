@@ -283,6 +283,11 @@
               @endcan
             </li>
 
+            <li>
+              @can('finanzas.orden_pago')
+                <a class="@yield('orden_pago-active')" href="{{route('finanzas.orden_pago.index')}}">Órdenes de Pago</a>
+              @endcan
+            </li>
             
           </ul>
         </li>

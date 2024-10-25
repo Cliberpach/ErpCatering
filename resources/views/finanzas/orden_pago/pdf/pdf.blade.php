@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Orden de Compra</title>
+    <title>Orden de pago</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,7 +27,7 @@
             margin-bottom: 5px;
         }
         .header td, .footer-table td, .products-table td, .solicitud-table td {
-            padding: 5px;
+            padding: 6px;
             vertical-align: middle;
             font-size: 12px;
             color: #333; /* Color de texto gris oscuro */
@@ -68,7 +68,7 @@
             border: 1px solid #ddd; /* Borde gris claro para la tabla de productos */
         }
         .products-table th {
-            padding: 5px;
+            padding: 6px;
             background-color: #007bff; /* Fondo azul oscuro para encabezado */
             color: #ffffff; /* Texto blanco en el encabezado */
             font-size: 12px;
@@ -83,16 +83,10 @@
         }
         .solicitud-table td {
             text-align: right; /* Alinea el texto al final de la celda */
-            padding: 2px; /* Espaciado adicional para mejor apariencia */
-            font-size: 12px; /* Tamaño de fuente más grande para el texto */
+            padding: 20px; /* Espaciado adicional para mejor apariencia */
+            font-size: 16px; /* Tamaño de fuente más grande para el texto */
             font-weight: bold; /* Texto en negrita para resaltar */
             color: #007bff; /* Color azul para el texto */
-        }
-        .mensaje-table td {
-            text-align: left; /* Alinea el texto al final de la celda */
-            padding: 2px; /* Espaciado adicional para mejor apariencia */
-            font-size: 12px; /* Tamaño de fuente más grande para el texto */
-            color: #000000; /* Color azul para el texto */
         }
     </style>
 </head>
@@ -106,7 +100,7 @@
                         <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($empresa->img_ruta))) }}" alt="Logo">
                     @else 
                         <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/img_default.png'))) }}" alt="Logo">
-                    @endif
+                    @endif                
                 </td>
                 <td class="info-column" style="width: 70%; vertical-align: bottom; text-align: center;">
                     <div class="company">{{$empresa->razon_social}}</div>
@@ -121,81 +115,90 @@
         <!-- Segunda Tabla -->
         <table class="solicitud-table">
             <tr>
-                <td>ORDEN DE COMPRA</td>
-            </tr>
-            <tr>
-                <td>{{'FECHA: '.$fecha_impresion}}</td>
+                <td>{{"ORDEN DE PAGO N°".$orden_pago->id}}</td>
             </tr>
         </table>
 
         <!-- Tercera Tabla (con información del proveedor) -->
-        <table class="footer-table" style="margin-bottom:10px;">
+        <table class="footer-table" style="margin-bottom: 20px;">
             <tr>
-                <td>PROVEEDOR:</td>
-                <td>{{$orden_compra->proveedor_nombre}}</td>
+                <td><strong>PROVEEDOR:</strong></td>
+                <td>{{$orden_pago->proveedor_nombre}}</td>
             </tr>
             <tr>
-                <td>{{$orden_compra->tipo_documento_nombre.':'}}</td>
-                <td>{{$orden_compra->nro_documento}}</td> 
+                <td><strong>{{$orden_pago->proveedor_tipo_documento.":"}}</strong></td>
+                <td>{{$orden_pago->proveedor_nro_documento}}</td>
             </tr>
             <tr>
-                <td>MODALIDAD PAGO:</td>
-                @if ($orden_compra->modalidad_pago_nombre === 'CONTADO')
-                    <td>{{$orden_compra->modalidad_pago_nombre}}</td>
-                @endif
-                @if ($orden_compra->modalidad_pago_nombre === 'CREDITO')
-                    <td>{{$orden_compra->modalidad_pago_nombre.' - '.$orden_compra->modalidad_pago_nro_dias.' '.'DIAS'}}</td>
-                @endif
+                <td><strong>PROYECTO:</strong></td>
+                <td>{{$orden_pago->proyecto_nombre}}</td>
             </tr>
             <tr>
-                <td>PROYECTO:</td>
-                <td>{{$orden_compra->proyecto_nombre}}</td>
+                <td><strong>MEDIO PAGO:</strong></td>
+                <td>{{$orden_pago->medio_pago}}</td>
             </tr>
             <tr>
-                <td>DOCUMENTO:</td>
-                <td>{{$orden_compra->documento}}</td>
+                <td><strong>DOCUMENTO:</strong></td>
+                <td>{{$orden_pago->documento}}</td>
             </tr>
             <tr>
-                <td>MONEDA:</td>
-                <td>{{$orden_compra->moneda}}</td>
-            </tr>
-        </table>
-
-        <table class="mensaje-table">
-            <tr>
-                <td>SIRVACE POR ESTE MEDIO SUMINISTRARNOS LOS SIGUIENTES ARTÍCULOS:</td>
+                <td><strong>ELABORADO POR:</strong></td>
+                <td>{{$orden_pago->colaborador_registrador_nombre}}</td>
             </tr>
         </table>
 
         <!-- Cuarta Tabla -->
-        <table class="products-table">
+        <p style="margin:0;padding:0;font-size:14px;">Por pagos de:</p>
+        <table class="products-table" style="margin-bottom: 20px;">
             <thead>
                 <tr>
                     <th>PRODUCTO</th>
-                    <th>UNIDAD</th>
                     <th>CANT</th>
-                    <th>P.U.</th>
-                    <th>TOTAL</th>
+                    <th>UNIDAD</th>
+                    <th>PRECIO</th>
+                    <th>SUBTOTAL</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($orden_compra_detalle as $item)
+                @foreach ($orden_pago_detalle as $item)
                     <tr>
                         <td>{{$item->producto_nombre}}</td>
+                        <td>{{number_format($item->cantidad, 2)}}</td>
                         <td>{{$item->producto_unidad_medida}}</td>
-                        <td>{{$item->cantidad}}</td>
-                        @if ($orden_compra->moneda == "PEN")
-                            <td>{{$item->precio_soles}}</td>
-                            <td>{{ number_format($item->precio_soles * $item->cantidad, 2) }}</td>
+                        @if ($orden_pago->moneda === 'PEN')
+                            <td>{{number_format($item->precio_soles, 2)}}</td>
+                            <td>{{number_format($item->precio_soles * $item->cantidad, 2)}}</td>
                         @endif
-                        @if ($orden_compra->moneda == "USD")
-                            <td>{{$item->precio_dolares}}</td>
-                            <td>{{ number_format($item->precio_dolares * $item->cantidad, 2) }}</td>
+                        @if ($orden_pago->moneda === 'USD')
+                            <td>{{number_format($item->precio_dolares, 2)}}</td>
+                            <td>{{number_format($item->precio_dolares * $item->cantidad, 2)}}</td>
                         @endif
-                    </tr>         
+                    </tr>
                 @endforeach
-            </tbody>
+            </tbody>   
             <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td  style="text-align: right;"><strong>SUBTOTAL</strong></td>
+                    <td  >
+                        <strong>
+                            {{ number_format($orden_pago->subtotal, 2) }}
+                        </strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td  style="text-align: right;"><strong>IGV</strong></td>
+                    <td  >
+                        <strong>
+                            {{ number_format($orden_pago->monto_igv, 2) }}
+                        </strong>
+                    </td>
+                </tr>
                 <tr>
                     <td></td>
                     <td></td>
@@ -203,52 +206,33 @@
                     <td  style="text-align: right;"><strong>TOTAL</strong></td>
                     <td  >
                         <strong>
-                            {{ number_format($orden_compra->total, 2) }}
+                            {{ number_format($orden_pago->total, 2) }}
                         </strong>
                     </td>
                 </tr>
-            </tfoot>
+            </tfoot>         
         </table> 
 
         <table class="products-table">
             <tbody>
                 <tr>
-                    <td><strong>PROYECTO:</strong></td>
-                    <td>{{$orden_compra->proyecto_nombre}}</td>
-                </tr>
-                <tr>
-                    <td><strong>DIRECCION OBRA:</strong></td>
-                    <td>{{$orden_compra->direccion_obra}}</td>
-                </tr>
-                <tr>
-                    <td><strong>PERSONA CONTACTO:</strong></td>
-                    <td>{{$orden_compra->persona_contacto_nombre}}</td>
-                </tr>
-                <tr>
-                    <td><strong>FECHA ENTREGA:</strong></td>
-                    <td>{{$orden_compra->fecha_entrega}}</td>
-                </tr>
-                <tr>
-                    <td><strong>TERMINOS DE ENTREGA:</strong></td>
-                    <td>{{$orden_compra->terminos_entrega}}</td>
-                </tr>
-                <tr>
-                    <td><strong>MODALIDAD PAGO:</strong></td>
-                    <td>
-                        @if($orden_compra->modalidad_pago_nombre == 'CREDITO')
-                            {{ $orden_compra->modalidad_pago_nombre . ' (' . $orden_compra->modalidad_pago_nro_dias . ' días)' }}
-                        @else
-                            {{ $orden_compra->modalidad_pago_nombre }}
-                        @endif
-                    </td> 
-                </tr>
-                <tr>
                     <td><strong>OBSERVACIONES:</strong></td>
-                    <td>{{$orden_compra->observacion}}</td>
+                    <td>{{$orden_pago->observacion}}</td>
+                </tr>
+                <tr>
+                    <td><strong>{{"CUENTA ".$orden_pago->banco_nombre}}</strong></td>
+                    <td><strong style="font-size: 14px;">{{$orden_pago->nro_cuenta}}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>{{"CCI"}}</strong></td>
+                    <td><strong style="font-size: 14px;">{{$orden_pago->cci}}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>{{"CUENTA DETRACCIÓN"}}</strong></td>
+                    <td><strong style="font-size: 14px;">{{$orden_pago->nro_cuenta_detraccion}}</strong></td>
                 </tr>
             </tbody>
         </table>
-        
     </div>
 </body>
 </html>

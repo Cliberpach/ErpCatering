@@ -1,7 +1,7 @@
 
 @extends('layouts.layout')
 @section('title-page')
-    ÓRDENES DE COMPRA - FINANZAS
+    LISTA DE ÓRDENES DE PAGO
 @endsection
 
 @section('finanzas-collapsed', '')
@@ -14,15 +14,15 @@
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Registro de Salidas <i class="fa-solid fa-truck-arrow-right"></i>
+      <h6>Órdenes de Pago <i class="fa-solid fa-cash-register"></i>
       </h6>
         
-            <button class="btn btn-primary" onclick="goToRegistrarSalida()">
+            {{-- <button class="btn btn-primary" onclick="goToRegistrarSalida()">
                 <i class="fa-solid fa-plus"></i> NUEVO
-            </button>
+            </button> --}}
     </div>
     <div class="table-responsive">
-        @include('logistica.registro_salida.tables.table_list_salidas')
+        @include('finanzas.orden_pago.tables.table_list_orden_pago')
     </div>
 </div>
 <!-- end card -->
@@ -36,11 +36,11 @@
 @endif
 
 <script>
-    let dtSalidas    =   null;
+    let dtOrdenesPago    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
         mostrarMsgErrors();
-        iniciarDataTableSalidas();
+        iniciarDataTableOrdenesPago();
     })
 
     function mostrarMsgErrors(){
@@ -50,18 +50,19 @@
         } 
     }
 
-    function iniciarDataTableSalidas(){
-        const urlGetSalidas = '{{ route('logistica.registro_salida.getSalidas') }}';
+    function iniciarDataTableOrdenesPago(){
+        const urlGetOrdenesPago = '{{ route('finanzas.orden_pago.getOrdenesPago') }}';
 
-        dtSalidas  =   new DataTable('#table_list_salidas',{
+        dtOrdenesPago  =   new DataTable('#table_list_orden_pago',{
             serverSide: true,
             processing: true,
             responsive:true,
             ajax: {
-                url: urlGetSalidas,
+                url: urlGetOrdenesPago,
                 type: 'GET',
             },
             columns: [
+                { data: 'id', name: 'id' },
                 {
                     data: 'simbolo',
                     name: 'simbolo',
@@ -70,21 +71,32 @@
                     }
                 },
                 {
-                    data: 'simbolo_guia_remision',
-                    name: 'simbolo_guia_remision',
+                    data: 'simbolo_orden_compra',
+                    name: 'simbolo_orden_compra',
                     createdCell: function (td, cellData, rowData, row, col) {
                         $(td).css('font-weight', 'bold');
                     }
                 },
-                { data: 'colaborador_nombre', name: 'colaborador_nombre' },
-                { data: 'almacen_origen_nombre', name: 'almacen_origen_nombre' },
-                { data: 'almacen_destino_nombre', name: 'almacen_destino_nombre' },
-                { data: 'fecha_registro', name: 'fecha_registro' },
+                { data: 'colaborador_registrador_nombre', name: 'colaborador_registrador_nombre' },
+                { data: 'proveedor_nombre', name: 'proveedor_nombre' },
+                { data: 'banco_nombre', name: 'banco_nombre' },
+                { data: 'nro_cuenta', name: 'nro_cuenta' },
+                { data: 'cci', name: 'cci' },
+                { data: 'nro_cuenta_detraccion', name: 'nro_cuenta_detraccion' },
+                { data: 'proyecto_nombre', name: 'proyecto_nombre' },
+                { data: 'documento', name: 'documento' },
+                { data: 'medio_pago', name: 'medio_pago' },
+                { data: 'moneda', name: 'moneda' },
+                { data: 'subtotal', name: 'subtotal' },
+                { data: 'monto_igv', name: 'monto_igv' },
+                { data: 'total', name: 'total' },
+                { data: 'observacion', name: 'observacion' },
+                { data: 'created_at', name: 'created_at' },
                 {
                     data: null, 
                     render: function(data, type, row) {
                         
-                        const urlPdf                = `{{ route('logistica.registro_salida.pdf', ':id') }}`.replace(':id', data.id);
+                        const urlPdf                =   `{{ route('finanzas.orden_pago.pdf', ':id') }}`.replace(':id', data.id);
                         const urlGoToGuiaRemision   =   `{{route('logistica.registro_salida.goToGuiaRemision',':id')}}`.replace(':id',data.id);
 
                         let acciones    =   `
@@ -99,20 +111,10 @@
                                                             <img width="20" height="20" src="{{asset('img/icons/pdf/pdf2.png')}}" alt="coins"/> PDF
                                                         </a>
                                                     </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShow(${data.id});">
-                                                            <img width="20" height="20" src="{{asset('img/icons/ver/ver1.png')}}" alt="coins"/> Ver
-                                                        </a>
-                                                    </li>
+                                                  
                                             `;
 
-                            if(!data.guia_remision_id){
-                                acciones    +=  `<li>
-                                                    <a class="dropdown-item" href="${urlGoToGuiaRemision}" >
-                                                        <img width="20" height="20" src="{{asset('img/icons/transporte/transporte1.png')}}" alt="coins"/> Guía Remisión
-                                                    </a>
-                                                </li>`;
-                            }
+                
 
                             acciones    +=  `</ul></div>`;
 
@@ -123,6 +125,14 @@
                     searchable: false 
                 }
             ],
+            "columnDefs": [
+                {
+                    "targets": [0], 
+                    "visible": false,
+                    "searchable": false 
+                }
+            ],
+            "order": [[0, "desc"]],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",

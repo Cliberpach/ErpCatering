@@ -330,7 +330,7 @@ Route::group(['prefix' => 'lista_requerimientos', 'middleware' => ['auth','check
 
 //======= INICIO FINANZAS =============
 
-Route::group(['prefix' => 'lista_orden_compra', 'middleware' => ['auth','checkCustomPermission:finanzas.orden_pago','notificacionMiddleware']], function () {
+Route::group(['prefix' => 'lista_orden_compra', 'middleware' => ['auth','checkCustomPermission:finanzas.lista_orden_compra','notificacionMiddleware']], function () {
 
     Route::get('/index', [ListaOrdenCompraController::class, 'index'])->name('finanzas.lista_orden_compra.index');
     // Route::post('/generarCotizacion', [ListaRequerimientoController::class, 'generarCotizacion'])->name('logistica.lista_requerimientos.generarCotizacion');
@@ -342,6 +342,21 @@ Route::group(['prefix' => 'lista_orden_compra', 'middleware' => ['auth','checkCu
     Route::get('/pdf/{id}', [OrdenCompraController::class, 'pdf'])->name('finanzas.lista_orden_compra.pdf');
     Route::get('/ordenCompraToOrdenPagoCreate/{id}', [ListaOrdenCompraController::class, 'ordenCompraToOrdenPagoCreate'])->name('finanzas.lista_orden_compra.ordenCompraToOrdenPagoCreate');
     Route::post('/ordenCompraToOrdenPagoStore', [ListaOrdenCompraController::class, 'ordenCompraToOrdenPagoStore'])->name('finanzas.lista_orden_compra.ordenCompraToOrdenPagoStore');
+
+});
+
+Route::group(['prefix' => 'orden_pago', 'middleware' => ['auth','checkCustomPermission:finanzas.orden_pago','notificacionMiddleware']], function () {
+
+    Route::get('/index', [OrdenPagoController::class, 'index'])->name('finanzas.orden_pago.index');
+    // Route::post('/generarCotizacion', [ListaRequerimientoController::class, 'generarCotizacion'])->name('logistica.lista_requerimientos.generarCotizacion');
+    Route::get('/getOrdenesPago', [OrdenPagoController::class, 'getOrdenesPago'])->name('finanzas.orden_pago.getOrdenesPago');
+    //Route::get('/show/{id}', [ListaRequerimientoController::class, 'show'])->name('logistica.lista_requerimientos.show');
+    // Route::get('/goToCotizacionCompra/{id}', [ListaRequerimientoController::class, 'goToCotizacionCompra'])->name('logistica.lista_requerimientos.goToCotizacionCompra');
+    // Route::post('/requerimientoToCotizacion', [ListaRequerimientoController::class, 'requerimientoToCotizacion'])->name('logistica.lista_requerimientos.requerimientoToCotizacion');
+    // Route::get('/show/{id}', [OrdenCompraController::class, 'show'])->name('finanzas.lista_orden_compra.show');
+    Route::get('/pdf/{id}', [OrdenPagoController::class, 'pdf'])->name('finanzas.orden_pago.pdf');
+    // Route::get('/ordenCompraToOrdenPagoCreate/{id}', [ListaOrdenCompraController::class, 'ordenCompraToOrdenPagoCreate'])->name('finanzas.lista_orden_compra.ordenCompraToOrdenPagoCreate');
+    // Route::post('/ordenCompraToOrdenPagoStore', [ListaOrdenCompraController::class, 'ordenCompraToOrdenPagoStore'])->name('finanzas.lista_orden_compra.ordenCompraToOrdenPagoStore');
 
 });
 
