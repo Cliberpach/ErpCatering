@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('tipo_documento_id');
             $table->foreign('tipo_documento_id')->references('id')->on('tipos_documento');
             
-            $table->unsignedBigInteger('banco_id');
+            $table->unsignedBigInteger('banco_id')->nullable();
             $table->foreign('banco_id')->references('id')->on('bancos');
             
             $table->string('nro_documento',20)->unique();
