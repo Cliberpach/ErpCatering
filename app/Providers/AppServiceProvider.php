@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $empresa        =   DB::table('empresas')->where('id', 1)->first();
+        //$empresa        =   DB::table('empresas')->where('id', 1)->first();
         
         // $notificaciones =   DB::select('select 
         //                     r.id,
@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
         //                     where r.estado != "ANULADO"
         //                     order by r.id desc');
 
-        View::share('empresa', $empresa);
+        //View::share('empresa', $empresa);
         // View::share('notificaciones', $notificaciones);
 
     }
