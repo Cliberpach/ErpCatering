@@ -300,7 +300,7 @@ class ListaOrdenCompraController extends Controller
                                             [$request->get('orden_compra_id')]);
             
             $orden_pago                                 =   new OrdenPago();
-            $orden_pago->orden_compra_id                =   $request->get('orden_compra_id');
+            //$orden_pago->orden_compra_id                =   $request->get('orden_compra_id');
             $orden_pago->proveedor_id                   =   $orden_compra->proveedor_id;
             $orden_pago->proveedor_nombre               =   $orden_compra->proveedor_nombre;
             $orden_pago->proveedor_tipo_documento       =   $orden_compra->proveedor_tipo_documento;

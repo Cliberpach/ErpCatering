@@ -16,8 +16,8 @@ return new class extends Migration
 
             $table->string('moneda',100);
 
-            $table->unsignedBigInteger('orden_compra_id');
-            $table->foreign('orden_compra_id')->references('id')->on('ordenes_compra');
+            // $table->unsignedBigInteger('orden_compra_id');
+            // $table->foreign('orden_compra_id')->references('id')->on('ordenes_compra');
 
             $table->unsignedBigInteger('proveedor_id');
             $table->foreign('proveedor_id')->references('id')->on('proveedores');
