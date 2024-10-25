@@ -474,10 +474,13 @@ class CotizacionCompraController extends Controller
 
         $igv                =   DB::select('select e.igv from empresas as e')[0]->igv;
 
+        $bancos     =   DB::select('select * from bancos as b
+                        where b.estado = "ACTIVO"');
+
         return view('compras.cotizacion_compra.cotizacion_to_orden',
         compact('cotizacion_compra','cotizacion_compra_detalle','categorias',
         'marcas','proveedores','tipos_documento','modalidades_pago','requerimiento','proyecto',
-        'proyecto_personal','igv'));
+        'proyecto_personal','igv','bancos'));
         
     }
 
