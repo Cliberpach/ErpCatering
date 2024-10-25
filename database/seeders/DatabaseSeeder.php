@@ -47,6 +47,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoGastoSeeder::class);
         $this->call(TipoComprobanteSunatSeeder::class);
         $this->call(EmpresaFacturacionSeeder::class);
+        $this->call(BancoSeeder::class);
 
     }
 }
