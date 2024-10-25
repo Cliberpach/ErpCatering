@@ -117,7 +117,7 @@
                                             </a>
                                         </li>`;
 
-                        if(data.tipo === 'SIMPLE'){
+                        if(data.tipo === 'SIMPLE' && data.estado === 'PENDIENTE' ){
                             acciones    +=  `<li>
                                                 <a class="dropdown-item" href="${urlEdit}">
                                                     <i class="fa-solid fa-file-pen"></i> Editar
@@ -125,7 +125,9 @@
                                             </li>`;
                         }
 
-                        acciones    +=  ` <li>
+                        if(data.estado === 'PENDIENTE' ){
+                            
+                            acciones    +=  ` <li>
                                             <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarCotizacionCompra(${data.id})">
                                                 <i class="fa-solid fa-trash"></i> Eliminar
                                             </a>
@@ -133,6 +135,9 @@
                                     </ul>
                                     </div>`;
 
+                        }
+
+                       
                         return acciones;
                     },
                     name: 'actions', 

@@ -15,8 +15,8 @@ return new class extends Migration
 
             $table->id();
 
-            $table->unsignedBigInteger('oden_pago_id')->nullable(); 
-            $table->foreign('oden_pago_id')->references('id')->on('ordenes_pago'); 
+            $table->unsignedBigInteger('orden_pago_id')->nullable(); 
+            $table->foreign('orden_pago_id')->references('id')->on('ordenes_pago'); 
 
             $table->unsignedBigInteger('colaborador_registrador_id');
             $table->foreign('colaborador_registrador_id')->references('id')->on('colaboradores');
