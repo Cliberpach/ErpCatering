@@ -157,12 +157,15 @@ class OrdenCompraController extends Controller
                                 where m.estado = "ACTIVO"');
                             
         $igv                =   DB::select('select e.igv from empresas as e')[0]->igv;
+
+        $bancos             =   DB::select('select * from bancos as b
+                                where b.estado = "ACTIVO"');
                     
 
         return view('compras.orden_compra.edit',
         compact('orden_compra','orden_compra_detalle','categorias',
         'marcas','proveedores','tipos_documento','modalidades_pago',
-        'proyecto_personal','igv','proyecto','supervisor'));
+        'proyecto_personal','igv','proyecto','supervisor','bancos'));
   
     }
 
@@ -234,11 +237,14 @@ class OrdenCompraController extends Controller
                         and a.proyecto_id = ? or a.id = 1',
                         [$orden_compra->proyecto_id]);
 
+        $bancos     =   DB::select('select * from bancos as b
+                        where b.estado = "ACTIVO"');
+
         
 
         return view('compras.orden_compra.orden_compra_to_registro_compra',
         compact('categorias','marcas','almacenes','tipos_documento','proveedores',
-        'orden_compra','orden_compra_detalle'));
+        'orden_compra','orden_compra_detalle','bancos'));
     }
 
 

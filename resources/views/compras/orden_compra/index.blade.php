@@ -128,19 +128,32 @@
                                                         </a>
                                                     </li>
                                             `;
-                        if(data.orden_compra_estado === 'PENDIENTE'){
+                        if(data.modalidad_pago === 'CONTADO' && data.orden_compra_estado === 'CON ORDEN PAGO'){
                             acciones += `
                                         <li>
                                             <a class="dropdown-item" href="${urlGoToRegistroCompra}">
                                                 <i class="fa-solid fa-file-invoice"></i> GENERAR DOCUMENTO
                                             </a>
                                         </li>
+                                        `;
+                        }
+
+                        if(data.modalidad_pago !== 'CONTADO' && data.orden_compra_estado === 'PENDIENTE'){
+                            acciones += `
                                         <li>
-                                            <a class="dropdown-item" href="${urlEdit}">
-                                                <i class="fa-solid fa-pen-to-square"></i> EDITAR
+                                            <a class="dropdown-item" href="${urlGoToRegistroCompra}">
+                                                <i class="fa-solid fa-file-invoice"></i> GENERAR DOCUMENTO
                                             </a>
                                         </li>
                                         `;
+                        }
+
+                        if(data.orden_compra_estado === 'PENDIENTE'){
+                            acciones += `  <li>
+                                            <a class="dropdown-item" href="${urlEdit}">
+                                                <i class="fa-solid fa-pen-to-square"></i> EDITAR
+                                            </a>
+                                        </li>`;
                         }
 
                         acciones += `</ul></div>`;

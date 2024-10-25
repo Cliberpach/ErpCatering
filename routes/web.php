@@ -341,6 +341,7 @@ Route::group(['prefix' => 'lista_orden_compra', 'middleware' => ['auth','checkCu
     Route::get('/show/{id}', [OrdenCompraController::class, 'show'])->name('finanzas.lista_orden_compra.show');
     Route::get('/pdf/{id}', [OrdenCompraController::class, 'pdf'])->name('finanzas.lista_orden_compra.pdf');
     Route::get('/ordenCompraToOrdenPagoCreate/{id}', [ListaOrdenCompraController::class, 'ordenCompraToOrdenPagoCreate'])->name('finanzas.lista_orden_compra.ordenCompraToOrdenPagoCreate');
+    Route::post('/ordenCompraToOrdenPagoStore', [ListaOrdenCompraController::class, 'ordenCompraToOrdenPagoStore'])->name('finanzas.lista_orden_compra.ordenCompraToOrdenPagoStore');
 
 });
 

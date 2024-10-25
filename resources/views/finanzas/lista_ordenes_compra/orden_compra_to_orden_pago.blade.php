@@ -14,7 +14,7 @@
 
 <div class="card-style settings-card-1 mb-30">
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Datos del registro de compra <i class="fa-solid fa-toolbox"></i></h6>
+      <h6>Datos de la Orden de pago <i class="fa-solid fa-toolbox"></i></h6>
     </div>
     <div class="card-body">
         @include('finanzas.lista_ordenes_compra.forms.form_orden_compra_to_orden_pago_create')
@@ -89,9 +89,9 @@
 
         document.querySelector('#formOrdenCompraToOrdenPago').addEventListener('submit',(e)=>{
             e.preventDefault();
-            const validacion    =   validacionordenCompraToRegistroCompra();
+            const validacion    =   validacionordenCompraToOrdenPago();
             if(validacion){
-                ordenCompraToRegistroCompra();
+                ordenCompraToOrdenPago();
             }
         })
 
@@ -349,7 +349,7 @@
         return {subtotal,monto_igv,total};
     }
     
-    function validacionordenCompraToRegistroCompra(){
+    function validacionordenCompraToOrdenPago(){
         if(lstCompra.length === 0){
             toastr.error('EL DETALLE DE LA COMPRA ESTÁ VACÍO!!!');
             return false;
@@ -497,7 +497,7 @@
     }
 
 
-    function ordenCompraToRegistroCompra(){
+    function ordenCompraToOrdenPago(){
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
             confirmButton: "btn btn-success",
@@ -506,8 +506,8 @@
         buttonsStyling: false
         });
         swalWithBootstrapButtons.fire({
-        title: "DESEA GENERAR EL REGISTRO DE COMPRA?",
-        text: "DOCUMENTO DE COMPRA!",
+        title: "DESEA GENERAR LA ORDEN DE PAGO?",
+        text: "OPERACIÓN NO REVERSIBLE!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "SÍ, GENERAR!",
@@ -517,17 +517,21 @@
         if (result.isConfirmed) {
 
             limpiarErroresValidacion('msgError');
-            const token                             =   document.querySelector('input[name="_token"]').value;
-            const formOrdenCompraToOrdenPago   =   document.querySelector('#formOrdenCompraToOrdenPago');
-            const formData                          =   new FormData(formOrdenCompraToOrdenPago);
-            const urlOrdenCompraToRegistrarCompra   =   @json(route('compras.orden_compra.ordenCompraToRegistroCompra'));
+            const token                         =   document.querySelector('input[name="_token"]').value;
+            const formOrdenCompraToOrdenPago    =   document.querySelector('#formOrdenCompraToOrdenPago');
+            const formData                      =   new FormData(formOrdenCompraToOrdenPago);
+            const urlOrdenCompraToOrdenPago     =   @json(route('finanzas.lista_orden_compra.ordenCompraToOrdenPagoStore'));
 
-            formData.append('lstCompra',JSON.stringify(lstCompra));
             formData.append('orden_compra_id',@json($orden_compra->id));
+            formData.append('colaborador_registrador_id',@json($colaborador_registrador->id));
+
+            lstImagenesPago.forEach((file, index) => {
+                formData.append(`lstImagenesPago[${index}]`, file); 
+            });
 
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Generando registro de compra...',
+                html: 'Generando orden de pago...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -535,7 +539,7 @@
             });
 
             try {
-                const response  =   await fetch(urlOrdenCompraToRegistrarCompra, {
+                const response  =   await fetch(urlOrdenCompraToOrdenPago, {
                                         method: 'POST',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -556,7 +560,7 @@
                 }
                 
                 if(res.success){
-                    const compra_index      =   @json(route('compras.registro_compra.index'));
+                    const compra_index      =   @json(route('finanzas.lista_orden_compra.index'));
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                     window.location.href    =   compra_index;
                 }else{
@@ -566,7 +570,7 @@
 
               
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN GENERAR REGISTRO DE COMPRA');
+                toastr.error(error,'ERROR EN LA PETICIÓN GENERAR ORDEN DE PAGO');
                 Swal.close();
             }
           

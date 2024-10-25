@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('ordenes_compra', function (Blueprint $table) {
+
             $table->id();
+
+            $table->unsignedBigInteger('oden_pago_id')->nullable(); 
+            $table->foreign('oden_pago_id')->references('id')->on('ordenes_pago'); 
 
             $table->unsignedBigInteger('colaborador_registrador_id');
             $table->foreign('colaborador_registrador_id')->references('id')->on('colaboradores');
@@ -57,6 +61,7 @@ return new class extends Migration
             ->default('PENDIENTE');
             
             $table->timestamps();
+
         });
     }
 

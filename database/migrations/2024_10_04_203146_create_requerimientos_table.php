@@ -28,6 +28,11 @@ return new class extends Migration
 
 
             $table->unsignedBigInteger('orden_compra_id')->nullable();
+            $table->foreign('orden_compra_id')->references('id')->on('ordenes_compra');
+
+            $table->unsignedBigInteger('orden_pago_id')->nullable(); 
+            $table->foreign('orden_pago_id')->references('id')->on('ordenes_pago');
+
             $table->string('factura_atencion')->nullable();
 
             $table->date('fecha_atencion'); 
@@ -35,7 +40,8 @@ return new class extends Migration
             $table->unsignedBigInteger('primer_producto_id');
             $table->foreign('primer_producto_id')->references('id')->on('productos');
 
-            $table->enum('estado', ['PENDIENTE', 'COTIZADO', 'CON ORDEN COMPRA','FACTURADO','ANULADO'])->default('PENDIENTE');
+            $table->enum('estado', ['PENDIENTE', 'COTIZADO', 'CON ORDEN COMPRA',
+            'FACTURADO','ANULADO','CON ORDEN PAGO'])->default('PENDIENTE');
 
             $table->timestamps();
         });
