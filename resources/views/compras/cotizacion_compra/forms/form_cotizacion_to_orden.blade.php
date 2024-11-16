@@ -12,11 +12,25 @@
                                 <i class="fa-solid fa-bell-concierge"></i>                            
                             </span>
                             <input 
-                            @if ($requerimiento)
-                                value="{{"RE-".$requerimiento->id}}"
-                            @else
+                            @if ($cotizacion_compra->tipo === 'SIMPLE' && $requerimiento)
+                                value="{{"RE-".$requerimientos[0]->id}}"
+                            @endif 
+                            @if($cotizacion_compra->tipo === 'SIMPLE' && !$requerimiento)
                                 value="SIN REQUERIMIENTO"
-                            @endif required disabled  id="requerimiento" name="requerimiento" type="text" class="form-control" placeholder="PROYECTO" aria-label="Username" aria-describedby="basic-addon1">
+                            @endif 
+                            @if($cotizacion_compra->tipo === 'COMPUESTA')
+                                @php
+                                    $lblReq = '';
+                                @endphp
+                                @foreach ($requerimientos as $requerimiento)
+                                    @php
+                                        $lblReq .= '| RE-'.$requerimiento->id.' |';
+                                    @endphp
+                                @endforeach
+                                value="{{$lblReq}}"
+                            @endif 
+                            
+                            required disabled  id="requerimiento" name="requerimiento" type="text" class="form-control" placeholder="PROYECTO" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
                         <span class="fecha_entrega_error msgError"  style="color:red;"></span>
                     </div>

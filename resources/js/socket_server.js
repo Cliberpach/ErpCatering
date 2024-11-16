@@ -8,56 +8,42 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import https from 'https';
 
-const PORT = process.env.PORT || 3000; 
+const __filename    = fileURLToPath(import.meta.url);
+const __dirname     = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
+const PORT          =   process.env.PORT || 3000; 
+const environment   =   process.env.VITE_ENV;
+const key           =   process.env.SSL_KEY_PATH;
+const cert          =   process.env.SSL_CERT_PATH;
+const cors_origin   =   process.env.CORS_ORIGIN
 
-// Obtener el nombre del archivo y el directorio
-const __filename = fileURLToPath(new URL(import.meta.url));
-const __dirname = path.dirname(__filename);
-
-// Convertir a ruta absoluta y evitar duplicados
-const envFile = process.env.NODE_ENV === 'production' 
-    ? path.resolve(__dirname, '.env.production') 
-    : path.resolve(__dirname, '.env.development');
-
-
-//========== CARGANDO VARIABLES ========
-dotenv.config({ path: envFile }); 
-
-
-//==== MOSTRAR EN CONSOLA LAS VARIABLES DE ENTORNO =======
-//console.log('Variables de entorno:', process.env); 
-//======== IMPRIMIR EN CONSOLA EL ARCHIVO .ENV Q SE ESTÁ LEYENDO =========
-/*
-fs.readFile(envFile, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error al leer el archivo .env:', err);
-    } else {
-      console.log('Contenido del archivo .env:\n', data);
-    }
-});
-*/
+console.log('Current Environment:', environment);
+console.log('key:', key);
+console.log('cert:', cert);
+console.log('cors',cors_origin);
 
 
 const app = express();
+app.use(cors());
 
 let server  =   null;
 
-if(process.env.NODE_ENV === 'production'){
+if(environment === 'production'){
     const options = {
-        key: fs.readFileSync('/etc/letsencrypt/live/www.obramaster.online/privkey.pem'),  // Ruta a tu archivo de >
-        cert: fs.readFileSync('/etc/letsencrypt/live/www.obramaster.online/fullchain.pem'), // Ruta a tu archivo d>
+        key: fs.readFileSync(key),  // Ruta a tu archivo de >
+        cert: fs.readFileSync(cert), // Ruta a tu archivo d>
     };
     server = https.createServer(options, app);
 }
 
-if(process.env.NODE_ENV === 'development'){
+if(environment === 'development'){
     server = http.createServer(app);
 }
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.CORS_ORIGIN, // Usar la variable de entorno
+        origin: cors_origin, // Usar la variable de entorno
         methods: ['GET', 'POST'],
         credentials: true // Habilitar si necesitas enviar cookies o autenticación
     }
@@ -65,7 +51,7 @@ const io = new Server(server, {
 
 // Configuración de CORS para las solicitudes HTTP
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN, // Usar la variable de entorno
+    origin: cors_origin, // Usar la variable de entorno
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true

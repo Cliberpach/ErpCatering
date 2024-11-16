@@ -13,12 +13,28 @@ use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\Auth;
 
 class CProductoController extends Controller
 {
     public function index(){
+
         $proyectos  =   Proyecto::where('estado','<>','ANULADO')->get();
-        $almacenes  =   Almacen::where('estado','<>','ANULADO')->get();
+        $almacenes  =   null;
+
+        $rol    =   Auth::user()->getRoleNames()[0];
+        
+        //======= OBTENIENDO ALMACENES ======
+        if($rol === 'SUPERVISOR'){
+            $almacenes  =   DB::select('select a.*  
+                            from proyectos as pr 
+                            inner join almacenes as a on a.proyecto_id = pr.id
+                            where pr.supervisor_id = ? 
+                            and a.estado <> "ANULADO"',[Auth::user()->colaborador_id]);
+        }else{
+            $almacenes  =   Almacen::where('estado','<>','ANULADO')->get();
+        }
+        
 
         return view('consultas.producto.index',compact('proyectos','almacenes'));
     }

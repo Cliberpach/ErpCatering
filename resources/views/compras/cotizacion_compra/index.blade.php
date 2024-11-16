@@ -101,7 +101,7 @@
                                                 <ul class="dropdown-menu" style="max-height: 100px; overflow-y: auto;">
                                             `;
                         
-                        if(data.estado === "PENDIENTE" && data.tipo === 'SIMPLE'){
+                        if(data.estado === "PENDIENTE"){
                             acciones    +=  `<li>
                                                 <a class="dropdown-item" href="${urlOrdenCompra}">
                                                     <i class="fa-solid fa-cart-shopping"></i> Orden compra

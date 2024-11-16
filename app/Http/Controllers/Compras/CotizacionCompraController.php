@@ -387,7 +387,7 @@ class CotizacionCompraController extends Controller
                                         inner join tablas_generales_detalles as tgd on tgd.id = p.unidad_medida_id
                                         where ccd.cotizacion_compra_id = ?',[$cotizacion_id]);
 
-        $requerimiento  =   DB::select('select 
+        $requerimientos  =  DB::select('select 
                             pr.nombre,
                             pr.direccion,
                             pr.supervisor_id,
@@ -420,8 +420,8 @@ class CotizacionCompraController extends Controller
         }
                         
         //========= COTIZACIÓN SIN REQUERIMIENTO ========
-        if(count($requerimiento) === 0){
-            $requerimiento      =   null;
+        if(count($requerimientos) === 0){
+            $requerimientos     =   null;
 
             $proyecto_personal  =   DB::select('select
                                     pp.colaborador_id,
@@ -435,9 +435,7 @@ class CotizacionCompraController extends Controller
                                     [$cotizacion_compra->proyecto_id]);
                             
         }else{
-            //======= COTIZACIÓN CON REQUERIMIENTO ==========
-            $requerimiento      =   $requerimiento[0];
-
+           
             $proyecto_personal  =   DB::select('select
                                     pp.colaborador_id,
                                     CONCAT(co.nombre, " - CEL:", co.telefono) AS persona_contacto
@@ -479,7 +477,7 @@ class CotizacionCompraController extends Controller
 
         return view('compras.cotizacion_compra.cotizacion_to_orden',
         compact('cotizacion_compra','cotizacion_compra_detalle','categorias',
-        'marcas','proveedores','tipos_documento','modalidades_pago','requerimiento','proyecto',
+        'marcas','proveedores','tipos_documento','modalidades_pago','requerimientos','proyecto',
         'proyecto_personal','igv','bancos'));
         
     }
@@ -507,7 +505,10 @@ class CotizacionCompraController extends Controller
             "table_cotizacion_to_orden_detalle_length"  => "10"
             "lstCotizacionCompra"                       => "[{"cantidad":"20.00","categoria_nombre":"CEMENTO","marca_nombre":"MOCHICA","producto_id":1,"producto_nombre":"CEMENTO ROJO MOCHICA X 45 KG","producto_unidad_medida":"UNIDAD","precio":"29.50","total":590},{"cantidad":"10.00","categoria_nombre":"TUBO","marca_nombre":"EUROTUBO","producto_id":2,"producto_nombre":"TUBO HIDRÁULICO","producto_unidad_medida":"UNIDAD","precio":"2","total":20,"almacen_nombre":""}]"
             "cotizacion_compra_id"  => "1"  --VALIDACION COMPLEJA
-            "requerimiento_id"      => "1"  --VALIDACION COMPLEJA
+            "requerimientos" => "[  
+                                    {"nombre":"PROYECTO HUERTA GRANDE","direccion":"CAR. PANAMERICANA SUR NRO. 241  PANAMERICANA SUR, ICA - PISCO - PARACAS","supervisor_id":2,"id":3,"persona_contacto":"LUIS DANIEL ALVA LUJAN - CEL:974585471"},
+                                    {"nombre":"PROYECTO HUERTA GRANDE","direccion":"CAR. PANAMERICANA SUR NRO. 241  PANAMERICANA SUR, ICA - PISCO - PARACAS","supervisor_id":2,"id":4,"persona_contacto":"LUIS DANIEL ALVA LUJAN - CEL:974585471"}
+                                ]"--VALIDACION COMPLEJA
         ]
     */
     public function cotizacionToOrden(OrdenCompraStoreRequest $request){
@@ -522,7 +523,7 @@ class CotizacionCompraController extends Controller
             CotizacionCompraController::validarLstCotizacionCompra($lstCotizacionCompraDetalle);
 
             $montos             =   CotizacionCompraController::calcularMontos($lstCotizacionCompraDetalle,$request->get('igv',null),$request->get('valor_igv'));
-            $requerimiento      =   DB::select('select r.id 
+            $requerimientos     =   DB::select('select r.id 
                                     from requerimientos as r
                                     where r.cotizacion_compra_id = ?',
                                     [$request->get('cotizacion_compra_id')]);
@@ -596,12 +597,16 @@ class CotizacionCompraController extends Controller
                 $orden_compra_detalle->save();
             }
 
-            if(count($requerimiento) !== 0){
-                //======== ACTUALIZAR ESTADO DEL REQUERIMIENTO =======
-                $requerimiento                  =   Requerimiento::find($requerimiento[0]->id);
-                $requerimiento->orden_compra_id =   $orden_compra->id;
-                $requerimiento->estado          =   'CON ORDEN COMPRA';
-                $requerimiento->update();
+            if(count($requerimientos) !== 0){
+
+                //======== ACTUALIZAR ESTADO DEL REQUERIMIENTO O REQUERIMIENTOS =======
+                foreach ($requerimientos as $requerimiento) {
+                    $requerimiento_find                  =   Requerimiento::find($requerimiento->id);
+                    $requerimiento_find->orden_compra_id =   $orden_compra->id;
+                    $requerimiento_find->estado          =   'CON ORDEN COMPRA';
+                    $requerimiento_find->update();
+                }
+               
             }
            
             //========= ACTUALIZAR ESTADO DE COTIZACIÓN =======
@@ -691,45 +696,49 @@ class CotizacionCompraController extends Controller
         }
 
 
-        //======= VERIFICANDO SI LA COTIZACIÓN TIENE REQUERIMIENTO EN LA BD ======
-        $requerimiento  =   DB::select('select r.id from requerimientos as r
+        //======= VERIFICANDO SI LA COTIZACIÓN TIENE REQUERIMIENTOS EN LA BD ======
+        $requerimientos =   DB::select('select r.id from requerimientos as r
                             where r.cotizacion_compra_id = ?',
                             [$request->get('cotizacion_compra_id')]);
 
-        //======= EN CASO TENGA REQUERIMIENTO =====
-        //===== VALIDAR EL REQUERIMIENTO ======
-        if(count($requerimiento) === 1){
+        //======= EN CASO TENGA REQUERIMIENTOS =====
+        //===== VALIDAR LOS REQUERIMIENTOS ======
+        if(count($requerimientos) !== 0){
 
-            //====== CON REQUERIMIENTO =====
-            if(!$request->has('requerimiento_id')){
+            //====== CON REQUERIMIENTOS =====
+            if(!$request->has('requerimientos')){
                 throw new Exception("FALTA EL PARÁMETRO REQUERIMIENTO ID");
             }
-            if(!$request->get('requerimiento_id')){
-                throw new Exception("FALTA EL PARÁMETRO REQUERIMIENTO ID");
+            if(!$request->get('requerimientos')){
+                throw new Exception("FALTA EL PARÁMETRO REQUERIMIENTOS");
             }
 
-             //========= VALIDANDO REQUERIMIENTO EN BD ======
-            $requerimiento  =   Requerimiento::find($request->get('requerimiento_id'));
+            //========= VALIDANDO REQUERIMIENTOS EN BD ======
+            $requerimientos =   json_decode($request->get('requerimientos'));
+            foreach ($requerimientos as $requerimiento) {
+                $requerimiento  =   Requerimiento::find($requerimiento->id);
 
-            if(!$requerimiento){
-                throw new Exception("NO EXISTE EL REQUERIMIENTO EN LA BD");
+                if(!$requerimiento){
+                    throw new Exception("NO EXISTE EL REQUERIMIENTO EN LA BD");
+                }
+    
+                if(!$requerimiento->estado  === 'PENDIENTE'){
+                    throw new Exception("EL REQUERIMIENTO NO ESTÁ COTIZADO");
+                }
+    
+                if(!$requerimiento->estado  === 'CON ORDEN COMPRA'){
+                    throw new Exception("EL REQUERIMIENTO YA FUE CONVERTIDO A ORDEN DE COMPRA");
+                }
+    
+                if(!$requerimiento->estado  === 'FACTURADO'){
+                    throw new Exception("EL REQUERIMIENTO YA FUE FACTURADO");
+                }
+    
+                if(!$requerimiento->estado  === 'ANULADO'){
+                    throw new Exception("EL REQUERIMIENTO ESTÁ ANULADO");
+                }
             }
-
-            if(!$requerimiento->estado  === 'PENDIENTE'){
-                throw new Exception("EL REQUERIMIENTO NO ESTÁ COTIZADO");
-            }
-
-            if(!$requerimiento->estado  === 'CON ORDEN COMPRA'){
-                throw new Exception("EL REQUERIMIENTO YA FUE CONVERTIDO A ORDEN DE COMPRA");
-            }
-
-            if(!$requerimiento->estado  === 'FACTURADO'){
-                throw new Exception("EL REQUERIMIENTO YA FUE FACTURADO");
-            }
-
-            if(!$requerimiento->estado  === 'ANULADO'){
-                throw new Exception("EL REQUERIMIENTO ESTÁ ANULADO");
-            }
+           
         }
       
         //======== VALIDANDO LA PERSONA DE CONTACTO ========

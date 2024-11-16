@@ -348,7 +348,7 @@
 
             formData.append('lstCotizacionCompra',JSON.stringify(lstCotizacionCompra))
             formData.append('cotizacion_compra_id',@json($cotizacion_compra->id))
-            formData.append('requerimiento_id', {{ $requerimiento->id ?? 'null' }});
+            formData.append('requerimientos', JSON.stringify(@json($requerimientos)));
 
             Swal.fire({
                 title: 'Cargando...',

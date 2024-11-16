@@ -5,17 +5,31 @@ namespace App\Http\Controllers\Consultas;
 use App\Http\Controllers\Controller;
 use App\Models\Registros\Proyecto;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Exports\Consultas\PersonalExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\Auth;
+
 class CPersonalController extends Controller
 {
     public function index(){
-        $proyectos  =   Proyecto::where('estado','<>','ANULADO')->get();
+        $rol        =   Auth::user()->getRoleNames()[0];
+        $proyectos  =   null;
+
+        //======= OBTENIENDO ALMACENES ======
+        if($rol === 'SUPERVISOR'){
+            $proyectos  =   DB::select('select pr.*  
+                            from proyectos as pr 
+                            where pr.supervisor_id = ? 
+                            and pr.estado <> "ANULADO"',[Auth::user()->colaborador_id]);
+        }else{
+            $proyectos  =   Proyecto::where('estado','<>','ANULADO')->get();
+        }
+
         return view('consultas.personal.index',compact('proyectos'));
     }
 
