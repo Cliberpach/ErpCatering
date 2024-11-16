@@ -105,10 +105,14 @@
         <table class="header">
             <tr>
                 <td class="image-column" style="width: 30%;">
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($empresa->img_ruta))) }}" alt="Logo">
+                    @if ($empresa->img_ruta)
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($empresa->img_ruta))) }}" alt="Logo">
+                    @else
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/img_default.png'))) }}" alt="Logo">
+                    @endif
                 </td>
                 <td class="info-column" style="width: 70%; vertical-align: bottom; text-align: center;">
-                    <div class="company">{{$empresa->nombre}}</div>
+                    <div class="company">{{$empresa->razon_social}}</div>
                     <div class="address">RUC: {{$empresa->ruc}}</div>
                     <div class="address">{{$empresa->direccion}}</div>
                     <div class="phone">Teléfono: {{$empresa->telefono}}</div>
@@ -119,7 +123,7 @@
 
         <table class="solicitud-table">
             <tr>
-                <td>REPORTE DE PERSONAL</td>
+                <td>REPORTE DE MAQUINARIA</td>
             </tr>
         </table>
 

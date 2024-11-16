@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('provincias', function (Blueprint $table) {
             $table->char('id', 4)->primary();
             $table->string('nombre');
+            
             $table->char('departamento_id', 2);
             $table->foreign('departamento_id')->references('id')->on('departamentos')->onDelete('cascade');
         });

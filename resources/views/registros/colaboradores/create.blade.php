@@ -167,6 +167,7 @@
         reverseButtons: true
         }).then(async (result) => {
         if (result.isConfirmed) {
+            
             limpiarErroresValidacion('msgError');
             const token                     =   document.querySelector('input[name="_token"]').value;
             const formRegistrarColaborador  =   document.querySelector('#formRegistrarColaborador');
