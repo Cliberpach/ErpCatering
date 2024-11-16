@@ -5,6 +5,7 @@
 /public/img/asistencia_entrada
 /public/greenter/guias_remision
 /public/img/ordenes_pago/pagos
+/resources/js/.env
 /storage/*.key
 /vendor
 .env
