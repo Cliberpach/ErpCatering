@@ -37,6 +37,13 @@
             const   formAsistenciaEntrada                   =   document.querySelector('#formAsistenciaEntrada');
             formAsistenciaEntrada.reset();
             document.getElementById('img_vista_previa').src =   @json(asset('img/img_default.png'));
+
+            //========= COLOCANDO ASISTENCIA MANUAL ======
+            const horaEntradaContainer = document.getElementById('hora_entrada_container');
+            horaEntradaContainer.classList.remove('hidden');
+            horaEntradaContainer.classList.add('visible');
+            document.querySelector('#lbl_hora_entrada').classList.add('required_field');
+            document.querySelector('#hora_entrada').required = true;
         });
 
         document.querySelector('#img_asistencia_entrada').addEventListener('change', function(event) {

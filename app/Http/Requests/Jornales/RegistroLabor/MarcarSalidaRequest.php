@@ -6,8 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use DB;
-use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+
 class MarcarSalidaRequest extends FormRequest
 {
     /**
@@ -64,8 +66,8 @@ class MarcarSalidaRequest extends FormRequest
         return [
             'tipo_asistencia_salida.in'            => 'Valor no válido para el tipo de asistencia.',
 
-            'hora_salida.required_without' => 'Hora entrada obligatoria para asistencia manual.',
-            'hora_salida.date_format'      => 'La hora de entrada debe tener el formato HH:MM.',
+            'hora_salida.required_without'  => 'Hora salida obligatoria para asistencia manual.',
+            'hora_salida.date_format'       => 'La hora de salida debe tener el formato HH:MM.',
 
             'registro_labor_id.required'    => 'El registro de labor es obligatorio.',
             'registro_labor_id.exists'      => 'No existe el registro de labor en la BD.',

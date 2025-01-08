@@ -37,23 +37,30 @@
             const   formAsistenciaSalida                   =   document.querySelector('#formAsistenciaSalida');
             formAsistenciaSalida.reset();
             document.getElementById('img_vista_previa').src =   @json(asset('img/img_default.png'));
+
+            //========= REGRESANDO A ASISTENCIA MANUAL ========
+            const horaSalidaContainer = document.getElementById('hora_salida_container');
+            horaSalidaContainer.classList.remove('hidden');
+            horaSalidaContainer.classList.add('visible');
+            document.querySelector('#lbl_hora_salida').classList.add('required_field');
+            document.querySelector('#hora_salida').required = true;
         });
 
       
 
         document.getElementById('tipo_asistencia_salida').addEventListener('change', function() {
-            const horaEntradaContainer = document.getElementById('hora_salida_container');
+            const horaSalidaContainer = document.getElementById('hora_salida_container');
             
             if (this.checked) {  // (AUTOMÁTICA)
-                horaEntradaContainer.classList.remove('visible');
-                horaEntradaContainer.classList.add('hidden');
+                horaSalidaContainer.classList.remove('visible');
+                horaSalidaContainer.classList.add('hidden');
 
                 document.querySelector('#lbl_hora_salida').classList.remove('required_field');
                 document.querySelector('#hora_salida').required = false;
 
             } else {  //(MANUAL)
-                horaEntradaContainer.classList.remove('hidden');
-                horaEntradaContainer.classList.add('visible');
+                horaSalidaContainer.classList.remove('hidden');
+                horaSalidaContainer.classList.add('visible');
 
                 document.querySelector('#lbl_hora_salida').classList.add('required_field');
                 document.querySelector('#hora_salida').required = true;
