@@ -52,7 +52,7 @@
                 <span class="direccion_error msgError"  style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
-                <label for="telefono" style="font-weight: bold;">Teléfono</label>
+                <label class="required_field" for="telefono" style="font-weight: bold;">Teléfono</label>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-mobile-screen"></i>
@@ -62,24 +62,34 @@
                 <span class="telefono_error msgError"  style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
-                <label class="required_field" for="horas_semana" style="font-weight: bold;">Horas Semana</label>
+                <label class="required_field" for="dias_trabajo" style="font-weight: bold;">Días Trabajo</label>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-clock"></i>
                     </span>
-                    <input required maxlength="20" id="horas_semana" name="horas_semana" type="text" class="form-control" placeholder="Horas semana" aria-label="Username" aria-describedby="basic-addon1">
+                    <input required maxlength="20" id="dias_trabajo" name="dias_trabajo" type="text" class="form-control" placeholder="Días de trabajo" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                
-                <span class="horas_semana_error msgError" style="color:red;"></span>
+                <span class="dias_trabajo_error msgError" style="color:red;"></span>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
-                <label class="required_field" for="pago_semana" style="font-weight: bold;">Pago Semana</label>
+                <label class="required_field" for="dias_descanso" style="font-weight: bold;">Días Descanso</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">
+                        <i class="fa-solid fa-clock"></i>
+                    </span>
+                    <input required maxlength="20" id="dias_descanso" name="dias_descanso" type="text" class="form-control" placeholder="Días de descanso" aria-label="Username" aria-describedby="basic-addon1">
+                </div>                
+                <span class="dias_descanso_error msgError" style="color:red;"></span>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
+                <label class="required_field" for="pago_mensual" style="font-weight: bold;">Pago Mensual</label>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-money-bill-1-wave"></i>
                     </span>
-                    <input required maxlength="10" name="pago_semana" id="pago_semana" type="text" class="form-control" placeholder="Pago semana" aria-label="Username" aria-describedby="basic-addon1">
+                    <input required maxlength="10" name="pago_mensual" id="pago_mensual" type="text" class="form-control" placeholder="Pago mensual" aria-label="Username" aria-describedby="basic-addon1">
                 </div>       
-                <span class="pago_semana_error msgError" style="color:red;"></span>
+                <span class="pago_mensual_error msgError" style="color:red;"></span>
             </div>
     </div>
 </form> 

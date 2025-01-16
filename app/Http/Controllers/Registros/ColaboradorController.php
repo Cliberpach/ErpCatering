@@ -22,21 +22,23 @@ class ColaboradorController extends Controller
     }
 
     public function getColaboradores(Request $request){
-        $colaboradores = DB::table('colaboradores as co')
-                    ->join('cargos as ca', 'ca.id', '=', 'co.cargo_id')
-                    ->select(
-                        'co.id', 
-                        'co.nombre',
-                        'co.direccion',
-                        'co.telefono',
-                        'co.nro_documento',
-                        'co.horas_semana',
-                        'co.pago_semana',
-                        'ca.descripcion as cargo_nombre',
-                        'co.estado'
-                    )
-                    ->where('co.estado','ACTIVO')
-                    ->get();
+
+        $colaboradores  =   DB::table('colaboradores as co')
+                            ->join('cargos as ca', 'ca.id', '=', 'co.cargo_id')
+                            ->select(
+                                'co.id', 
+                                'co.nombre',
+                                'co.direccion',
+                                'co.telefono',
+                                'co.nro_documento',
+                                'co.dias_trabajo',
+                                'co.dias_descanso',
+                                'co.pago_mensual',
+                                'ca.descripcion as cargo_nombre',
+                                'co.estado'
+                            )
+                            ->where('co.estado','ACTIVO')
+                            ->get();
 
         return DataTables::of($colaboradores)
                 ->make(true);
@@ -50,7 +52,23 @@ class ColaboradorController extends Controller
         return view('registros.colaboradores.create',compact('tipos_documento','cargos'));
     }
 
+
+/*
+array:10 [ // app\Http\Controllers\Registros\ColaboradorController.php:55
+  "_token"              => "d38M0zVONrs0K90ZaS3Qr4eqnPK3bSvETRV0CxjX"
+  "tipo_documento"      => "1"
+  "nro_documento"       => "80239830"
+  "nombre"              => "HILMER JULIAN PALOMINOs"
+  "cargo"               => "1"
+  "direccion"           => "AV CHAVIMOCHIC 1234"
+  "telefono"            => "974585471"
+  "dias_trabajo"        => "24"
+  "dias_descanso"       => "12"
+  "pago_mensual"        => "1200"
+]
+*/ 
     public function store(ColaboradorStoreRequest $request){
+      
         DB::beginTransaction();
         try {
             $colaborador                    =   new Colaborador();
@@ -59,10 +77,11 @@ class ColaboradorController extends Controller
             $colaborador->cargo_id          =   $request->get('cargo');
             $colaborador->direccion         =   Str::upper($request->get('direccion'));
             $colaborador->telefono          =   $request->get('telefono');
-            $colaborador->horas_semana      =   $request->get('horas_semana');
-            $colaborador->pago_semana       =   $request->get('pago_semana');
+            $colaborador->dias_trabajo      =   $request->get('dias_trabajo');
+            $colaborador->dias_descanso     =   $request->get('dias_descanso');
+            $colaborador->pago_mensual      =   $request->get('pago_mensual');
             $colaborador->nro_documento     =   $request->get('nro_documento');
-            $colaborador->pago_hora         =   $request->get('pago_semana')/$request->get('horas_semana');
+            $colaborador->pago_dia          =   $request->get('pago_mensual')/$request->get('dias_trabajo');
             $colaborador->save();
 
             DB::commit();
@@ -93,10 +112,11 @@ class ColaboradorController extends Controller
             $colaborador->cargo_id          =   $request->get('cargo');
             $colaborador->direccion         =   Str::upper($request->get('direccion'));
             $colaborador->telefono          =   $request->get('telefono');
-            $colaborador->horas_semana      =   $request->get('horas_semana');
-            $colaborador->pago_semana       =   $request->get('pago_semana');
+            $colaborador->dias_trabajo      =   $request->get('dias_trabajo');
+            $colaborador->dias_descanso     =   $request->get('dias_descanso');
+            $colaborador->pago_mensual      =   $request->get('pago_mensual');
             $colaborador->nro_documento     =   $request->get('nro_documento');
-            $colaborador->pago_hora         =   $request->get('pago_semana')/$request->get('horas_semana');
+            $colaborador->pago_dia          =   $request->get('pago_mensual')/$request->get('dias_trabajo');
             $colaborador->update();
 
             DB::commit();

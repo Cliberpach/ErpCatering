@@ -23,11 +23,12 @@ return new class extends Migration
             $table->string('nro_documento',20)->unique();
 
             $table->string('nombre',260);
-            $table->string('direccion',200);
+            $table->string('direccion',200)->nullable();
             $table->string('telefono',20);
-            $table->decimal('horas_semana',20)->unsigned();
-            $table->decimal('pago_semana', 10, 2)->unsigned();
-            $table->decimal('pago_hora', 10, 6)->unsigned();
+            $table->decimal('dias_trabajo',20)->unsigned();
+            $table->decimal('dias_descanso',20)->unsigned();
+            $table->decimal('pago_mensual', 10, 2)->unsigned();
+            $table->decimal('pago_dia', 10, 6)->unsigned();
             $table->enum('estado', ['ACTIVO', 'ANULADO'])->default('ACTIVO');
 
             $table->timestamps();

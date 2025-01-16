@@ -14,6 +14,7 @@ use App\Http\Controllers\Compras\RegistroCompraController;
 use App\Http\Controllers\Finanzas\ListaOrdenCompraController;
 use App\Http\Controllers\Finanzas\OrdenPagoController;
 use App\Http\Controllers\Herramientas\ConfiguracionController;
+use App\Http\Controllers\Herramientas\FeriadoController;
 use App\Http\Controllers\Logistica\RegistroSalidaController;
 use App\Http\Controllers\PlanProyecto\TareaController;
 use App\Http\Controllers\Registros\AlmacenController;
@@ -481,6 +482,18 @@ Route::group(['prefix' => 'configuracion', 'middleware' => ['auth','notificacion
     Route::get('/index', [ConfiguracionController::class, 'index'])->name('herramientas.configuracion.index');
     Route::put('/ambiente_greenter/{id}', [ConfiguracionController::class, 'ambiente_greenter'])->name('herramientas.configuracion.ambiente_greenter');
   
+});
+
+Route::group(['prefix' => 'feriados', 'middleware' => ['auth','notificacionMiddleware']], function () {
+
+    Route::get('/index', [FeriadoController::class, 'index'])->name('herramientas.feriados.index');
+    Route::get('/getFeriados', [FeriadoController::class, 'getFeriados'])->name('herramientas.feriados.getFeriados');
+    Route::get('/create', [FeriadoController::class, 'create'])->name('herramientas.feriados.create');
+    Route::post('/store', [FeriadoController::class, 'store'])->name('herramientas.feriados.store');
+    Route::get('/edit/{id}', [FeriadoController::class, 'edit'])->name('herramientas.feriados.edit');
+    Route::put('/update/{id}', [FeriadoController::class, 'update'])->name('herramientas.feriados.update');
+    Route::delete('/destroy/{id}', [FeriadoController::class, 'destroy'])->name('herramientas.feriados.destroy');
+
 });
 //======= FIN HERRAMIENTAS ==========
 

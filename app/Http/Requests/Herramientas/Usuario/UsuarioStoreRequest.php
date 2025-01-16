@@ -74,5 +74,4 @@ class UsuarioStoreRequest extends FormRequest
         ], 422));
     }
 
-
 }

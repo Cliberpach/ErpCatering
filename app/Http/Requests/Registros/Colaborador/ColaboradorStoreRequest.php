@@ -47,8 +47,9 @@ class ColaboradorStoreRequest extends FormRequest
             'cargo'         => 'required|exists:cargos,id',
             'direccion'     => 'nullable|max:200',
             'telefono'      => ['required', 'max:20', 'regex:/^[0-9]+$/'],
-            'horas_semana'  => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'pago_semana'   => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'dias_descanso' => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'dias_trabajo'  => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'pago_mensual'  => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
         ];
     }
 
@@ -76,13 +77,17 @@ class ColaboradorStoreRequest extends FormRequest
             'telefono.max'              => 'El teléfono no debe superar los 20 caracteres.',
             'telefono.regex'            => 'El teléfono debe contener solo números.',
 
-            'horas_semana.required'     => 'Las horas de la semana son obligatorias.',
-            'horas_semana.numeric'      => 'Las horas de la semana deben ser un número.',
-            'horas_semana.regex'        => 'Las horas de la semana deben tener como máximo 2 decimales.',
+            'dias_trabajo.required'     => 'Las horas de la semana son obligatorias.',
+            'dias_trabajo.numeric'      => 'Las horas de la semana deben ser un número.',
+            'dias_trabajo.regex'        => 'Las horas de la semana deben tener como máximo 2 decimales.',
 
-            'pago_semana.required'      => 'El pago semanal es obligatorio.',
-            'pago_semana.numeric'       => 'El pago semanal debe ser un número.',
-            'pago_semana.regex'         => 'El pago semanal debe tener como máximo 2 decimales.',
+            'dias_descanso.required'     => 'Las horas de la semana son obligatorias.',
+            'dias_descanso.numeric'      => 'Las horas de la semana deben ser un número.',
+            'dias_descanso.regex'        => 'Las horas de la semana deben tener como máximo 2 decimales.',
+
+            'pago_mensual.required'      => 'El pago semanal es obligatorio.',
+            'pago_mensual.numeric'       => 'El pago semanal debe ser un número.',
+            'pago_mensual.regex'         => 'El pago semanal debe tener como máximo 2 decimales.',
         ];
     }
 

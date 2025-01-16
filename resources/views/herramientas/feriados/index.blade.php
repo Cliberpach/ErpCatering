@@ -1,29 +1,30 @@
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE COLABORADORES
+    LISTADO DE FERIADOS
 @endsection
 
-@section('registros-collapsed', '')
-@section('registros-expanded', 'true')
-@section('registros-show', 'show')
-@section('colaboradores-active', 'active')
+@section('herramientas-collapsed', '')
+@section('herramientas-expanded', 'true')
+@section('herramientas-show', 'show')
+@section('feriados-active', 'active')
 
 
 @section('section-page')
+
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Colaboradores <i class="fa-solid fa-user"></i>
+      <h6>Feriados <i class="fa-solid fa-toolbox"></i>
       </h6>
-      <button class="btn btn-primary" onclick="goToCrearColaborador()">
+      <button class="btn btn-primary" onclick="goToCrearFeriado()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
     </div>
+  
     <div class="table-responsive">
-        @include('registros.colaboradores.tables.table_list_colaboradores')
+        @include('herramientas.feriados.tables.tbl_list_feriados')
     </div>
 </div>
-<!-- end card -->
 @endsection
 
 @if(Session::has('message_success'))
@@ -34,39 +35,41 @@
 @endif
 
 <script>
-    let dtColaboradores    =   null;
+    let dtFeriados    =   null;
 
     document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableColaboradores();
+        iniciarDataTableFeriados();
+        iniciarDataTableStocks();
+        iniciarSelect2();
+        eventsMdlImportarProductos();
     })
 
-    function iniciarDataTableColaboradores(){
-        const urlGetColaboradores = '{{ route('registros.colaborador.getColaboradores') }}';
+    function iniciarDataTableFeriados(){
+        const urlGetFeriados = '{{ route('herramientas.feriados.getFeriados') }}';
 
-        dtColaboradores  =   new DataTable('#table_colaboradores',{
+        dtFeriados  =   new DataTable('#tbl_list_feriados',{
             serverSide: true,
             processing: true,
             ajax: {
-                url: urlGetColaboradores,
+                url: urlGetFeriados,
                 type: 'GET',
+                data: function (d) {
+                    d.categoria_id  =   $('#categoria').val();
+                    d.marca_id      =   $('#marca').val();
+                }
             },
             columns: [
                 { data: 'id', name: 'id' },
-                { data: 'nombre', name: 'nombre' },
-                { data: 'cargo_nombre', name: 'cargo_nombre' },
-                { data: 'direccion', name: 'direccion' },
-                { data: 'telefono', name: 'telefono' },
-                { data: 'nro_documento', name: 'nro_documento' },
-                { data: 'dias_trabajo', name: 'dias_trabajo' },
-                { data: 'dias_descanso', name: 'dias_descanso' },
-                { data: 'pago_mensual', name: 'pago_mensual' },
+                { data: 'fecha', name: 'fecha' },
+                { data: 'anio', name: 'anio' },
+                { data: 'descripcion', name: 'descripcion' },
                 {
                     data: null, 
                     render: function(data, type, row) {
-                        const baseUrlEdit   =   `{{ route('registros.colaborador.edit', ['id' => ':id']) }}`;
+                        const baseUrlEdit   =   `{{ route('herramientas.feriados.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
-                        const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
+                        const urlDelete = `{{ route('herramientas.feriados.destroy', ':id') }}`.replace(':id', data.id);
 
                         return `
                             <div class="btn-group dropstart">
@@ -75,13 +78,18 @@
                             </button>
                             <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
                                 <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowProducto(${data.id})">
+                                        <i class="fa-solid fa-eye"></i> Ver
+                                    </a>
+                                </li>
+                                <li>
                                     <a class="dropdown-item" href="${urlEdit}">
                                         <i class="fa-solid fa-pen-to-square"></i> Editar
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarColaborador(${data.id})">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarFeriado(${data.id})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -118,27 +126,27 @@
         });
     }
 
-    function goToCrearColaborador(){
-        window.location.href = @json(route('registros.colaborador.create'));
+    function iniciarSelect2(){
+        $( '.select2_form' ).select2( {
+            theme: "bootstrap-5",
+            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+            placeholder: $( this ).data( 'placeholder' ),
+            allowClear: true 
+        } );
+    }
+
+    function goToCrearFeriado(){
+        window.location.href = @json(route('herramientas.feriados.create'));
     }
 
 
-    function eliminarColaborador(id){
+    function eliminarFeriado(id){
         toastr.clear();
-        let row             =   getRowById(dtColaboradores,id);
+        let row             =   getRowById(dtFeriados,id);
         let message         =   '';
         let tipo_documento  =   '';
 
-        if(row.tipo_documento_id == 1){
-            tipo_documento  =   'DNI';
-        }
-
-        if(row.tipo_documento_id == 2){
-            tipo_documento  =   'CARNET EXTRANJERÍA';
-        }
-
-
-        message =   `Desea eliminar el colaborador: ${row.nombre}, ${tipo_documento}:${row.nro_documento}`;
+        message =   `Desea eliminar el feriado: ${row.descripcion}`;
 
         const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -160,7 +168,7 @@
             
             Swal.fire({
                 title: 'Cargando...',
-                html: 'Eliminando colaborador...',
+                html: 'Eliminando feriado...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading(); 
@@ -168,11 +176,11 @@
             });
 
             try {
-                let urlDeleteColaborador    =   `{{ route('registros.colaborador.destroy', ['id' => ':id']) }}`;
-                urlDeleteColaborador        =   urlDeleteColaborador.replace(':id', id);
-                const token                     =   document.querySelector('input[name="_token"]').value;
+                let urlDeleteFeriado    =   `{{ route('herramientas.feriados.destroy', ['id' => ':id']) }}`;
+                urlDeleteFeriado        =   urlDeleteFeriado.replace(':id', id);
+                const token             =   document.querySelector('input[name="_token"]').value;
 
-                const response  =   await fetch(urlDeleteColaborador, {
+                const response  =   await fetch(urlDeleteFeriado, {
                                         method: 'DELETE',
                                         headers: {
                                             'X-CSRF-TOKEN': token 
@@ -182,14 +190,14 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtColaboradores.draw();
+                    dtFeriados.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR COLABORADOR');
+                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR FERIADO');
                 }
 
             } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR COLABORADOR');
+                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR FERIADO');
             }finally{
                 Swal.close();
             }
@@ -205,6 +213,15 @@
             });
         }
         });
+    }
+
+    function exportarExcelProductos(){
+        const categoriaId   = document.getElementById('categoria').value;
+        const marcaId       = document.getElementById('marca').value;
+        
+        const url = '{{ route('registros.producto.excel') }}' + `?categoriaId=${categoriaId}&marcaId=${marcaId}`;
+    
+        window.location.href = url;    
     }
 
 
