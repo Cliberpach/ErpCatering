@@ -34,6 +34,11 @@ return new class extends Migration
             $table->longText('img_ruta')->nullable();
             $table->string('img_nombre',260)->nullable();
 
+            $table->unsignedBigInteger('feriado_id')->nullable();
+            $table->foreign('feriado_id')->references('id')->on('feriados');
+
+            $table->boolean('feriado')->default(false);
+
             $table->primary(['registro_labor_id', 'colaborador_id', 'proyecto_id', 'supervisor_id'], 'pk_registros_labor_detalle');
             $table->timestamps();
         });

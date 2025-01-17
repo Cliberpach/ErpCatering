@@ -24,6 +24,12 @@ return new class extends Migration
 
             $table->unsignedInteger('cant_trabajadores')->default(0);
             $table->string('observacion',300)->nullable();
+
+            $table->unsignedBigInteger('feriado_id')->nullable();
+            $table->foreign('feriado_id')->references('id')->on('feriados');
+
+            $table->boolean('feriado')->default(false);
+
             $table->enum('estado', ['ACTIVO', 'ANULADO','FINALIZADO'])->default('ACTIVO');
 
             $table->timestamps();

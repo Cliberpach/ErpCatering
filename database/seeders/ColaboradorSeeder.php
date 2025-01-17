@@ -20,9 +20,10 @@ class ColaboradorSeeder extends Seeder
         $colaborador->nombre            =   'ADMIN';
         $colaborador->direccion         =   'AV UNION 123';
         $colaborador->telefono          =   '999999999';
-        $colaborador->horas_semana      =   48;
-        $colaborador->pago_semana       =   2000;
-        $colaborador->pago_hora         =   (2000/48);
+        $colaborador->dias_descanso     =   10;
+        $colaborador->dias_trabajo      =   30;
+        $colaborador->pago_mensual      =   1200;
+        $colaborador->pago_dia          =   30;
         $colaborador->save();
 
     }
