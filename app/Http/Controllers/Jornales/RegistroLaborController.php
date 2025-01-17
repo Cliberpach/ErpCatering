@@ -8,6 +8,7 @@ use App\Http\Requests\Jornales\RegistroLabor\MarcarSalidaRequest;
 use App\Http\Requests\Jornales\RegistroLabor\RegistroLaborStoreRequest;
 use App\Models\Jornales\RegistroLabor;
 use App\Models\Jornales\RegistroLaborDetalle;
+use App\Models\Registros\Cargo;
 use App\Models\Registros\Proyecto;
 use App\Models\Registros\ProyectoPersonal;
 use Carbon\Carbon;
@@ -29,6 +30,7 @@ class RegistroLaborController extends Controller
 
         $registros_labor = DB::table('registros_labor as rl')
                             ->join('colaboradores as c', 'c.id', '=', 'rl.supervisor_id')
+                            ->leftJoin('feriados as f','f.id','rl.feriado_id')
                             ->select(
                                 'rl.id', 
                                 'c.nombre as supervisor_nombre',
@@ -36,7 +38,8 @@ class RegistroLaborController extends Controller
                                 'rl.observacion',
                                 'rl.created_at as fecha_registro',
                                 'rl.observacion as observacion',
-                                'rl.estado'
+                                'rl.estado',
+                                DB::raw('IF(rl.feriado = 1, "FERIADO", "DIA NORMAL") as feriado_estado')
                             )
                             ->where('rl.estado','!=','ANULADO')
                             ->where('rl.supervisor_id',Auth::user()->colaborador_id)
@@ -65,12 +68,26 @@ class RegistroLaborController extends Controller
             if(count($proyecto) === 0){
                 throw new Exception("Error, Necesitas supervisar algún proyecto para poder iniciar la asistencia");
             }
+
+            //======= REVIZANDO SI EL DÍA ACTUAL ES FERIADO =====
+            $fecha_actual = Carbon::now()->format('Y-m-d');
+
+            $feriado    =   DB::select('select f.* 
+                            from feriados as f
+                            where f.fecha = ?',[$fecha_actual]);
+
             
             //========== REGISTRAR MAESTRO ASISTENCIA =======
             $registro_labor                     =   new RegistroLabor();
             $registro_labor->supervisor_id      =   $colaborador[0]->id;
             $registro_labor->proyecto_id        =   $proyecto[0]->id;
             $registro_labor->fecha_asistencia   =   Carbon::today();
+
+            if(count($feriado) === 1){
+                $registro_labor->feriado    =   true;
+                $registro_labor->feriado_id =   $feriado[0]->id;
+            }
+
             $registro_labor->save();
 
             //===== OBTENER TODOS LOS USUARIOS ASOCIADOS A ESE PROYECTO ======
@@ -91,6 +108,10 @@ class RegistroLaborController extends Controller
                 $registro_labor_detalle->supervisor_id      =   $colaborador[0]->id;
                 $registro_labor_detalle->colaborador_id     =   $proyecto_colaborador->colaborador_id;
                 $registro_labor_detalle->registro_labor_id  =   $registro_labor->id;
+                if(count($feriado) === 1){
+                    $registro_labor_detalle->feriado    =   true;
+                    $registro_labor_detalle->feriado_id =   $feriado[0]->id;
+                }
                 $registro_labor_detalle->save();
             }
           
@@ -117,7 +138,8 @@ class RegistroLaborController extends Controller
                                 rld.hora_entrada,
                                 rld.hora_salida,
                                 rld.img_ruta,
-                                rld.img_nombre
+                                rld.img_nombre,
+                                rld.estado
                             from registros_labor_detalle as rld
                             inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.colaborador_id =  rld.colaborador_id)
                             inner join colaboradores as co on co.id = rld.colaborador_id
@@ -138,7 +160,28 @@ class RegistroLaborController extends Controller
         compact('colaboradores','registro_labor_maestro','colaborador_actual_id'));
     }
 
+
+
+/*
+//========= MANUAL =====
+array:4 [ // app\Http\Controllers\Jornales\RegistroLaborController.php:144
+  "_token"              => "c451CXaK9qFsjM4WZpJh8kqJgCtqW5RE0q0piaon"
+  "hora_entrada"        => "12:45"
+  "registro_labor_id"   => "1"
+  "colaborador_id"      => "4"
+]
+
+//======= AUTOMÁTICA ======
+array:5 [ // app\Http\Controllers\Jornales\RegistroLaborController.php:157
+  "_token"              => "c451CXaK9qFsjM4WZpJh8kqJgCtqW5RE0q0piaon"
+  "tipo_asistencia"     => "AUTOMATICO"
+  "hora_entrada"        => "12:45"
+  "registro_labor_id"   => "1"
+  "colaborador_id"      => "4"
+]
+*/ 
     public function marcarEntrada(MarcarEntradaRequest $request){
+     
         DB::beginTransaction();
         try {
             $tipo_asistencia    =   $request->get('tipo_asistencia',null);
@@ -158,12 +201,20 @@ class RegistroLaborController extends Controller
             //========= MARCAR ASISTENCIA HORA ENTRADA =======
             DB::update('
                 update registros_labor_detalle
-                set hora_entrada = ?
-                where proyecto_id = ? and colaborador_id = ? and registro_labor_id = ?',
+                set 
+                hora_entrada = ?,
+                updated_at = ?,
+                estado = "ENTRADA"
+                where 
+                proyecto_id = ? 
+                and colaborador_id = ? 
+                and registro_labor_id = ?',
                 [$hora_entrada, 
+                Carbon::now(),
                 $registro_labor->proyecto_id,
                 $colaborador_id, 
-                $registro_labor->id]
+                $registro_labor->id,
+                ]
             );
 
             //====== INCREMENTANDO CANT_TRABAJADORES EN EL MAESTRO =======
@@ -259,7 +310,8 @@ class RegistroLaborController extends Controller
                                 rld.hora_entrada,
                                 rld.hora_salida,
                                 rld.img_ruta,
-                                rld.img_nombre
+                                rld.img_nombre,
+                                rld.estado
                             from registros_labor_detalle as rld
                             inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.colaborador_id =  rld.colaborador_id)
                             inner join colaboradores as co on co.id = rld.colaborador_id
@@ -328,7 +380,9 @@ class RegistroLaborController extends Controller
             DB::update('
                 UPDATE registros_labor_detalle
                 SET hora_salida = ?, 
-                    tiempo_trabajado = TIMEDIFF(?, hora_entrada)
+                    tiempo_trabajado = TIMEDIFF(?, hora_entrada),
+                    updated_at = ?,
+                    estado = "ASISTIO"
                 WHERE proyecto_id = ? 
                 AND colaborador_id = ? 
                 AND registro_labor_id = ?
@@ -336,6 +390,7 @@ class RegistroLaborController extends Controller
                 [
                     $hora_salida, 
                     $hora_salida, 
+                    Carbon::now(),
                     $registro_labor->proyecto_id, 
                     $request->get('colaborador_id'), 
                     $registro_labor->id,

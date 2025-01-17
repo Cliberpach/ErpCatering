@@ -140,6 +140,9 @@
                         </div>
                     </td>
                     <td>
+                        ${c.estado}    
+                    </td>
+                    <td>
                         ${elementImg}    
                     </td>
                 </tr>

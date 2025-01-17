@@ -48,11 +48,13 @@ class CPersonalController extends Controller
                             'c.nro_documento',
                             'c.nombre as colaborador_nombre',
                             'ca.descripcion as cargo',
-                            DB::raw("SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado)), 0)) as tiempo_trabajado"),
-                            DB::raw("LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))) as horas_trabajadas"),
-                            DB::raw("ROUND(IFNULL(c.pago_hora, 0), 2) as pago_hora"),
-                            DB::raw("ROUND(IFNULL(c.pago_hora, 0) * LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))), 2) as pago") 
-                        );
+                            'c.pago_mensual',
+                            DB::raw('FORMAT(c.pago_dia, 2) as pago_dia'),
+                            DB::raw('COUNT(CASE WHEN rld.feriado = 0 AND rld.estado = "ASISTIO" THEN 1 END) as no_feriados_trabajados'),
+                            DB::raw('COUNT(CASE WHEN rld.feriado = 1 AND rld.estado = "ASISTIO" THEN 1 END) as feriados_trabajados'),
+                            DB::raw('COUNT(CASE WHEN rld.estado = "ASISTIO" THEN 1 END) as total_dias_trabajados')
+                        )
+                        ->where('c.estado','ACTIVO');
 
         if($proyecto_id){
             $consulta->where('rld.proyecto_id', $proyecto_id ); 
@@ -66,7 +68,7 @@ class CPersonalController extends Controller
             $consulta->where('rld.created_at', '<=', $fecha_fin . ' 23:59:59'); 
         }
                           
-        $consulta->groupBy('c.id', 'c.nombre', 'c.pago_hora', 'td.descripcion', 'c.nro_documento', 'ca.descripcion');
+        $consulta->groupBy('c.id', 'c.nombre', 'c.pago_mensual','c.pago_dia', 'td.descripcion', 'c.nro_documento', 'ca.descripcion');
                 
         return DataTables::of($consulta->get())
                         ->make(true);
@@ -93,7 +95,6 @@ class CPersonalController extends Controller
         if (!$proyecto_id) {
             dd('EL PROYECTO NO EXISTE EN LA BD');
         }
-
         $consulta   =   DB::table('registros_labor_detalle as rld')
                         ->join('colaboradores as c', 'c.id', 'rld.colaborador_id')
                         ->join('cargos as ca', 'ca.id', 'c.cargo_id')
@@ -103,11 +104,13 @@ class CPersonalController extends Controller
                             'c.nro_documento',
                             'c.nombre as colaborador_nombre',
                             'ca.descripcion as cargo',
-                            DB::raw("SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado)), 0)) as tiempo_trabajado"),
-                            DB::raw("LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))) as horas_trabajadas"),
-                            DB::raw("ROUND(IFNULL(c.pago_hora, 0), 2) as pago_hora"),
-                            DB::raw("ROUND(IFNULL(c.pago_hora, 0) * LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))), 2) as pago") 
-                        );
+                            DB::raw('COUNT(CASE WHEN rld.feriado = 0 AND rld.estado = "ASISTIO" THEN 1 END) as no_feriados_trabajados'),
+                            DB::raw('COUNT(CASE WHEN rld.feriado = 1 AND rld.estado = "ASISTIO" THEN 1 END) as feriados_trabajados'),
+                            DB::raw('COUNT(CASE WHEN rld.estado = "ASISTIO" THEN 1 END) as total_dias_trabajados'),
+                            DB::raw('FORMAT(c.pago_dia, 2) as pago_dia'),
+                            'c.pago_mensual'    
+                        )
+                        ->where('c.estado','ACTIVO');
 
         if($proyecto_id){
             $consulta->where('rld.proyecto_id', $proyecto_id ); 
@@ -121,8 +124,8 @@ class CPersonalController extends Controller
             $consulta->where('rld.created_at', '<=', $fecha_fin . ' 23:59:59'); 
         }
                           
-        $consulta   =   $consulta->groupBy('c.id', 'c.nombre', 'c.pago_hora', 'td.descripcion', 
-                        'c.nro_documento', 'ca.descripcion')->get();
+        $consulta->groupBy('c.id', 'c.nombre', 'c.pago_mensual','c.pago_dia', 'td.descripcion', 'c.nro_documento', 'ca.descripcion');
+        $consulta   =   $consulta->get();
 
         Carbon::setLocale('es');
         $fecha_impresion = Carbon::now();

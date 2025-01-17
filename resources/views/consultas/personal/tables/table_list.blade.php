@@ -5,9 +5,9 @@
         <th scope="col">N° DOC</th>
         <th scope="col">PERSONAL</th>
         <th scope="col">CARGO</th>
-        <th scope="col">DÍAS TRABAJADOS</th>
+        <th scope="col">NO FERIADOS TRABAJADOS</th>
         <th scope="col">FERIADOS TRABAJADOS</th>
-        <th scope="col">HORAS EXTRA</th>
+        <th scope="col">TOTAL DÍAS TRABAJADOS</th>
         <th scope="col">PAGO/DÍA</th>
         <th scope="col">PAGO MENSUAL</th>
       </tr>

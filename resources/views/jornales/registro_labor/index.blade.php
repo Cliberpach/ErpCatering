@@ -106,8 +106,25 @@
                 { data: 'supervisor_nombre', name: 'supervisor_nombre' },
                 { data: 'fecha_registro', name: 'fecha_registro' },
                 { data: 'cant_trabajadores', name: 'cant_trabajadores' },
+                { data: 'feriado_estado', name: 'feriado_estado' },
                 { data: 'observacion', name: 'observacion' },
-                { data: 'estado', name: 'estado' }
+                {
+                    data: 'estado',
+                    name: 'estado',
+                    render: function(data, type, row) {
+                        let badgeClass = '';
+
+                        if (data === 'ACTIVO') {
+                            badgeClass = 'bg-primary'; 
+                        } else if (data === 'ANULADO') {
+                            badgeClass = 'bg-danger'; 
+                        } else if (data === 'FINALIZADO') {
+                            badgeClass = 'bg-secondary'; 
+                        }
+
+                        return `<span class="badge ${badgeClass}">${data}</span>`;
+                    }
+                }
             ],
             order: [[3, 'desc']],
             language: {

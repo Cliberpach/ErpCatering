@@ -14,7 +14,7 @@
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Horarios <i class="fa-solid fa-clock"></i></h6>
+      <h6>Días Trabajo <i class="fa-solid fa-clock"></i></h6>
     </div>
     <div class="row mb-3">
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
@@ -96,10 +96,11 @@
                 { data: 'nro_documento', name: 'nro_documento' },
                 { data: 'colaborador_nombre', name: 'colaborador_nombre' },
                 { data: 'cargo', name: 'cargo' },
-                { data: 'tiempo_trabajado', name: 'tiempo_trabajado' },
-                { data: 'horas_trabajadas', name: 'horas_trabajadas' },
-                { data: 'pago_hora', name: 'pago_hora' },
-                { data: 'pago', name: 'pago' },
+                { data: 'no_feriados_trabajados', name: 'no_feriados_trabajados' },
+                { data: 'feriados_trabajados', name: 'feriados_trabajados' },
+                { data: 'total_dias_trabajados', name: 'total_dias_trabajados' },
+                { data: 'pago_dia', name: 'pago_dia' },
+                { data: 'pago_mensual', name: 'pago_mensual' }
             ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
@@ -209,7 +210,7 @@
         const fecha_inicio  =   document.querySelector('#fecha_inicio');
         const fecha_fin     =   document.querySelector('#fecha_fin');
         
-        if(fecha_fin.value < fecha_inicio.value){
+        if(fecha_fin.value < fecha_inicio.value && fecha_inicio.value && fecha_fin.value){
             toastr.error('LA FECHA DE FIN DEBE SER MAYOR A LA FECHA DE INICIO!!');
             fecha_fin.value =   '';
             fecha_fin.focus();
@@ -222,7 +223,7 @@
         const fecha_inicio  =   document.querySelector('#fecha_inicio');
         const fecha_fin     =   document.querySelector('#fecha_fin');
         
-        if(fecha_inicio.value > fecha_fin.value){
+        if(fecha_inicio.value > fecha_fin.value && fecha_inicio.value && fecha_fin.value){
             toastr.error('LA FECHA DE INICIO DEBE SER MENOR A LA FECHA DE FIN!!');
             fecha_inicio.value =   '';
             fecha_inicio.focus();

@@ -81,7 +81,7 @@ array:10 [ // app\Http\Controllers\Registros\ColaboradorController.php:55
             $colaborador->dias_descanso     =   $request->get('dias_descanso');
             $colaborador->pago_mensual      =   $request->get('pago_mensual');
             $colaborador->nro_documento     =   $request->get('nro_documento');
-            $colaborador->pago_dia          =   $request->get('pago_mensual')/$request->get('dias_trabajo');
+            $colaborador->pago_dia          =   $request->get('pago_mensual')/30;
             $colaborador->save();
 
             DB::commit();
@@ -116,7 +116,7 @@ array:10 [ // app\Http\Controllers\Registros\ColaboradorController.php:55
             $colaborador->dias_descanso     =   $request->get('dias_descanso');
             $colaborador->pago_mensual      =   $request->get('pago_mensual');
             $colaborador->nro_documento     =   $request->get('nro_documento');
-            $colaborador->pago_dia          =   $request->get('pago_mensual')/$request->get('dias_trabajo');
+            $colaborador->pago_dia          =   $request->get('pago_mensual')/30;
             $colaborador->update();
 
             DB::commit();
