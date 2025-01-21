@@ -142,13 +142,11 @@ class RegistroLaborController extends Controller
                                 rld.estado
                             from registros_labor_detalle as rld
                             inner join proyectos as pr on pr.id = rld.proyecto_id
-                            --inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.colaborador_id =  rld.colaborador_id)
                             inner join colaboradores as co on co.id = rld.colaborador_id
                             inner join cargos as ca on ca.id = co.cargo_id
                             inner join tipos_documento as td on td.id = co.tipo_documento_id
                             where rld.proyecto_id = ? 
-                            and pr.estado <> "ANULADO" 
-                            --and (rld.registro_labor_id = ? or rld.registro_labor_id is null)',
+                            and pr.estado <> "ANULADO"',
                             [$registro_labor_maestro->proyecto_id,$id]);
 
         //======== OBTENIENDO COLABORADOR ACTUAL =======
