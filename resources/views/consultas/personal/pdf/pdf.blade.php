@@ -157,7 +157,7 @@
                     <th>N° DOC</th>
                     <th>PERSONAL</th>
                     <th>CARGO</th>
-                    <th>NO FERIADOS TRABAJADOS</th>
+                    <th>DÍAS TRABAJADOS</th>
                     <th>FERIADOS TRABAJADOS</th>
                     <th>TOTAL DÍAS TRABAJADOS</th>
                     <th>PAGO/DÍA</th>

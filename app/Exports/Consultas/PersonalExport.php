@@ -66,7 +66,7 @@ class PersonalExport implements FromCollection, ShouldAutoSize, WithStyles
 
         $data = $consulta->get();
 
-        $data->prepend(['TIPO DOC', 'N° DOC', 'PERSONAL', 'CARGO', 'NO FERIADOS TRABAJADOS', 'FERIADOS TRABAJADOS','TOTAL DÍAS TRABAJADOS', 'PAGO/DÍA', 'PAGO MENSUAL']);
+        $data->prepend(['TIPO DOC', 'N° DOC', 'PERSONAL', 'CARGO', 'DÍAS TRABAJADOS', 'FERIADOS TRABAJADOS','TOTAL DÍAS TRABAJADOS', 'PAGO/DÍA', 'PAGO MENSUAL']);
         $data->prepend(['']);
         $data->prepend(['FECHA REPORTE:',Carbon::now(),'','USUARIO:',Auth::user()->name]);
         $data->prepend(['FECHA INICIO REPORTE:',$this->fecha_inicio,'','FECHA FIN REPORTE:',$this->fecha_fin]);
