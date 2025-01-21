@@ -145,7 +145,9 @@ class RegistroLaborController extends Controller
                             inner join colaboradores as co on co.id = rld.colaborador_id
                             inner join cargos as ca on ca.id = co.cargo_id
                             inner join tipos_documento as td on td.id = co.tipo_documento_id
-                            where rld.proyecto_id = ? 
+                            where 
+                            rld.proyecto_id = ? 
+                            and rld.registro_labor_id = ?
                             and pr.estado <> "ANULADO"',
                             [$registro_labor_maestro->proyecto_id,$id]);
 
