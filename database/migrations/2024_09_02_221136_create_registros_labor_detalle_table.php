@@ -39,6 +39,8 @@ return new class extends Migration
 
             $table->boolean('feriado')->default(false);
 
+            $table->enum('estado', ['ENTRADA', 'PENDIENTE','FALTA INJUSTIFICADA'])->default('PENDIENTE');
+
             $table->primary(['registro_labor_id', 'colaborador_id', 'proyecto_id', 'supervisor_id'], 'pk_registros_labor_detalle');
             $table->timestamps();
         });
