@@ -93,7 +93,7 @@ return array(
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Greenter\\XMLSecLibs\\' => array($vendorDir . '/greenter/xmldsig/src'),
     'Greenter\\Sunat\\GRE\\' => array($vendorDir . '/greenter/gre-api/src'),
-    'Greenter\\' => array($vendorDir . '/greenter/core/src/Core', $vendorDir . '/greenter/xml/src', $vendorDir . '/greenter/ws/src', $vendorDir . '/greenter/lite/src/Greenter'),
+    'Greenter\\' => array($vendorDir . '/greenter/core/src/Core', $vendorDir . '/greenter/lite/src/Greenter', $vendorDir . '/greenter/ws/src', $vendorDir . '/greenter/xml/src'),
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),
     'Fruitcake\\Cors\\' => array($vendorDir . '/fruitcake/php-cors/src'),
     'FontLib\\' => array($vendorDir . '/dompdf/php-font-lib/src/FontLib'),
@@ -115,6 +115,7 @@ return array(
     'Carbon\\Doctrine\\' => array($vendorDir . '/carbonphp/carbon-doctrine-types/src/Carbon/Doctrine'),
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
     'Brick\\Math\\' => array($vendorDir . '/brick/math/src'),
+    'Barryvdh\\DomPDF\\' => array($vendorDir . '/barryvdh/laravel-dompdf/src'),
     'BaconQrCode\\' => array($vendorDir . '/bacon/bacon-qr-code/src'),
     'App\\' => array($baseDir . '/app', $vendorDir . '/laravel/pint/app'),
 );

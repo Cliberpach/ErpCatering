@@ -25,7 +25,7 @@ return new class extends Migration
 
             $table->string('nombre',200);
 
-            $table->unsignedInteger('codigo_barras')->nullable();
+            $table->string('codigo_barras')->nullable();
             $table->string('codigo_interno')->nullable();
             $table->longText('ruta_codigo_barras')->nullable();
             

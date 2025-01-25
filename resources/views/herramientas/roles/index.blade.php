@@ -59,7 +59,7 @@
                         const baseUrlEdit   =   `{{ route('herramientas.rol.edit', ['id' => ':id']) }}`;
                         urlEdit             =   baseUrlEdit.replace(':id', data.id); 
 
-                        const urlDelete = `{{ route('herramientas.usuario.destroy', ':id') }}`.replace(':id', data.id);
+                        const urlDelete = `{{ route('herramientas.rol.destroy', ':id') }}`.replace(':id', data.id);
 
                         return `
                             <div class="btn-group">
