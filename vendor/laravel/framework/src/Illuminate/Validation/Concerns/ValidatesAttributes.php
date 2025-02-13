@@ -18,6 +18,7 @@ use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Exceptions\MathException;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
@@ -297,6 +298,8 @@ trait ValidatesAttributes
     protected function checkDateTimeOrder($format, $first, $second, $operator)
     {
         $firstDate = $this->getDateTimeWithOptionalFormat($format, $first);
+
+        $format = $this->getDateFormat($second) ?: $format;
 
         if (! $secondDate = $this->getDateTimeWithOptionalFormat($format, $second)) {
             if (is_null($second = $this->getValue($second))) {
@@ -905,7 +908,7 @@ trait ValidatesAttributes
             return false;
         }
 
-        $validations = collect($parameters)
+        $validations = (new Collection($parameters))
             ->unique()
             ->map(fn ($validation) => match (true) {
                 $validation === 'strict' => new NoRFCWarningsValidation(),
@@ -2259,7 +2262,7 @@ trait ValidatesAttributes
      */
     protected function shouldConvertToBoolean($parameter)
     {
-        return in_array('boolean', Arr::get($this->rules, $parameter, []));
+        return in_array('boolean', $this->rules[$parameter] ?? []);
     }
 
     /**

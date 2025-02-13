@@ -56,8 +56,7 @@ class AuthenticatedSessionController extends Controller
      * @return mixed
      */
     public function store(LoginRequest $request)
-    {   
-        
+    {
         return $this->loginPipeline($request)->then(function ($request) {
             return app(LoginResponse::class);
         });

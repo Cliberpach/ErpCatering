@@ -119,7 +119,7 @@ class Str
      */
     public static function ascii($value, $language = 'en')
     {
-        return ASCII::to_ascii((string) $value, $language);
+        return ASCII::to_ascii((string) $value, $language, replace_single_chars_only: false);
     }
 
     /**
@@ -329,6 +329,19 @@ class Str
     }
 
     /**
+     * Determine if a given string doesn't contain a given substring.
+     *
+     * @param  string  $haystack
+     * @param  string|iterable<string>  $needles
+     * @param  bool  $ignoreCase
+     * @return bool
+     */
+    public static function doesntContain($haystack, $needles, $ignoreCase = false)
+    {
+        return ! static::contains($haystack, $needles, $ignoreCase);
+    }
+
+    /**
      * Convert the case of a string.
      *
      * @param  string  $string
@@ -366,6 +379,10 @@ class Str
             $needles = (array) $needles;
         }
 
+        if (is_null($haystack)) {
+            return false;
+        }
+
         foreach ($needles as $needle) {
             if ((string) $needle !== '' && str_ends_with($haystack, $needle)) {
                 return true;
@@ -396,14 +413,14 @@ class Str
 
         $start = ltrim($matches[1]);
 
-        $start = str(mb_substr($start, max(mb_strlen($start, 'UTF-8') - $radius, 0), $radius, 'UTF-8'))->ltrim()->unless(
+        $start = Str::of(mb_substr($start, max(mb_strlen($start, 'UTF-8') - $radius, 0), $radius, 'UTF-8'))->ltrim()->unless(
             fn ($startWithRadius) => $startWithRadius->exactly($start),
             fn ($startWithRadius) => $startWithRadius->prepend($omission),
         );
 
         $end = rtrim($matches[3]);
 
-        $end = str(mb_substr($end, 0, $radius, 'UTF-8'))->rtrim()->unless(
+        $end = Str::of(mb_substr($end, 0, $radius, 'UTF-8'))->rtrim()->unless(
             fn ($endWithRadius) => $endWithRadius->exactly($end),
             fn ($endWithRadius) => $endWithRadius->append($omission),
         );
@@ -464,9 +481,10 @@ class Str
      *
      * @param  string|iterable<string>  $pattern
      * @param  string  $value
+     * @param  bool  $ignoreCase
      * @return bool
      */
-    public static function is($pattern, $value)
+    public static function is($pattern, $value, $ignoreCase = false)
     {
         $value = (string) $value;
 
@@ -484,6 +502,10 @@ class Str
                 return true;
             }
 
+            if ($ignoreCase && mb_strtolower($pattern) === mb_strtolower($value)) {
+                return true;
+            }
+
             $pattern = preg_quote($pattern, '#');
 
             // Asterisks are translated into zero-or-more regular expression wildcards
@@ -491,7 +513,7 @@ class Str
             // pattern such as "library/*", making any string check convenient.
             $pattern = str_replace('\*', '.*', $pattern);
 
-            if (preg_match('#^'.$pattern.'\z#u', $value) === 1) {
+            if (preg_match('#^'.$pattern.'\z#'.($ignoreCase ? 'iu' : 'u'), $value) === 1) {
                 return true;
             }
         }
@@ -717,14 +739,19 @@ class Str
      *
      * @param  string  $string
      * @param  array  $options
+     * @param  array  $extensions
      * @return string
      */
-    public static function inlineMarkdown($string, array $options = [])
+    public static function inlineMarkdown($string, array $options = [], array $extensions = [])
     {
         $environment = new Environment($options);
 
         $environment->addExtension(new GithubFlavoredMarkdownExtension());
         $environment->addExtension(new InlinesOnlyExtension());
+
+        foreach ($extensions as $extension) {
+            $environment->addExtension($extension);
+        }
 
         $converter = new MarkdownConverter($environment);
 
@@ -823,10 +850,10 @@ class Str
         preg_match_all($pattern, $subject, $matches);
 
         if (empty($matches[0])) {
-            return collect();
+            return new Collection;
         }
 
-        return collect($matches[1] ?? $matches[0]);
+        return new Collection($matches[1] ?? $matches[0]);
     }
 
     /**
@@ -1110,7 +1137,7 @@ class Str
     public static function replaceArray($search, $replace, $subject)
     {
         if ($replace instanceof Traversable) {
-            $replace = collect($replace)->all();
+            $replace = (new Collection($replace))->all();
         }
 
         $segments = explode($search, $subject);
@@ -1152,15 +1179,15 @@ class Str
     public static function replace($search, $replace, $subject, $caseSensitive = true)
     {
         if ($search instanceof Traversable) {
-            $search = collect($search)->all();
+            $search = (new Collection($search))->all();
         }
 
         if ($replace instanceof Traversable) {
-            $replace = collect($replace)->all();
+            $replace = (new Collection($replace))->all();
         }
 
         if ($subject instanceof Traversable) {
-            $subject = collect($subject)->all();
+            $subject = (new Collection($subject))->all();
         }
 
         return $caseSensitive
@@ -1293,7 +1320,7 @@ class Str
     public static function remove($search, $subject, $caseSensitive = true)
     {
         if ($search instanceof Traversable) {
-            $search = collect($search)->all();
+            $search = (new Collection($search))->all();
         }
 
         return $caseSensitive
@@ -1563,6 +1590,10 @@ class Str
     {
         if (! is_iterable($needles)) {
             $needles = [$needles];
+        }
+
+        if (is_null($haystack)) {
+            return false;
         }
 
         foreach ($needles as $needle) {

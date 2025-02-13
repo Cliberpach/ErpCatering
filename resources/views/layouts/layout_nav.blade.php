@@ -85,11 +85,27 @@
                 <a class="@yield('maquinarias-active')" href="{{route('registros.maquinaria.index')}}"> Maquinaria </a>
               @endcan
             </li>
-            <li>
-              @can('registros.proyecto')
-                <a class="@yield('proyectos-active')" href="{{route('registros.proyecto.index')}}">Proyecto</a>
-              @endcan
-            </li>
+            <li class="nav-item nav-item-has-children">
+            <a
+              href="#0"
+              data-bs-toggle="collapse"
+              data-bs-target="#ddmenu_3"
+              aria-controls="ddmenu_3"
+              aria-label="Toggle navigation"
+            >
+              <span class="icon">
+                <i class="fa-solid fa-pig"></i>
+              </span>
+              <span class="text">Sedes</span>
+            </a>
+            <ul id="ddmenu_3" class="collapse dropdown-nav @yield('registros-show')" >
+              <li>
+                @can('registros.proyecto')
+                  <a class="@yield('registro_labor-active')" href="{{route('registros.proyecto.index')}}"> Sede Personal </a>
+                @endcan
+              </li>
+            </ul>
+        </li>
             <li>
               @can('registros.almacen')
                 <a class="@yield('almacenes-active')" href="{{route('registros.almacen.index')}}">Almacén</a>
@@ -124,6 +140,15 @@
               @can('registros.vehiculo')
                 <a class="@yield('vehiculo-active')" href="{{route('registros.vehiculo.index')}}">Vehículos</a>
               @endcan
+            </li>
+            <li>
+                <a class="@yield('regimen-active')" href="{{route('registros.regimen.index')}}">Regimen</a>
+            </li>
+            <li>
+                <a class="@yield('regimen-active')" href="{{route('registros.horario.index')}}">Horarios</a>
+            </li>
+            <li>
+                <a class="@yield('regimen-active')" href="{{route('registros.motivo_descanso.index')}}">Motivo de Descanso</a>
             </li>
           </ul>
         </li>

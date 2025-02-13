@@ -47,6 +47,12 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoGastoSeeder::class);
         $this->call(TipoComprobanteSunatSeeder::class);
         $this->call(EmpresaFacturacionSeeder::class);
+        $this->call(HorarioSeeder::class);
+
+        $this->call(Motivo_DescansoSeeder::class);
+
+        $this->call(RegimenSeeder::class);
+
         $this->call(BancoSeeder::class);
 
     }

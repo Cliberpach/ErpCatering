@@ -4,6 +4,7 @@ namespace Illuminate\Process;
 
 use Closure;
 use Illuminate\Process\Exceptions\ProcessTimedOutException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Conditionable;
 use LogicException;
@@ -245,9 +246,8 @@ class PendingProcess
     {
         $this->command = $command ?: $this->command;
 
+        $process = $this->toSymfonyProcess($command);
         try {
-            $process = $this->toSymfonyProcess($command);
-
             if ($fake = $this->fakeFor($command = $process->getCommandline())) {
                 return tap($this->resolveSynchronousFake($command, $fake), function ($result) {
                     $this->factory->recordIfRecording($this, $result);
@@ -349,8 +349,8 @@ class PendingProcess
      */
     protected function fakeFor(string $command)
     {
-        return collect($this->fakeHandlers)
-                ->first(fn ($handler, $pattern) => $pattern === '*' || Str::is($pattern, $command));
+        return (new Collection($this->fakeHandlers))
+            ->first(fn ($handler, $pattern) => $pattern === '*' || Str::is($pattern, $command));
     }
 
     /**

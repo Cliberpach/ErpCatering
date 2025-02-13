@@ -1,4 +1,7 @@
 onduct<?php
+use App\Http\Controllers\Registros\RegimenController;
+use App\Http\Controllers\Registros\HorarioController;
+use App\Http\Controllers\Registros\Motivo_DescansoController;
 
 use App\Http\Controllers\Compras\ProveedorController;
 use App\Http\Controllers\Consultas\CMaquinariaController;
@@ -139,6 +142,38 @@ Route::group(['prefix' => 'categorias', 'middleware' => ['auth','checkCustomPerm
     Route::post('/importarCategoriasExcel', [CategoriaController::class, 'importarCategoriasExcel'])->name('registros.categoria.importarCategoriasExcel');
 
 });
+Route::group(['prefix' => 'regimen', 'middleware' => ['auth','notificacionMiddleware']], function () {
+
+    Route::get('/index', [RegimenController::class, 'index'])->name('registros.regimen.index');
+    Route::get('/create', [RegimenController::class, 'create'])->name('registros.regimen.create');
+    Route::put('/update/{id}', [RegimenController::class, 'update'])->name('registros.regimen.update');
+    
+    Route::get('/edit/{id}', [RegimenController::class, 'edit'])->name('registros.regimen.edit');
+    Route::post('/store', [RegimenController::class, 'store'])->name('registros.regimen.store');
+    Route::get('/getRegimen', [RegimenController::class, 'getRegimen'])->name('registros.regimen.getRegimen');
+    Route::delete('/destroy/{id}', [RegimenController::class, 'destroy'])->name('registros.regimen.destroy');
+
+});
+Route::group(['prefix' => 'horario', 'middleware' => ['auth', 'notificacionMiddleware']], function () {
+    Route::get('/index', [HorarioController::class, 'index'])->name('registros.horario.index');
+    Route::get('/create', [HorarioController::class, 'create'])->name('registros.horario.create');
+    Route::put('/update/{id}', [HorarioController::class, 'update'])->name('registros.horario.update');
+    Route::get('/edit/{id}', [HorarioController::class, 'edit'])->name('registros.horario.edit');
+    Route::post('/store', [HorarioController::class, 'store'])->name('registros.horario.store');
+    Route::get('/getHorario', [HorarioController::class, 'getHorario'])->name('registros.horario.getHorario');
+    Route::delete('/destroy/{id}', [HorarioController::class, 'destroy'])->name('registros.horario.destroy');
+});
+
+Route::group(['prefix' => 'motivo_descanso', 'middleware' => ['auth', 'notificacionMiddleware']], function () {
+    Route::get('/index', [Motivo_DescansoController::class, 'index'])->name('registros.motivo_descanso.index');
+    Route::get('/create', [Motivo_DescansoController::class, 'create'])->name('registros.motivo_descanso.create');
+    Route::put('/update/{id}', [Motivo_DescansoController::class, 'update'])->name('registros.motivo_descanso.update');
+    Route::get('/edit/{id}', [Motivo_DescansoController::class, 'edit'])->name('registros.motivo_descanso.edit');
+    Route::post('/store', [Motivo_DescansoController::class, 'store'])->name('registros.motivo_descanso.store');
+    Route::get('/getMotivoDescanso', [Motivo_DescansoController::class, 'getMotivoDescanso'])->name('registros.motivo_descanso.getMotivoDescanso');
+    Route::delete('/destroy/{id}', [Motivo_DescansoController::class, 'destroy'])->name('registros.motivo_descanso.destroy');
+});
+
 
 Route::group(['prefix' => 'productos', 'middleware' => ['auth','checkCustomPermission:registros.producto','notificacionMiddleware']], function () {
 
