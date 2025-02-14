@@ -153,6 +153,7 @@
                 }
             });
 
+            
             try {
                 let urlDeleteRegimen     =   `{{ route('registros.regimen.destroy', ['id' => ':id']) }}`;
                 urlDeleteRegimen         =   urlDeleteRegimen.replace(':id', id);

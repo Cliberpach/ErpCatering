@@ -1,30 +1,49 @@
 <?php
 
-namespace App\Http\Requests\Registros\MotivoDescanso;
+namespace App\Http\Requests\Registros\Motivo_Descanso;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
 
 class Motivo_DescansoStoreRequest extends FormRequest
 {
-    public function authorize()
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
     {
         return true;
     }
 
-    public function rules()
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
     {
         return [
-            'descripcion' => 'required|string|max:255|unique:motivo_descansos,descripcion',
+            'descripcion' => 'required|string|max:500',
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
-            'descripcion.required' => 'La descripción es obligatoria.',
-            'descripcion.string'   => 'La descripción debe ser un texto.',
-            'descripcion.max'      => 'La descripción no puede exceder los 255 caracteres.',
-            'descripcion.unique'   => 'Ya existe un motivo de descanso con esta descripción.',
+          
+            'descripcion.required' => 'El campo "descripción" es obligatoraio.',
+            'descripcion.string' => 'El campo "descripción" debe ser una cadena de texto.',
+            'descripcion.max' => 'El campo "descripción" no debe exceder los 500 caracteres.',
+
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new ValidationException($validator, response()->json([
+            'errors' => $validator->errors()
+        ], 422));
     }
 }

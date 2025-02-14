@@ -29,7 +29,7 @@ class RegimenStoreRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('regimenes')
+                Rule::unique('regimens')
             ],
             'descripcion' => 'required|string|max:500',
             'dias_trabajo' => 'required|integer|min:1',

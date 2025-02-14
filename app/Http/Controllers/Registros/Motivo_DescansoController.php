@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Registros;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Registros\Motivo_Descanso\Motivo_DescansoStoreRequest;
-use App\Http\Requests\Registros\Motivo_Descanso\Motivo_DescansoUpdateRequest;
 use App\Models\Registros\Motivo_Descanso;
+use App\Http\Requests\Registros\MotivoDescanso\Motivo_DescansoStoreRequest;
+use App\Http\Requests\Registros\MotivoDescanso\Motivo_DescansoUpdateRequest;
 use Illuminate\Http\Request;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;
@@ -20,7 +20,7 @@ class Motivo_DescansoController extends Controller
 
     public function getMotivoDescanso(Request $request){
 
-        $motivos = DB::table('motivo_descansos as m')
+        $motivos = DB::table('motivo_descanso as m')
                     ->select(
                         'm.id', 
                         'm.descripcion',

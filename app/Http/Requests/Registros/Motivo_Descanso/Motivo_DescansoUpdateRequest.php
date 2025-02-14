@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Registros\MotivoDescanso;
+namespace App\Http\Requests\Registros\Motivo_Descanso;
 
+use App\Http\Requests\Registros\Motivo_Descanso\Motivo_DescansoStoreRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
 class Motivo_DescansoUpdateRequest extends FormRequest
@@ -14,7 +15,7 @@ class Motivo_DescansoUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'descripcion' => 'required|string|max:255|unique:motivo_descansos,descripcion,' . $this->route('id'),
+            'descripcion' => 'required|string|max:255|unique:motivo_descanso,descripcion,' . $this->route('id'),
         ];
     }
 
