@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Registros\Motivo_Descanso;
+namespace App\Http\Requests\Registros\Regimen;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
@@ -31,10 +31,10 @@ class RegimenUpdateRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('regimen')->ignore($regimenId)
+                Rule::unique('regimens')->ignore($regimenId)
             ],
-            'descripcion' => 'required|string|max:500',
-            'dias_trabajo' => 'required|integer|min:1',
+            'descripcion'   => 'required|string|max:500',
+            'dias_trabajo'  => 'required|integer|min:1',
             'dias_descanso' => 'required|integer|min:1',
         ];
     }

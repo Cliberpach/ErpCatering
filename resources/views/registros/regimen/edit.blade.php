@@ -37,7 +37,6 @@
     })
 
     function events(){
-        eventsMdlCreateTablaGeneralDetalle();
 
         document.querySelector('#formActualizarRegimen').addEventListener('submit',(e)=>{
             e.preventDefault();

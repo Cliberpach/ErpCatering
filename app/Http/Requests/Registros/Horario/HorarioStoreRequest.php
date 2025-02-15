@@ -3,6 +3,9 @@
 namespace App\Http\Requests\Registros\Horario;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
 
 class HorarioStoreRequest extends FormRequest
 {
@@ -36,5 +39,12 @@ class HorarioStoreRequest extends FormRequest
             'minutos_tolerancia.integer'  => 'Los minutos de tolerancia deben ser un número entero.',
             'minutos_tolerancia.min'      => 'Los minutos de tolerancia no pueden ser negativos.',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new ValidationException($validator, response()->json([
+            'errors' => $validator->errors()
+        ], 422));
     }
 }

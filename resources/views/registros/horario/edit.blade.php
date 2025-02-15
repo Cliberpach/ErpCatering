@@ -88,6 +88,7 @@
                 });
 
                 try {
+                  
                     const token = document.querySelector('input[name="_token"]').value;
                     const formActualizarHorario = document.querySelector('#formActualizarHorario');
                     const formData = new FormData(formActualizarHorario);

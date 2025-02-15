@@ -3,6 +3,9 @@
 namespace App\Http\Requests\Registros\Horario;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
 
 class HorarioUpdateRequest extends FormRequest
 {
@@ -25,5 +28,12 @@ class HorarioUpdateRequest extends FormRequest
     public function messages()
     {
         return (new HorarioStoreRequest())->messages();
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new ValidationException($validator, response()->json([
+            'errors' => $validator->errors()
+        ], 422));
     }
 }

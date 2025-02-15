@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Registros;
 
 use App\Http\Controllers\Controller;
 use App\Models\Registros\Motivo_Descanso;
-use App\Http\Requests\Registros\MotivoDescanso\Motivo_DescansoStoreRequest;
-use App\Http\Requests\Registros\MotivoDescanso\Motivo_DescansoUpdateRequest;
+use App\Http\Requests\Registros\Motivo_Descanso\Motivo_DescansoStoreRequest;
+use App\Http\Requests\Registros\Motivo_Descanso\Motivo_DescansoUpdateRequest;
 use Illuminate\Http\Request;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
+class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -238,12 +238,12 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
         ),
         'Yajra\\DataTables\\' => 
         array (
-            0 => __DIR__ . '/..' . '/yajra/laravel-datatables-fractal/src',
-            1 => __DIR__ . '/..' . '/yajra/laravel-datatables-export/src',
-            2 => __DIR__ . '/..' . '/yajra/laravel-datatables-editor/src',
+            0 => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src',
+            1 => __DIR__ . '/..' . '/yajra/laravel-datatables-html/src',
+            2 => __DIR__ . '/..' . '/yajra/laravel-datatables-fractal/src',
             3 => __DIR__ . '/..' . '/yajra/laravel-datatables-buttons/src',
-            4 => __DIR__ . '/..' . '/yajra/laravel-datatables-html/src',
-            5 => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src',
+            4 => __DIR__ . '/..' . '/yajra/laravel-datatables-export/src',
+            5 => __DIR__ . '/..' . '/yajra/laravel-datatables-editor/src',
         ),
         'Whoops\\' => 
         array (
@@ -419,8 +419,8 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -504,8 +504,8 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri',
-            1 => __DIR__ . '/..' . '/league/uri-interfaces',
+            0 => __DIR__ . '/..' . '/league/uri-interfaces',
+            1 => __DIR__ . '/..' . '/league/uri',
         ),
         'League\\MimeTypeDetection\\' => 
         array (
@@ -595,10 +595,10 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
         ),
         'Greenter\\' => 
         array (
-            0 => __DIR__ . '/..' . '/greenter/lite/src/Greenter',
+            0 => __DIR__ . '/..' . '/greenter/core/src/Core',
             1 => __DIR__ . '/..' . '/greenter/xml/src',
             2 => __DIR__ . '/..' . '/greenter/ws/src',
-            3 => __DIR__ . '/..' . '/greenter/core/src/Core',
+            3 => __DIR__ . '/..' . '/greenter/lite/src/Greenter',
         ),
         'GrahamCampbell\\ResultType\\' => 
         array (
@@ -757,11 +757,14 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
         'App\\Http\\Controllers\\Registros\\CategoriaController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/CategoriaController.php',
         'App\\Http\\Controllers\\Registros\\ColaboradorController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/ColaboradorController.php',
         'App\\Http\\Controllers\\Registros\\ConductorController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/ConductorController.php',
+        'App\\Http\\Controllers\\Registros\\HorarioController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/HorarioController.php',
         'App\\Http\\Controllers\\Registros\\MaquinariaController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/MaquinariaController.php',
         'App\\Http\\Controllers\\Registros\\MarcaController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/MarcaController.php',
         'App\\Http\\Controllers\\Registros\\ModalidadPagoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/ModalidadPagoController.php',
+        'App\\Http\\Controllers\\Registros\\Motivo_DescansoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/Motivo_DescansoController.php',
         'App\\Http\\Controllers\\Registros\\ProductoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/ProductoController.php',
         'App\\Http\\Controllers\\Registros\\ProyectoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/ProyectoController.php',
+        'App\\Http\\Controllers\\Registros\\RegimenController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/RegimenController.php',
         'App\\Http\\Controllers\\Registros\\VehiculoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/VehiculoController.php',
         'App\\Http\\Controllers\\Requerimientos\\RequerimientoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Requerimientos/RequerimientoController.php',
         'App\\Http\\Controllers\\TrabajoEquipo\\RegistroTareaController' => __DIR__ . '/../..' . '/app/Http/Controllers/TrabajoEquipo/RegistroTareaController.php',
@@ -800,6 +803,8 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
         'App\\Http\\Requests\\Registros\\Colaborador\\ColaboradorUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Colaborador/ColaboradorUpdateRequest.php',
         'App\\Http\\Requests\\Registros\\Conductor\\ConductorStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Conductor/ConductorStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Conductor\\ConductorUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Conductor/ConductorUpdateRequest.php',
+        'App\\Http\\Requests\\Registros\\Horario\\HorarioStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Horario/HorarioStoreRequest.php',
+        'App\\Http\\Requests\\Registros\\Horario\\HorarioUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Horario/HorarioUpdateRequest.php',
         'App\\Http\\Requests\\Registros\\Maquinaria\\MaquinariaStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Maquinaria/MaquinariaStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Maquinaria\\MaquinariaUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Maquinaria/MaquinariaUpdateRequest.php',
         'App\\Http\\Requests\\Registros\\Marca\\MarcaImportExcelRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Marca/MarcaImportExcelRequest.php',
@@ -807,12 +812,15 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
         'App\\Http\\Requests\\Registros\\Marca\\MarcaUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Marca/MarcaUpdateRequest.php',
         'App\\Http\\Requests\\Registros\\ModalidadPago\\ModalidadPagoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/ModalidadPago/ModalidadPagoStoreRequest.php',
         'App\\Http\\Requests\\Registros\\ModalidadPago\\ModalidadPagoUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/ModalidadPago/ModalidadPagoUpdateRequest.php',
+        'App\\Http\\Requests\\Registros\\Motivo_Descanso\\Motivo_DescansoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Motivo_Descanso/Motivo_DescansoStoreRequest.php',
+        'App\\Http\\Requests\\Registros\\Motivo_Descanso\\Motivo_DescansoUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Motivo_Descanso/Motivo_DescansoUpdateRequest.php',
         'App\\Http\\Requests\\Registros\\Producto\\ProductoImportExcelRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Producto/ProductoImportExcelRequest.php',
         'App\\Http\\Requests\\Registros\\Producto\\ProductoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Producto/ProductoStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Producto\\ProductoUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Producto/ProductoUpdateRequest.php',
         'App\\Http\\Requests\\Registros\\Proyecto\\ProyectoAsignarSupervisorRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto/ProyectoAsignarSupervisorRequest.php',
         'App\\Http\\Requests\\Registros\\Proyecto\\ProyectoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto/ProyectoStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Proyecto\\ProyectoUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto/ProyectoUpdateRequest.php',
+        'App\\Http\\Requests\\Registros\\Regimen\\RegimenStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Regimen/RegimenStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Vehiculo\\VehiculoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Vehiculo/VehiculoStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Vehiculo\\VehiculoUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Vehiculo/VehiculoUpdateRequest.php',
         'App\\Http\\Requests\\Requerimientos\\Requerimiento\\RequerimientoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Requerimientos/Requerimiento/RequerimientoStoreRequest.php',
@@ -859,14 +867,17 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
         'App\\Models\\Registros\\Categoria' => __DIR__ . '/../..' . '/app/Models/Registros/Categoria.php',
         'App\\Models\\Registros\\Colaborador' => __DIR__ . '/../..' . '/app/Models/Registros/Colaborador.php',
         'App\\Models\\Registros\\Conductor' => __DIR__ . '/../..' . '/app/Models/Registros/Conductor.php',
+        'App\\Models\\Registros\\Horario' => __DIR__ . '/../..' . '/app/Models/Registros/Horario.php',
         'App\\Models\\Registros\\Maquinaria' => __DIR__ . '/../..' . '/app/Models/Registros/Maquinaria.php',
         'App\\Models\\Registros\\Marca' => __DIR__ . '/../..' . '/app/Models/Registros/Marca.php',
         'App\\Models\\Registros\\ModalidadPago' => __DIR__ . '/../..' . '/app/Models/Registros/ModalidadPago.php',
+        'App\\Models\\Registros\\Motivo_Descanso' => __DIR__ . '/../..' . '/app/Models/Registros/Motivo_Descanso.php',
         'App\\Models\\Registros\\Producto' => __DIR__ . '/../..' . '/app/Models/Registros/Producto.php',
         'App\\Models\\Registros\\Proveedor' => __DIR__ . '/../..' . '/app/Models/Registros/Proveedor.php',
         'App\\Models\\Registros\\Proyecto' => __DIR__ . '/../..' . '/app/Models/Registros/Proyecto.php',
         'App\\Models\\Registros\\ProyectoMaquinaria' => __DIR__ . '/../..' . '/app/Models/Registros/ProyectoMaquinaria.php',
         'App\\Models\\Registros\\ProyectoPersonal' => __DIR__ . '/../..' . '/app/Models/Registros/ProyectoPersonal.php',
+        'App\\Models\\Registros\\Regimen' => __DIR__ . '/../..' . '/app/Models/Registros/Regimen.php',
         'App\\Models\\Registros\\Vehiculo' => __DIR__ . '/../..' . '/app/Models/Registros/Vehiculo.php',
         'App\\Models\\Requerimientos\\Requerimiento' => __DIR__ . '/../..' . '/app/Models/Requerimientos/Requerimiento.php',
         'App\\Models\\Requerimientos\\RequerimientoDetalle' => __DIR__ . '/../..' . '/app/Models/Requerimientos/RequerimientoDetalle.php',
@@ -1113,13 +1124,16 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
         'Database\\Seeders\\DistritoSeeder' => __DIR__ . '/../..' . '/database/seeders/DistritoSeeder.php',
         'Database\\Seeders\\EmpresaFacturacionSeeder' => __DIR__ . '/../..' . '/database/seeders/EmpresaFacturacionSeeder.php',
         'Database\\Seeders\\EmpresaSeeder' => __DIR__ . '/../..' . '/database/seeders/EmpresaSeeder.php',
+        'Database\\Seeders\\HorarioSeeder' => __DIR__ . '/../..' . '/database/seeders/HorarioSeeder.php',
         'Database\\Seeders\\MarcaSeeder' => __DIR__ . '/../..' . '/database/seeders/MarcaSeeder.php',
         'Database\\Seeders\\ModalidadPagoSeeder' => __DIR__ . '/../..' . '/database/seeders/ModalidadPagoSeeder.php',
+        'Database\\Seeders\\Motivo_DescansoSeeder' => __DIR__ . '/../..' . '/database/seeders/Motivo_DescansoSeeder.php',
         'Database\\Seeders\\PermisoSeeder' => __DIR__ . '/../..' . '/database/seeders/PermisoSeeder.php',
         'Database\\Seeders\\ProductoSeeder' => __DIR__ . '/../..' . '/database/seeders/ProductoSeeder.php',
         'Database\\Seeders\\ProveedorSeeder' => __DIR__ . '/../..' . '/database/seeders/ProveedorSeeder.php',
         'Database\\Seeders\\ProvinciaSeeder' => __DIR__ . '/../..' . '/database/seeders/ProvinciaSeeder.php',
         'Database\\Seeders\\ProyectoSeeder' => __DIR__ . '/../..' . '/database/seeders/ProyectoSeeder.php',
+        'Database\\Seeders\\RegimenSeeder' => __DIR__ . '/../..' . '/database/seeders/RegimenSeeder.php',
         'Database\\Seeders\\RolSeeder' => __DIR__ . '/../..' . '/database/seeders/RolSeeder.php',
         'Database\\Seeders\\TablaGeneralSeeder' => __DIR__ . '/../..' . '/database/seeders/TablaGeneralSeeder.php',
         'Database\\Seeders\\TipoComprobanteSunatSeeder' => __DIR__ . '/../..' . '/database/seeders/TipoComprobanteSunatSeeder.php',
@@ -9461,10 +9475,10 @@ class ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit7e8c3c14ff33b199b4a0838993eb8423::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4::$classMap;
 
         }, null, ClassLoader::class);
     }

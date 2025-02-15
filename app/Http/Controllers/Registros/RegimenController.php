@@ -69,7 +69,18 @@ class RegimenController extends Controller
         return view('registros.regimen.edit',compact('regimen'));
     }
 
+
+/*
+array:5 [ // app\Http\Controllers\Registros\RegimenController.php:73
+  "_token"              => "i2EGpyXj414MvCG86P9xxwq7VXygfp9uSxiFibsX"
+  "nombre"              => "Regimen 21 dias trabajo 7 descansoasda"
+  "descripcion"         => "Este regimen laboral consiste en trabajar 21 dias y descansar 7 dias"
+  "dias_trabajo"        => "21"
+  "dias_descanso"       => "7"
+]
+*/ 
     public function update(RegimenUpdateRequest $request, $id){
+   
         DB::beginTransaction();
         try {
           
