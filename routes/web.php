@@ -2,7 +2,7 @@ onduct<?php
 use App\Http\Controllers\Registros\RegimenController;
 use App\Http\Controllers\Registros\HorarioController;
 use App\Http\Controllers\Registros\Motivo_DescansoController;
-
+use App\Http\Controllers\Registros\SedesController;
 use App\Http\Controllers\Compras\ProveedorController;
 use App\Http\Controllers\Consultas\CMaquinariaController;
 use App\Http\Controllers\Consultas\CPersonalController;
@@ -152,6 +152,18 @@ Route::group(['prefix' => 'regimen', 'middleware' => ['auth','notificacionMiddle
     Route::post('/store', [RegimenController::class, 'store'])->name('registros.regimen.store');
     Route::get('/getRegimen', [RegimenController::class, 'getRegimen'])->name('registros.regimen.getRegimen');
     Route::delete('/destroy/{id}', [RegimenController::class, 'destroy'])->name('registros.regimen.destroy');
+
+});
+Route::group(['prefix' => 'sedes', 'middleware' => ['auth','notificacionMiddleware']], function () {
+
+    Route::get('/index', [SedesController::class, 'index'])->name('registros.sedes.index');
+    Route::get('/create', [SedesController::class, 'create'])->name('registros.sedes.create');
+    Route::put('/update/{id}', [SedesController::class, 'update'])->name('registros.sedes.update');
+    
+    Route::get('/edit/{id}', [SedesController::class, 'edit'])->name('registros.sedes.edit');
+    Route::post('/store', [SedesController::class, 'store'])->name('registros.sedes.store');
+    Route::get('/getSedes', [SedesController::class, 'getSedes'])->name('registros.sedes.getSedes');
+    Route::delete('/destroy/{id}', [SedesController::class, 'destroy'])->name('registros.sedes.destroy');
 
 });
 Route::group(['prefix' => 'horario', 'middleware' => ['auth', 'notificacionMiddleware']], function () {

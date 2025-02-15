@@ -101,9 +101,12 @@
             <ul id="ddmenu_3" class="collapse dropdown-nav @yield('registros-show')" >
               <li>
                 @can('registros.proyecto')
-                  <a class="@yield('registro_labor-active')" href="{{route('registros.proyecto.index')}}"> Sede Personal </a>
+                  <a class="@yield('registro_labor-active')" href="{{route('registros.proyecto.index')}}"> Sedes </a>
                 @endcan
               </li>
+              <li>
+                <a class="@yield('sede-active')" href="{{route('registros.sedes.index')}}">Sede Personal</a>
+            </li>
             </ul>
         </li>
             <li>
