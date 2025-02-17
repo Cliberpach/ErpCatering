@@ -1,8 +1,8 @@
 onduct<?php
 use App\Http\Controllers\Registros\RegimenController;
+use App\Http\Controllers\Registros\ProyectoRegimenController;
 use App\Http\Controllers\Registros\HorarioController;
 use App\Http\Controllers\Registros\Motivo_DescansoController;
-use App\Http\Controllers\Registros\SedesController;
 use App\Http\Controllers\Compras\ProveedorController;
 use App\Http\Controllers\Consultas\CMaquinariaController;
 use App\Http\Controllers\Consultas\CPersonalController;
@@ -154,18 +154,7 @@ Route::group(['prefix' => 'regimen', 'middleware' => ['auth','notificacionMiddle
     Route::delete('/destroy/{id}', [RegimenController::class, 'destroy'])->name('registros.regimen.destroy');
 
 });
-Route::group(['prefix' => 'sedes', 'middleware' => ['auth','notificacionMiddleware']], function () {
 
-    Route::get('/index', [SedesController::class, 'index'])->name('registros.sedes.index');
-    Route::get('/create', [SedesController::class, 'create'])->name('registros.sedes.create');
-    Route::put('/update/{id}', [SedesController::class, 'update'])->name('registros.sedes.update');
-    
-    Route::get('/edit/{id}', [SedesController::class, 'edit'])->name('registros.sedes.edit');
-    Route::post('/store', [SedesController::class, 'store'])->name('registros.sedes.store');
-    Route::get('/getSedes', [SedesController::class, 'getSedes'])->name('registros.sedes.getSedes');
-    Route::delete('/destroy/{id}', [SedesController::class, 'destroy'])->name('registros.sedes.destroy');
-
-});
 Route::group(['prefix' => 'horario', 'middleware' => ['auth', 'notificacionMiddleware']], function () {
     Route::get('/index', [HorarioController::class, 'index'])->name('registros.horario.index');
     Route::get('/create', [HorarioController::class, 'create'])->name('registros.horario.create');
@@ -185,6 +174,7 @@ Route::group(['prefix' => 'motivo_descanso', 'middleware' => ['auth', 'notificac
     Route::get('/getMotivoDescanso', [Motivo_DescansoController::class, 'getMotivoDescanso'])->name('registros.motivo_descanso.getMotivoDescanso');
     Route::delete('/destroy/{id}', [Motivo_DescansoController::class, 'destroy'])->name('registros.motivo_descanso.destroy');
 });
+
 
 
 Route::group(['prefix' => 'productos', 'middleware' => ['auth','checkCustomPermission:registros.producto','notificacionMiddleware']], function () {
@@ -253,13 +243,16 @@ Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermi
     Route::delete('/destroy/{id}', [ProyectoController::class, 'destroy'])->name('registros.proyecto.destroy');
     Route::patch('/asignarSupervisor/{id}', [ProyectoController::class, 'asignarSupervisor'])->name('registros.proyecto.asignarSupervisor');
     Route::patch('/finalizarProyecto/{id}', [ProyectoController::class, 'finalizarProyecto'])->name('registros.proyecto.finalizarProyecto');
-    
+    Route::get('/vista', [ProyectoController::class, 'vista'])->name('registros.proyecto.vista');
+
     Route::get('/asignarPersonal/{id}', [ProyectoController::class, 'asignarPersonalCreate'])->name('registros.proyecto.asignarPersonalCreate');
     Route::post('/asignarPersonal', [ProyectoController::class, 'asignarPersonalStore'])->name('registros.proyecto.asignarPersonalStore');
 
     Route::get('/asignarMaquinaria/{id}', [ProyectoController::class, 'asignarMaquinariaCreate'])->name('registros.proyecto.asignarMaquinariaCreate');
     Route::post('/asignarMaquinaria', [ProyectoController::class, 'asignarMaquinariaStore'])->name('registros.proyecto.asignarMaquinariaStore');
-
+    Route::get('/asignarRegimen/{id}', [ProyectoController::class, 'asignarRegimenCreate'])->name('registros.proyecto.asignar_regimen');
+    Route::post('/asignarRegimen', [ProyectoController::class, 'asignarRegimenStore'])->name('registros.proyecto.asignarRegimenStore');
+    
     Route::get('/show/{id}', [ProyectoController::class, 'show'])->name('registros.proyecto.show');
 
 });

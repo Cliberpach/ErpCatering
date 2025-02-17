@@ -339,5 +339,27 @@ class ProyectoController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+    public function getProyectosDireccion(Request $request){
 
+        $proyectos = Proyecto::where('proyectos.estado','<>', 'ANULADO')
+                    ->leftJoin('colaboradores', 'proyectos.supervisor_id', '=', 'colaboradores.id')
+                    ->select('proyectos.id', 
+                    'proyectos.nombre', 
+                    'colaboradores.nombre as supervisor_nombre',
+                    'proyectos.direccion_calle',
+                    'proyectos.direccion_numero',
+                    'proyectos.direccion_sector',
+                    'proyectos.estado') 
+                    ->get();
+    
+        return DataTables::of($proyectos)
+                ->make(true);
+    }
+    public function vista(){
+
+        
+
+        return view('registros.proyectos.vista');
+    }
+    
 }

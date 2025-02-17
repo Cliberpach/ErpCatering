@@ -5,10 +5,13 @@ namespace App\Models\Registros;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Sedes extends Model
+
+class ProyectoRegimen extends Model
 {
     use HasFactory;
-    protected $table = 'sedes';
 
-    protected $guarded = [''];
+    protected $table = 'proyecto_regimen';
+
+    protected $guarded = [];
+
 }
