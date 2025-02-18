@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE PROYECTOS
+    LISTADO DE SEDES-PERSONAL
 @endsection
 
 @section('registros-collapsed', '')
@@ -15,11 +15,14 @@
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <select id="selectProyecto" class="form-control select2_form">
-             @foreach($proyectos as $proyecto)
-        <option value="{{ $proyecto->id }}">{{ $proyecto->nombre }}</option>
-        @endforeach
-        </select>
+    <select id="selectProyecto" class="form-control select2_form">
+    @foreach($proyectos as $proyecto)
+        <option value="{{ $proyecto->id }}" 
+            {{ isset($primerProyecto) && $primerProyecto->id == $proyecto->id ? 'selected' : '' }}>
+            {{ $proyecto->nombre }}
+        </option>
+    @endforeach
+</select>
       <button class="btn btn-primary" onclick="goToCrearProyecto()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
@@ -43,12 +46,22 @@
 <script>
     let dtProyectosDireccion    =   null;
     let dtColaboradores         =   null;
+
     document.addEventListener('DOMContentLoaded', () => {
     iniciarDataTableProyectos();
-    iniciarEventosSelectProyecto(); // Inicializar eventos del select
     iniciarSelect2();
+    iniciarEventosSelectProyecto(); // Inicializar eventos del select
     eventsMdlAsignarSupervisor();
     eventsMdlShowProyecto();
+
+    // Cargar el DataTable de Colaboradores con el primer proyecto seleccionado
+    const firstProyecto = document.querySelector("#selectProyecto");
+    if (firstProyecto) {
+        console.log("Primer proyecto detectado: ", firstProyecto.value);
+        iniciarDataTableColaboradores(firstProyecto.value);
+    } else {
+        console.error("No se encontró el select de proyectos.");
+    }
 });
 
 function iniciarEventosSelectProyecto() {
@@ -63,52 +76,6 @@ function iniciarEventosSelectProyecto() {
         document.getElementById('selectProyecto').value = firstProyecto.value;
         iniciarDataTableColaboradores(firstProyecto.value);
     }
-}
-
-function iniciarDataTableColaboradores(proyecto_id = null) {
-    if (dtColaboradores) {
-        dtColaboradores.destroy();
-    }
-
-    dtColaboradores = new DataTable('#table_colaboradores_regimen', {
-        serverSide: true,
-        processing: true,
-        ajax: {
-            url: '{{ route("registros.proyecto.getColaboradoresRegimen") }}',
-            type: 'GET',
-            data: function(d) {
-                d.proyecto_id = proyecto_id;
-            }
-        },
-        columns: [
-            { data: 'nombre', name: 'nombre' },
-            { data: 'dni', name: 'dni' },
-            { data: 'horario', name: 'horario', defaultContent: '<span class="text-muted">No asignado</span>' },
-            { data: 'regimen', name: 'regimen', defaultContent: '<span class="text-muted">No asignado</span>' },
-            { 
-                data: null, 
-                render: function(data) {
-                    return `
-                        <button class="btn btn-primary" onclick="asignarHorarioRegimen(${data.id})">
-                            <i class="fa-solid fa-clock"></i> Asignar
-                        </button>`;
-                }, 
-                orderable: false, 
-                searchable: false 
-            }
-        ],
-        language: {
-            "lengthMenu": "Mostrar _MENU_ registros por página",
-            "zeroRecords": "No se encontraron resultados",
-            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-            "infoEmpty": "Mostrando 0 a 0 de 0 registros",
-            "search": "Buscar:",
-            "paginate": {
-                "next": "Siguiente",
-                "previous": "Anterior"
-            }
-        }
-    });
 }
 
 function iniciarDataTableProyectos() {
@@ -216,6 +183,50 @@ function iniciarDataTableProyectos() {
 }
     function goToCrearProyecto(){
         window.location.href = "{{ route('registros.proyecto.create') }}";
+}
+
+function iniciarDataTableColaboradores(proyecto_id = null) {
+    if (dtColaboradores) {
+        dtColaboradores.destroy();
+    }
+    const urlGetProyectosRegimen = '{{ route("registros.proyecto.getColaboradoresRegimen") }}';
+
+    dtColaboradores = new DataTable('#table_colaboradores_regimen', {
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: urlGetProyectosRegimen,
+            type: 'GET',
+        },
+        columns: [
+            { data: 'nombre', name: 'nombre' },
+            { data: 'dni', name: 'dni' },
+            { data: 'horario', name: 'horario', defaultContent: '<span class="text-muted">No asignado</span>' },
+            { data: 'regimen', name: 'regimen', defaultContent: '<span class="text-muted">No asignado</span>' },
+            { 
+                data: null, 
+                render: function(data) {
+                    return `
+                        <button class="btn btn-primary" onclick="asignarHorarioRegimen(${data.id})">
+                            <i class="fa-solid fa-clock"></i> Asignar
+                        </button>`;
+                }, 
+                orderable: false, 
+                searchable: false 
+            }
+        ],
+        language: {
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron resultados",
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+            "search": "Buscar:",
+            "paginate": {
+                "next": "Siguiente",
+                "previous": "Anterior"
+            }
+        }
+    });
 }
 
     function iniciarSelect2(){

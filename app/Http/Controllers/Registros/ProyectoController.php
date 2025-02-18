@@ -339,31 +339,44 @@ class ProyectoController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
-    public function getProyectosDireccion(Request $request){
-
-        $proyectos = Proyecto::where('proyectos.estado','<>', 'ANULADO')
-                    ->leftJoin('colaboradores', 'proyectos.supervisor_id', '=', 'colaboradores.id')
-                    ->select('proyectos.id', 
-                    'proyectos.nombre', 
-                    'colaboradores.nombre as supervisor_nombre',
-                    'proyectos.direccion',) 
-                    ->get();
+    public function getProyectosDireccion(Request $request) {
+        $proyectoId = $request->input('proyecto_id');
     
-        return DataTables::of($proyectos)
-                ->make(true);
+        if (!$proyectoId) {
+            return response()->json(['data' => []]); // Si no hay proyecto, retorna vacío
+        }
+    
+        $proyecto = Proyecto::where('proyectos.id', $proyectoId)
+            ->whereNotIn('proyectos.estado', ['ANULADO', 'INACTIVO'])
+            ->leftJoin('colaboradores', 'proyectos.supervisor_id', '=', 'colaboradores.id')
+            ->select(
+                'proyectos.id', 
+                'proyectos.nombre', 
+                'colaboradores.nombre as supervisor_nombre',
+                'proyectos.direccion'
+            )
+            ->first(); // Solo un resultado
+    
+        return response()->json($proyecto);
     }
     public function vista(){
         $proyectos = Proyecto::all();
-        return view('registros.proyectos.vista',compact('proyectos'));
+        $primerProyecto = $proyectos->first();
+
+        return view('registros.proyectos.vista',compact('proyectos','primerProyecto'));
     }
     public function getColaboradoresRegimen(Request $request)
 {
-    $proyectoId = $request->input('proyecto_id'); 
+    $proyectoId = $request->input('proyecto_id');
+
+    if (!$proyectoId) {
+        return response()->json(['data' => []]); // Retorna vacío si no hay proyecto seleccionado
+    }
 
     $colaboradores = DB::table('colaboradores')
         ->leftJoin('horarios', 'colaboradores.horario_id', '=', 'horarios.id')
         ->leftJoin('regimenes', 'colaboradores.regimen_id', '=', 'regimenes.id')
-        ->where('colaboradores.proyecto_id', $proyectoId)
+        ->where('colaboradores.proyecto_id', $proyectoId) // Asegúrate de que esta columna existe
         ->select(
             'colaboradores.id',
             'colaboradores.nombre',
@@ -373,7 +386,6 @@ class ProyectoController extends Controller
         )
         ->get();
 
-    return DataTables::of($colaboradores)
-        ->make(true);
+    return DataTables::of($colaboradores)->make(true);
 }
 }
