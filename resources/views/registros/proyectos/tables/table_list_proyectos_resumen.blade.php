@@ -5,8 +5,6 @@
             <th scope="col">NOMBRE</th>
             <th scope="col">SUPERVISOR</th>
             <th scope="col">DIRECCION</th>
-
-
             <th scope="col">ACCIONES</th>
         </tr>
     </thead>

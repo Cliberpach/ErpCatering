@@ -15,14 +15,19 @@
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Proyectos <i class="fa-solid fa-diagram-project" style="color: rgb(7, 45, 168);"></i>
-      </h6>
+      <select id="selectProyecto" class="form-control select2_form">
+             @foreach($proyectos as $proyecto)
+        <option value="{{ $proyecto->id }}">{{ $proyecto->nombre }}</option>
+        @endforeach
+        </select>
       <button class="btn btn-primary" onclick="goToCrearProyecto()">
         <i class="fa-solid fa-plus"></i> NUEVO
       </button>
     </div>
     <div class="table-responsive">
         @include('registros.proyectos.tables.table_list_proyectos_resumen')
+        @include('registros.proyectos.tables.table_list_colaborador_regimen')
+
     </div>
 </div>
 <!-- end card -->
@@ -36,95 +41,148 @@
 @endif
 
 <script>
-    let dtProyectos    =   null;
+    let dtProyectosDireccion    =   null;
+    let dtColaboradores         =   null;
+    document.addEventListener('DOMContentLoaded', () => {
+    iniciarDataTableProyectos();
+    iniciarEventosSelectProyecto(); // Inicializar eventos del select
+    iniciarSelect2();
+    eventsMdlAsignarSupervisor();
+    eventsMdlShowProyecto();
+});
 
-    document.addEventListener('DOMContentLoaded',()=>{
-        iniciarDataTableProyectos();
-        iniciarSelect2();
-        eventsMdlAsignarSupervisor();
-        eventsMdlShowProyecto();
-    })
-    function iniciarDataTableProyectos(){
-    const urlGetProyectos = '{{ route("registros.proyecto.getProyectos") }}';
+function iniciarEventosSelectProyecto() {
+    document.getElementById('selectProyecto').addEventListener('change', function() {
+        const proyecto_id = this.value;
+        iniciarDataTableColaboradores(proyecto_id);
+    });
 
-    dtProyectos  =   new DataTable('#table_proyectos_resumen', {
+    // Seleccionar automáticamente el primer proyecto al cargar la página
+    const firstProyecto = document.querySelector("#selectProyecto option");
+    if (firstProyecto) {
+        document.getElementById('selectProyecto').value = firstProyecto.value;
+        iniciarDataTableColaboradores(firstProyecto.value);
+    }
+}
+
+function iniciarDataTableColaboradores(proyecto_id = null) {
+    if (dtColaboradores) {
+        dtColaboradores.destroy();
+    }
+
+    dtColaboradores = new DataTable('#table_colaboradores_regimen', {
         serverSide: true,
         processing: true,
         ajax: {
-            url: urlGetProyectos,
+            url: '{{ route("registros.proyecto.getColaboradoresRegimen") }}',
+            type: 'GET',
+            data: function(d) {
+                d.proyecto_id = proyecto_id;
+            }
+        },
+        columns: [
+            { data: 'nombre', name: 'nombre' },
+            { data: 'dni', name: 'dni' },
+            { data: 'horario', name: 'horario', defaultContent: '<span class="text-muted">No asignado</span>' },
+            { data: 'regimen', name: 'regimen', defaultContent: '<span class="text-muted">No asignado</span>' },
+            { 
+                data: null, 
+                render: function(data) {
+                    return `
+                        <button class="btn btn-primary" onclick="asignarHorarioRegimen(${data.id})">
+                            <i class="fa-solid fa-clock"></i> Asignar
+                        </button>`;
+                }, 
+                orderable: false, 
+                searchable: false 
+            }
+        ],
+        language: {
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron resultados",
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            "infoEmpty": "Mostrando 0 a 0 de 0 registros",
+            "search": "Buscar:",
+            "paginate": {
+                "next": "Siguiente",
+                "previous": "Anterior"
+            }
+        }
+    });
+}
+
+function iniciarDataTableProyectos() {
+    const urlGetProyectosDireccion = '{{ route("registros.proyecto.getProyectosDireccion") }}';
+
+    dtProyectosDireccion = new DataTable('#table_proyectos_resumen', {
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: urlGetProyectosDireccion,
             type: 'GET',
         },
-      columns: [
-    { data: 'id', name: 'id' },
-    { data: 'nombre', name: 'nombre' },
-    { data: 'supervisor_nombre', name: 'supervisor_nombre' },
-    {
-        data: null, 
-        render: function(data, type, row) {
-            // Accede directamente a las propiedades de 'data' sin 'proyectos.'
-            let direccionCompleta = `${data.direccion_calle} ${data.direccion_numero}, ${data.direccion_sector}`;
-            return direccionCompleta;
-        },
-        name: 'direccion',
-    },
+        columns: [
+            { data: 'id', name: 'id' },
+            { data: 'nombre', name: 'nombre' },
+            { data: 'supervisor_nombre', name: 'supervisor_nombre' },
+            { data: 'direccion', name: 'direccion' },
             {
                 data: null, 
                 render: function(data, type, row) {
-                    // Agrega los botones de acciones
-                    const baseUrlEdit   =   `{{ route('registros.proyecto.edit', ['id' => ':id']) }}`;
-                    const urlEdit             =   baseUrlEdit.replace(':id', data.id); 
+                    const baseUrlEdit = `{{ route('registros.proyecto.edit', ['id' => ':id']) }}`;
+                    const urlEdit = baseUrlEdit.replace(':id', data.id); 
 
-                    const baseUrlAsignarPersonal    =   `{{ route('registros.proyecto.asignarPersonalCreate', ['id' => ':id']) }}`;   
-                    const urlAsignarPersonal        =   baseUrlAsignarPersonal.replace(':id',data.id);
+                    const baseUrlAsignarPersonal = `{{ route('registros.proyecto.asignarPersonalCreate', ['id' => ':id']) }}`;   
+                    const urlAsignarPersonal = baseUrlAsignarPersonal.replace(':id', data.id);
 
-                    const baseUrlAsignarMaquinaria    =   `{{ route('registros.proyecto.asignarMaquinariaCreate', ['id' => ':id']) }}`;   
-                    const urlAsignarMaquinaria        =   baseUrlAsignarMaquinaria.replace(':id',data.id);
+                    const baseUrlAsignarMaquinaria = `{{ route('registros.proyecto.asignarMaquinariaCreate', ['id' => ':id']) }}`;   
+                    const urlAsignarMaquinaria = baseUrlAsignarMaquinaria.replace(':id', data.id);
 
                     const urlDelete = `{{ route('registros.colaborador.destroy', ':id') }}`.replace(':id', data.id);
 
                     return `
                         <div class="btn-group dropstart">
-                        <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-grip"></i>
-                        </button>
-                        <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
-                             <li>
-                                <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowProyecto(${data.id})">
-                                    <i class="fa-solid fa-eye"></i> Ver
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="${urlEdit}">
-                                    <i class="fa-solid fa-pen-to-square"></i> Editar
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProyecto(${data.id})">
-                                    <i class="fa-solid fa-trash"></i> Eliminar
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="javascript:void(0);" onclick="finalizarProyecto(${data.id})">
-                                    <i class="fa-solid fa-flag-checkered"></i> Finalizar
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsignarSupervisor(${data.id})">
-                                    <i class="fa-solid fa-book-open-reader"></i> Asignar supervisor
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="${urlAsignarPersonal}" >
-                                    <i class="fa-solid fa-people-group"></i> Asignar personal
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="${urlAsignarMaquinaria}" >
-                                    <i class="fa-solid fa-tractor"></i> Asignar maquinaria
-                                </a>
-                            </li>
-                        </ul>
+                            <button type="button" class="dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-grip"></i>
+                            </button>
+                            <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlShowProyecto(${data.id})">
+                                        <i class="fa-solid fa-eye"></i> Ver
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="${urlEdit}">
+                                        <i class="fa-solid fa-pen-to-square"></i> Editar
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProyecto(${data.id})">
+                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="finalizarProyecto(${data.id})">
+                                        <i class="fa-solid fa-flag-checkered"></i> Finalizar
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsignarSupervisor(${data.id})">
+                                        <i class="fa-solid fa-book-open-reader"></i> Asignar supervisor
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="${urlAsignarPersonal}">
+                                        <i class="fa-solid fa-people-group"></i> Asignar personal
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="${urlAsignarMaquinaria}">
+                                        <i class="fa-solid fa-tractor"></i> Asignar maquinaria
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     `;
                 },
@@ -156,9 +214,6 @@
         }
     });
 }
-
-
-
     function goToCrearProyecto(){
         window.location.href = "{{ route('registros.proyecto.create') }}";
 }
@@ -174,7 +229,7 @@
 
     function eliminarProyecto(id){
         toastr.clear();
-        let row             =   getRowById(dtProyectos,id);
+        let row             =   getRowById(dtProyectosDireccion,id);
         let message         =   '';
 
         message =   `Desea eliminar el proyecto: ${row.nombre}`;
@@ -221,7 +276,7 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtProyectos.draw();
+                    dtProyectosDireccion.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PROYECTO');
@@ -246,9 +301,12 @@
         });
     }
 
+
+
+
     function finalizarProyecto(id){
         toastr.clear();
-        let row             =   getRowById(dtProyectos,id);
+        let row             =   getRowById(dtProyectosDireccion,id);
         let message         =   '';
       
 
@@ -297,7 +355,7 @@
                 const   res =   await response.json();
 
                 if(res.success){
-                    dtProyectos.draw();
+                    dtProyectosDireccion.draw();
                     toastr.success(res.message,'OPERACIÓN COMPLETADA');
                 }else{
                     toastr.error(res.message,'ERROR EN EL SERVIDOR AL FINALIZAR PROYECTO');

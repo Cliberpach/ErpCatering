@@ -346,20 +346,34 @@ class ProyectoController extends Controller
                     ->select('proyectos.id', 
                     'proyectos.nombre', 
                     'colaboradores.nombre as supervisor_nombre',
-                    'proyectos.direccion_calle',
-                    'proyectos.direccion_numero',
-                    'proyectos.direccion_sector',
-                    'proyectos.estado') 
+                    'proyectos.direccion',) 
                     ->get();
     
         return DataTables::of($proyectos)
                 ->make(true);
     }
     public function vista(){
-
-        
-
-        return view('registros.proyectos.vista');
+        $proyectos = Proyecto::all();
+        return view('registros.proyectos.vista',compact('proyectos'));
     }
-    
+    public function getColaboradoresRegimen(Request $request)
+{
+    $proyectoId = $request->input('proyecto_id'); 
+
+    $colaboradores = DB::table('colaboradores')
+        ->leftJoin('horarios', 'colaboradores.horario_id', '=', 'horarios.id')
+        ->leftJoin('regimenes', 'colaboradores.regimen_id', '=', 'regimenes.id')
+        ->where('colaboradores.proyecto_id', $proyectoId)
+        ->select(
+            'colaboradores.id',
+            'colaboradores.nombre',
+            'colaboradores.dni',
+            DB::raw('IFNULL(horarios.nombre, "Sin asignar") as horario'),
+            DB::raw('IFNULL(regimenes.nombre, "Sin asignar") as regimen')
+        )
+        ->get();
+
+    return DataTables::of($colaboradores)
+        ->make(true);
+}
 }

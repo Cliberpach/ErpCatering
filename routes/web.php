@@ -244,9 +244,11 @@ Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermi
     Route::patch('/asignarSupervisor/{id}', [ProyectoController::class, 'asignarSupervisor'])->name('registros.proyecto.asignarSupervisor');
     Route::patch('/finalizarProyecto/{id}', [ProyectoController::class, 'finalizarProyecto'])->name('registros.proyecto.finalizarProyecto');
     Route::get('/vista', [ProyectoController::class, 'vista'])->name('registros.proyecto.vista');
+    Route::get('/getColaboradoresRegimen', [ProyectoController::class, 'getColaboradoresRegimen'])->name('registros.proyecto.getColaboradoresRegimen');
 
     Route::get('/asignarPersonal/{id}', [ProyectoController::class, 'asignarPersonalCreate'])->name('registros.proyecto.asignarPersonalCreate');
     Route::post('/asignarPersonal', [ProyectoController::class, 'asignarPersonalStore'])->name('registros.proyecto.asignarPersonalStore');
+    Route::get('/getProyectosDireccion', [ProyectoController::class, 'getProyectosDireccion'])->name('registros.proyecto.getProyectosDireccion');
 
     Route::get('/asignarMaquinaria/{id}', [ProyectoController::class, 'asignarMaquinariaCreate'])->name('registros.proyecto.asignarMaquinariaCreate');
     Route::post('/asignarMaquinaria', [ProyectoController::class, 'asignarMaquinariaStore'])->name('registros.proyecto.asignarMaquinariaStore');
