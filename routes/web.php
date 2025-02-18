@@ -254,7 +254,8 @@ Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermi
     Route::post('/asignarMaquinaria', [ProyectoController::class, 'asignarMaquinariaStore'])->name('registros.proyecto.asignarMaquinariaStore');
     Route::get('/asignarRegimen/{id}', [ProyectoController::class, 'asignarRegimenCreate'])->name('registros.proyecto.asignar_regimen');
     Route::post('/asignarRegimen', [ProyectoController::class, 'asignarRegimenStore'])->name('registros.proyecto.asignarRegimenStore');
-    
+    Route::post('/asignarHorarioRegimen', [ProyectoController::class, 'asignarHorarioRegimen'])->name('registros.proyecto.asignarHorarioRegimen');
+
     Route::get('/show/{id}', [ProyectoController::class, 'show'])->name('registros.proyecto.show');
 
 });

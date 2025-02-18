@@ -10,6 +10,7 @@ use App\Models\General\Departamento;
 use App\Models\General\Distrito;
 use App\Models\General\Provincia;
 use App\Models\Registros\Almacen;
+use App\Models\Registros\Colaborador;
 use App\Models\Registros\Proyecto;
 use App\Models\Registros\ProyectoMaquinaria;
 use App\Models\Registros\ProyectoPersonal;
@@ -355,9 +356,8 @@ class ProyectoController extends Controller
                 'colaboradores.nombre as supervisor_nombre',
                 'proyectos.direccion'
             )
-            ->first(); // Solo un resultado
-    
-        return response()->json($proyecto);
+            ->get(); // Solo un resultado
+    return DataTables::of($proyecto)->make(true);
     }
     public function vista(){
         $proyectos = Proyecto::all();
@@ -370,22 +370,39 @@ class ProyectoController extends Controller
     $proyectoId = $request->input('proyecto_id');
 
     if (!$proyectoId) {
-        return response()->json(['data' => []]); // Retorna vacío si no hay proyecto seleccionado
+        return response()->json(['data' => []]); 
     }
 
-    $colaboradores = DB::table('colaboradores')
-        ->leftJoin('horarios', 'colaboradores.horario_id', '=', 'horarios.id')
-        ->leftJoin('regimenes', 'colaboradores.regimen_id', '=', 'regimenes.id')
-        ->where('colaboradores.proyecto_id', $proyectoId) // Asegúrate de que esta columna existe
+    $colaboradores = DB::table('proyecto_personal as pp')
+        ->join('colaboradores as c', 'pp.colaborador_id', '=', 'c.id') 
+        ->leftJoin('colaborador_proyecto as cp', 'pp.colaborador_id', '=', 'cp.colaborador_id')
+        ->leftJoin('horarios as h', 'cp.horario_id', '=', 'h.id') 
+        ->leftJoin('regimens as r', 'cp.regimen_id', '=', 'r.id') 
+        ->where('pp.proyecto_id', $proyectoId)
         ->select(
-            'colaboradores.id',
-            'colaboradores.nombre',
-            'colaboradores.dni',
-            DB::raw('IFNULL(horarios.nombre, "Sin asignar") as horario'),
-            DB::raw('IFNULL(regimenes.nombre, "Sin asignar") as regimen')
+            'c.id as colaborador_id',
+            'c.nombre as nombre',
+            'c.nro_documento as dni',
+            DB::raw('COALESCE(h.descripcion, "Sin asignar") as horario'),
+            DB::raw('COALESCE(r.nombre, "Sin asignar") as regimen')
         )
         ->get();
 
     return DataTables::of($colaboradores)->make(true);
+}
+public function asignarHorarioRegimen(Request $request)
+{
+    $request->validate([
+        'colaborador_id' => 'required|exists:colaboradores,id',
+        'horario_id' => 'nullable|exists:horarios,id',
+        'regimen_id' => 'nullable|exists:regimenes,id',
+    ]);
+
+    $colaborador = Colaborador::findOrFail($request->colaborador_id);
+    $colaborador->horario_id = $request->horario_id;
+    $colaborador->regimen_id = $request->regimen_id;
+    $colaborador->save();
+
+    return response()->json(['success' => true, 'message' => 'Horario y régimen asignados correctamente.']);
 }
 }

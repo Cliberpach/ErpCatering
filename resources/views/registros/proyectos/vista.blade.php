@@ -15,18 +15,28 @@
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-    <select id="selectProyecto" class="form-control select2_form">
-    @foreach($proyectos as $proyecto)
-        <option value="{{ $proyecto->id }}" 
-            {{ isset($primerProyecto) && $primerProyecto->id == $proyecto->id ? 'selected' : '' }}>
-            {{ $proyecto->nombre }}
-        </option>
-    @endforeach
-</select>
-      <button class="btn btn-primary" onclick="goToCrearProyecto()">
-        <i class="fa-solid fa-plus"></i> NUEVO
-      </button>
     </div>
+
+    <div class="row justify-content-between mb-3">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+            <select id="selectProyecto" class="form-control select2_form" onchange="cambiarProyecto(this.value)">
+                @foreach($proyectos as $proyecto)
+                    <option value="{{ $proyecto->id }}" 
+                        {{ isset($primerProyecto) && $primerProyecto->id == $proyecto->id ? 'selected' : '' }}>
+                        {{ $proyecto->nombre }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6" style="display: flex;justify-content:end;">
+            <button class="btn btn-primary" onclick="goToCrearProyecto()">
+                <i class="fa-solid fa-plus"></i> Crear Proyecto
+            </button>
+        </div>
+
+      
+    </div>
+
     <div class="table-responsive">
         @include('registros.proyectos.tables.table_list_proyectos_resumen')
         @include('registros.proyectos.tables.table_list_colaborador_regimen')
@@ -48,35 +58,17 @@
     let dtColaboradores         =   null;
 
     document.addEventListener('DOMContentLoaded', () => {
-    iniciarDataTableProyectos();
-    iniciarSelect2();
-    iniciarEventosSelectProyecto(); // Inicializar eventos del select
-    eventsMdlAsignarSupervisor();
-    eventsMdlShowProyecto();
+        iniciarDataTableProyectos();
+        iniciarDataTableColaboradores();
+        iniciarSelect2();
+        eventsMdlAsignarSupervisor();
+        eventsMdlShowProyecto();
 
-    // Cargar el DataTable de Colaboradores con el primer proyecto seleccionado
-    const firstProyecto = document.querySelector("#selectProyecto");
-    if (firstProyecto) {
-        console.log("Primer proyecto detectado: ", firstProyecto.value);
-        iniciarDataTableColaboradores(firstProyecto.value);
-    } else {
-        console.error("No se encontró el select de proyectos.");
-    }
-});
+            
 
-function iniciarEventosSelectProyecto() {
-    document.getElementById('selectProyecto').addEventListener('change', function() {
-        const proyecto_id = this.value;
-        iniciarDataTableColaboradores(proyecto_id);
     });
 
-    // Seleccionar automáticamente el primer proyecto al cargar la página
-    const firstProyecto = document.querySelector("#selectProyecto option");
-    if (firstProyecto) {
-        document.getElementById('selectProyecto').value = firstProyecto.value;
-        iniciarDataTableColaboradores(firstProyecto.value);
-    }
-}
+
 
 function iniciarDataTableProyectos() {
     const urlGetProyectosDireccion = '{{ route("registros.proyecto.getProyectosDireccion") }}';
@@ -87,6 +79,9 @@ function iniciarDataTableProyectos() {
         ajax: {
             url: urlGetProyectosDireccion,
             type: 'GET',
+            data: function (d) {
+                d.proyecto_id  =   $('#selectProyecto').val();
+            }
         },
         columns: [
             { data: 'id', name: 'id' },
@@ -180,6 +175,8 @@ function iniciarDataTableProyectos() {
             }
         }
     });
+    console.log('DataTable inicializado correctamente.'); // Depuración
+
 }
     function goToCrearProyecto(){
         window.location.href = "{{ route('registros.proyecto.create') }}";
@@ -197,6 +194,9 @@ function iniciarDataTableColaboradores(proyecto_id = null) {
         ajax: {
             url: urlGetProyectosRegimen,
             type: 'GET',
+            data: function (d) {
+                d.proyecto_id  =   $('#selectProyecto').val();
+            }
         },
         columns: [
             { data: 'nombre', name: 'nombre' },
@@ -389,6 +389,10 @@ function iniciarDataTableColaboradores(proyecto_id = null) {
             });
         }
         });
+    }
+
+    function cambiarProyecto(proyecto_id){
+        console.log(proyecto_id);
     }
 
 
