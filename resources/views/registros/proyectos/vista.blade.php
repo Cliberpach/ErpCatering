@@ -12,6 +12,7 @@
 @section('section-page')
 @include('registros.proyectos.modals.modal_asignar_supervisor')
 @include('registros.proyectos.modals.modal_show')
+@include('registros.proyectos.modals.modal_asignar_regimen_horario')
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
@@ -205,10 +206,13 @@ function iniciarDataTableColaboradores(proyecto_id = null) {
             { data: 'regimen', name: 'regimen', defaultContent: '<span class="text-muted">No asignado</span>' },
             { 
                 data: null, 
-                render: function(data) {
+                render: function(data, type, row) {
+                    const baseUrlAsignarHorarioRegimen = `{{ route('registros.proyecto.asignarHorarioRegimenCreate', ['id' => ':id']) }}`;
+                    const urlAsignarHorarioRegimen = baseUrlAsignarHorarioRegimen.replace(':id', data.id); 
+                    
+
                     return `
-                        <button class="btn btn-primary" onclick="asignarHorarioRegimen(${data.id})">
-                            <i class="fa-solid fa-clock"></i> Asignar
+                        <button class="btn btn-primary" href="${urlAsignarHorarioRegimen}" ></i> Asignar
                         </button>`;
                 }, 
                 orderable: false, 
@@ -228,7 +232,6 @@ function iniciarDataTableColaboradores(proyecto_id = null) {
         }
     });
 }
-
     function iniciarSelect2(){
         $( '.select2_form' ).select2( {
             theme: "bootstrap-5",
@@ -393,6 +396,13 @@ function iniciarDataTableColaboradores(proyecto_id = null) {
 
     function cambiarProyecto(proyecto_id){
         console.log(proyecto_id);
+        if (dtProyectosDireccion) {
+        dtProyectosDireccion.ajax.reload(null, false); // Recargar sin reiniciar la paginación
+    }
+
+    if (dtColaboradores) {
+        dtColaboradores.ajax.reload(null, false); // Recargar sin reiniciar la paginación
+    }
     }
 
 

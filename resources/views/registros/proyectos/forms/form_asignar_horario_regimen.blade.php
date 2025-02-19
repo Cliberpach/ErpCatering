@@ -1,4 +1,4 @@
-<form id="formAsignarHorarioRegimen">
+<form action="" id="formAsignarHorarioRegimen" method="post">    
     @csrf
     <input type="hidden" name="colaborador_id" id="colaborador_id">
 

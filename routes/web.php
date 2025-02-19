@@ -255,6 +255,8 @@ Route::group(['prefix' => 'proyectos', 'middleware' => ['auth','checkCustomPermi
     Route::get('/asignarRegimen/{id}', [ProyectoController::class, 'asignarRegimenCreate'])->name('registros.proyecto.asignar_regimen');
     Route::post('/asignarRegimen', [ProyectoController::class, 'asignarRegimenStore'])->name('registros.proyecto.asignarRegimenStore');
     Route::post('/asignarHorarioRegimen', [ProyectoController::class, 'asignarHorarioRegimen'])->name('registros.proyecto.asignarHorarioRegimen');
+    Route::get('/asignarHorarioRegimenCreate/{id}', [ProyectoController::class, 'asignarHorarioRegimenCreate'])->name('registros.proyecto.asignarHorarioRegimenCreate');
+    Route::post('/asignarHorarioRegimenStore', [ProyectoController::class, 'asignarHorarioRegimenStore'])->name('registros.proyecto.asignarHorarioRegimenStore');
 
     Route::get('/show/{id}', [ProyectoController::class, 'show'])->name('registros.proyecto.show');
 
@@ -265,7 +267,7 @@ Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','
 
     Route::post('/store', [TablaGeneralDetalleController::class, 'store'])->name('herramientas.tabla_general_detalle.store');
     Route::get('/getListTablaGeneralDetalles/{id}', [TablaGeneralDetalleController::class, 'getListTablaGeneralDetalles'])->name('registros.tabla_general_detalle.getListTablaGeneralDetalles');
-
+    
 });
 
 
