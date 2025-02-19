@@ -208,12 +208,12 @@ function iniciarDataTableColaboradores(proyecto_id = null) {
                 data: null, 
                 render: function(data, type, row) {
                     const baseUrlAsignarHorarioRegimen = `{{ route('registros.proyecto.asignarHorarioRegimenCreate', ['id' => ':id']) }}`;
-                    const urlAsignarHorarioRegimen = baseUrlAsignarHorarioRegimen.replace(':id', data.id); 
+                    const urlAsignarHorarioRegimen = baseUrlAsignarHorarioRegimen.replace(':id', data.colaborador_id); 
                     
 
                     return `
-                        <button class="btn btn-primary" href="${urlAsignarHorarioRegimen}" ></i> Asignar
-                        </button>`;
+                        <a class="btn btn-primary" href="${urlAsignarHorarioRegimen}" ></i> Asignar
+                        </a>`;
                 }, 
                 orderable: false, 
                 searchable: false 

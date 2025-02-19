@@ -94,7 +94,6 @@
                 try {
                     const response = await fetch(urlAsignarHorarioRegimen, {
                         method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': token },
                         body: formData
                     });
 

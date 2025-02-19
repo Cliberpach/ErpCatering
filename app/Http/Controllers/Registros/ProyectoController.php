@@ -412,20 +412,22 @@ public function asignarHorarioRegimen(Request $request)
 
 public function asignarHorarioRegimenCreate($id)
 {
-    // Obtener colaboradores del proyecto
+    // Obtener colaboradores asociados al proyecto
     $colaboradores = DB::select('SELECT 
-                                    cp.colaborador_id, 
+                                    pp.colaborador_id, 
                                     co.nombre AS colaborador_nombre, 
                                     co.nro_documento AS colaborador_nro_documento, 
                                     cp.horario_id, 
                                     cp.regimen_id 
-                                FROM colaborador_proyecto AS cp
-                                INNER JOIN colaboradores AS co ON co.id = cp.colaborador_id
-                                WHERE cp.proyecto_id = ?', [$id]);
+                                FROM proyecto_personal AS pp
+                                INNER JOIN colaboradores AS co ON co.id = pp.colaborador_id
+                                LEFT JOIN colaborador_proyecto AS cp ON cp.colaborador_id = pp.colaborador_id
+                                WHERE pp.proyecto_id = ?', [$id]);
 
     // Obtener listas de horarios y regímenes
-    $horarios = DB::table('horarios')->get();
-    $regimenes = DB::table('regimens')->get();
+    $horarios = DB::table('horarios')->select('id', 'descripcion')->get();
+    $regimenes = DB::table('regimens')->select('id', 'nombre')->get();
+
 
     // Datos del proyecto
     $proyecto = Proyecto::findOrFail($id);
@@ -438,7 +440,7 @@ public function asignarHorarioRegimenStore(Request $request)
     $request->validate([
         'colaborador_id' => 'required|exists:colaborador_proyecto,colaborador_id',
         'horario_id' => 'nullable|exists:horarios,id',
-        'regimen_id' => 'nullable|exists:regimenes,id',
+        'regimen_id' => 'nullable|exists:regimens,id',
     ]);
 
     try {
@@ -458,6 +460,7 @@ public function asignarHorarioRegimenStore(Request $request)
         DB::rollBack();
         return response()->json(['success' => false, 'message' => 'Error al asignar horario y régimen.']);
     }
+    
 }
 
 }

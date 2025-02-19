@@ -1,4 +1,4 @@
-<form action="" id="formAsignarHorarioRegimen" method="post">    
+<form action="" id="formAsignarHorarioRegimen" method="POST">    
     @csrf
     <input type="hidden" name="colaborador_id" id="colaborador_id">
 
@@ -7,7 +7,7 @@
         <select name="horario_id" id="horario_id" class="form-control select2_form">
             <option value="">Seleccione un horario</option>
             @foreach($horarios as $horario)
-                <option value="{{ $horario->id }}">{{ $horario->nombre }}</option>
+            <option value="{{ $horario->id }}">{{ $horario->descripcion }}</option>
             @endforeach
         </select>
     </div>
@@ -17,10 +17,8 @@
         <select name="regimen_id" id="regimen_id" class="form-control select2_form">
             <option value="">Seleccione un régimen</option>
             @foreach($regimenes as $regimen)
-                <option value="{{ $regimen->id }}">{{ $regimen->nombre }}</option>
+            <option value="{{ $regimen->id }}">{{ $regimen->nombre }}</option>
             @endforeach
         </select>
     </div>
-
-    <button type="submit" class="btn btn-primary">Guardar</button>
 </form>
