@@ -182,7 +182,6 @@ function iniciarDataTableProyectos() {
     function goToCrearProyecto(){
         window.location.href = "{{ route('registros.proyecto.create') }}";
 }
-
 function iniciarDataTableColaboradores(proyecto_id = null) {
     if (dtColaboradores) {
         dtColaboradores.destroy();
@@ -207,13 +206,14 @@ function iniciarDataTableColaboradores(proyecto_id = null) {
             { 
                 data: null, 
                 render: function(data, type, row) {
-                    const baseUrlAsignarHorarioRegimen = `{{ route('registros.proyecto.asignarHorarioRegimenCreate', ['id' => ':id']) }}`;
-                    const urlAsignarHorarioRegimen = baseUrlAsignarHorarioRegimen.replace(':id', data.colaborador_id); 
-                    
+                    const proyectoId = $('#selectProyecto').val();
+                    const baseUrlAsignarHorarioRegimen = `{{ route('registros.proyecto.asignarHorarioRegimenCreate', ['proyectoId' => ':proyectoId', 'colaboradorId' => ':colaboradorId']) }}`;
+                    const urlAsignarHorarioRegimen = baseUrlAsignarHorarioRegimen
+                        .replace(':proyectoId', proyectoId)
+                        .replace(':colaboradorId', data.colaborador_id);
 
                     return `
-                        <a class="btn btn-primary" href="${urlAsignarHorarioRegimen}" ></i> Asignar
-                        </a>`;
+                        <a class="btn btn-primary" href="${urlAsignarHorarioRegimen}">Asignar</a>`;
                 }, 
                 orderable: false, 
                 searchable: false 

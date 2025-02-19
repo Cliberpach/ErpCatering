@@ -100,7 +100,7 @@
                     const res = await response.json();
 
                     if (res.success) {
-                        const proyectoIndex = @json(route('registros.proyecto.index'));
+                        const proyectoIndex = @json(route('registros.proyecto.vista'));
                         toastr.success(res.message, 'OPERACIÓN COMPLETADA');
                         window.location.href = proyectoIndex;
                     } else {

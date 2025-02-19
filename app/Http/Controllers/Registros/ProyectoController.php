@@ -410,38 +410,39 @@ public function asignarHorarioRegimen(Request $request)
     return response()->json(['success' => true, 'message' => 'Horario y régimen asignados correctamente.']);
 }
 
-public function asignarHorarioRegimenCreate($id)
+
+public function asignarHorarioRegimenCreate($proyectoId, $colaboradorId)
 {
-    // Obtener colaboradores asociados al proyecto
-    $colaboradores = DB::select('SELECT 
-                                    pp.colaborador_id, 
-                                    co.nombre AS colaborador_nombre, 
-                                    co.nro_documento AS colaborador_nro_documento, 
-                                    cp.horario_id, 
-                                    cp.regimen_id 
-                                FROM proyecto_personal AS pp
-                                INNER JOIN colaboradores AS co ON co.id = pp.colaborador_id
-                                LEFT JOIN colaborador_proyecto AS cp ON cp.colaborador_id = pp.colaborador_id
-                                WHERE pp.proyecto_id = ?', [$id]);
+    // Verificar el ID del proyecto
+    if (!is_numeric($proyectoId)) {
+        return response()->json(['success' => false, 'message' => 'ID de proyecto inválido.']);
+    }
+
+    // Obtener datos del proyecto
+    $proyecto = Proyecto::find($proyectoId);
+
+    // Verificar si el proyecto fue encontrado
+    if (!$proyecto) {
+        return response()->json(['success' => false, 'message' => 'Proyecto no encontrado.']);
+    }
+
+    // Obtener datos del colaborador
+    $colaborador = Colaborador::find($colaboradorId);
+
+    // Verificar si el colaborador fue encontrado
+    if (!$colaborador) {
+        return response()->json(['success' => false, 'message' => 'Colaborador no encontrado.']);
+    }
 
     // Obtener listas de horarios y regímenes
     $horarios = DB::table('horarios')->select('id', 'descripcion')->get();
     $regimenes = DB::table('regimens')->select('id', 'nombre')->get();
 
-
-    // Datos del proyecto
-    $proyecto = Proyecto::findOrFail($id);
-
-    return view('registros.proyectos.asignar_horario_regimen', compact('colaboradores', 'horarios', 'regimenes', 'proyecto'));
+    return view('registros.proyectos.asignar_horario_regimen', compact('colaborador', 'horarios', 'regimenes', 'proyecto'));
 }
-
 public function asignarHorarioRegimenStore(Request $request)
 {
-    $request->validate([
-        'colaborador_id' => 'required|exists:colaborador_proyecto,colaborador_id',
-        'horario_id' => 'nullable|exists:horarios,id',
-        'regimen_id' => 'nullable|exists:regimens,id',
-    ]);
+
 
     try {
         DB::beginTransaction();
