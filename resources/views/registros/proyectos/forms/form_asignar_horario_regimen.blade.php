@@ -1,6 +1,11 @@
 <form action="" id="formAsignarHorarioRegimen" method="POST">    
     @csrf
-    <input type="hidden" name="colaborador_id" id="colaborador_id">
+    <div class="mb-3">
+    <label for="colaboradorId" class="form-label">Nombre del Trabajador</label>
+    <input type="hidden" name="colaborador_id" value="{{ $colaborador->id }}">
+    <input type="text" class="form-control" value="{{ $colaborador->nombre }}" readonly>
+</div>
+
 
     <div class="mb-3">
         <label for="horario_id" class="form-label">Horario</label>
