@@ -442,26 +442,36 @@ public function asignarHorarioRegimenCreate($proyectoId, $colaboradorId)
 }
 public function asignarHorarioRegimenStore(Request $request)
 {
-
-
+    DB::beginTransaction();
     try {
-        DB::beginTransaction();
+        $colaborador_id = $request->get('colaborador_id');
+        $horario_id = $request->get('horario_id') ?? null;
+        $regimen_id = $request->get('regimen_id') ?? null;
 
+        // Eliminar cualquier asignación previa del colaborador
         DB::table('colaborador_proyecto')
-            ->where('colaborador_id', $request->colaborador_id)
-            ->update([
-                'horario_id' => $request->horario_id,
-                'regimen_id' => $request->regimen_id,
-                'updated_at' => now()
-            ]);
+            ->where('colaborador_id', $colaborador_id)
+            ->delete();
+
+        // Insertar la nueva asignación
+        DB::table('colaborador_proyecto')->insert([
+            'colaborador_id' => $colaborador_id,
+            'horario_id' => $horario_id,
+            'regimen_id' => $regimen_id,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
 
         DB::commit();
         return response()->json(['success' => true, 'message' => 'Horario y régimen asignados correctamente.']);
     } catch (\Throwable $th) {
         DB::rollBack();
-        return response()->json(['success' => false, 'message' => 'Error al asignar horario y régimen.']);
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al asignar horario y régimen.',
+            'error' => $th->getMessage(),
+        ]);
     }
-    
 }
 
 }
