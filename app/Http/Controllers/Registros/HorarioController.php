@@ -51,7 +51,7 @@ class HorarioController extends Controller
             $horario->nombre_proyecto       = Str::upper($request->get('nombre_proyecto'));
             $horario->hora_inicio           = $request->get('hora_inicio');
             $horario->hora_final            = $request->get('hora_final');
-            $horario->descripcion           = $request->get('descripcion');
+            $horario->descripcion = $request->filled('descripcion') ? $request->get('descripcion') : null;
             $horario->minutos_tolerancia    = $request->get('minutos_tolerancia');
             $horario->estado                = 'ACTIVO';
             $horario->save();
@@ -79,7 +79,7 @@ class HorarioController extends Controller
             $horario->nombre_proyecto       = Str::upper($request->get('nombre_proyecto'));
             $horario->hora_inicio           = $request->get('hora_inicio');
             $horario->hora_final            = $request->get('hora_final');
-            $horario->descripcion           = $request->get('descripcion');
+            $horario->descripcion = $request->filled('descripcion') ? $request->get('descripcion') : null;
             $horario->minutos_tolerancia    = $request->get('minutos_tolerancia');
             $horario->save();
 

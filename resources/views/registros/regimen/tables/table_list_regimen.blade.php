@@ -3,7 +3,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">NOMBRE</th>
-        <th scope="col">DESCRIPCION</th>
+        <th scope="col">OBSERVACION</th>
         <th scope="col">DIAS DE TRABAJO</th>
         <th scope="col">DIAS DE DESCANSO</th>
         <th scope="col">ACCIONES</th>

@@ -42,6 +42,11 @@ class RegimenController extends Controller
         return view('registros.regimen.create');
     }
 
+    public function edit($id){
+        $regimen     =   Regimen::find($id);
+
+        return view('registros.regimen.edit',compact('regimen'));
+    } 
     public function store(RegimenStoreRequest $request){
         
         DB::beginTransaction();
@@ -49,7 +54,7 @@ class RegimenController extends Controller
 
             $regimen                   =   new Regimen();
             $regimen->nombre           =   Str::upper($request->get('nombre'));
-            $regimen->descripcion    =   $request->get('descripcion');
+            $regimen->descripcion = $request->filled('descripcion') ? $request->get('descripcion') : null;
             $regimen->dias_trabajo      =   $request->get('dias_trabajo');
             $regimen->dias_descanso      =   $request->get('dias_descanso');
             $regimen->save();
@@ -63,22 +68,8 @@ class RegimenController extends Controller
         }
     }
 
-    public function edit($id){
-        $regimen     =   Regimen::find($id);
-
-        return view('registros.regimen.edit',compact('regimen'));
-    }
 
 
-/*
-array:5 [ // app\Http\Controllers\Registros\RegimenController.php:73
-  "_token"              => "i2EGpyXj414MvCG86P9xxwq7VXygfp9uSxiFibsX"
-  "nombre"              => "Regimen 21 dias trabajo 7 descansoasda"
-  "descripcion"         => "Este regimen laboral consiste en trabajar 21 dias y descansar 7 dias"
-  "dias_trabajo"        => "21"
-  "dias_descanso"       => "7"
-]
-*/ 
     public function update(RegimenUpdateRequest $request, $id){
    
         DB::beginTransaction();
@@ -86,7 +77,7 @@ array:5 [ // app\Http\Controllers\Registros\RegimenController.php:73
           
             $regimen                   =   Regimen::find($id);
             $regimen->nombre           =   Str::upper($request->get('nombre'));
-            $regimen->descripcion    =   $request->get('descripcion');
+            $regimen->descripcion = $request->filled('descripcion') ? $request->get('descripcion') : null; 
             $regimen->dias_trabajo     =   $request->get('dias_trabajo');
             $regimen->dias_descanso      =   $request->get('dias_descanso');
             $regimen->save();

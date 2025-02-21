@@ -33,7 +33,7 @@ class RegimenUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique('regimens')->ignore($regimenId)
             ],
-            'descripcion'   => 'required|string|max:500',
+            'descripcion'   => 'nullable|string|max:500',
             'dias_trabajo'  => 'required|integer|min:1',
             'dias_descanso' => 'required|integer|min:1',
         ];
@@ -46,10 +46,6 @@ class RegimenUpdateRequest extends FormRequest
             'nombre.string' => 'El campo "nombre" debe ser una cadena de texto.',
             'nombre.max' => 'El campo "nombre" no debe exceder los 255 caracteres.',
             'nombre.unique' => 'Este nombre de régimen ya está registrado.',
-
-            'descripcion.required' => 'El campo "descripción" es obligatorio.',
-            'descripcion.string' => 'El campo "descripción" debe ser una cadena de texto.',
-            'descripcion.max' => 'El campo "descripción" no debe exceder los 500 caracteres.',
 
             'dias_trabajo.required' => 'El campo "días de trabajo" es obligatorio.',
             'dias_trabajo.integer' => 'El campo "días de trabajo" debe ser un número entero.',

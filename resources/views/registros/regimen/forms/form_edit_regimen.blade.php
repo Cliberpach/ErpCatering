@@ -17,7 +17,7 @@
                 <span class="input-group-text" id="basic-addon1">
                     <i class="fa-solid fa-keyboard"></i>                  
                 </span>
-                <textarea required id="descripcion" maxlength="500" name="descripcion" class="form-control" placeholder="Descripción" aria-label="Descripción" aria-describedby="basic-addon1">{{ $regimen->descripcion }}</textarea>
+                <textarea id="descripcion" maxlength="500" name="descripcion" class="form-control" placeholder="Descripción" aria-label="Descripción" aria-describedby="basic-addon1">{{ $regimen->descripcion }}</textarea>
             </div>                  
             <span class="descripcion_error msgError" style="color:red;"></span>
         </div>  

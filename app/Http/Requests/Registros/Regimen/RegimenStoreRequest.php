@@ -31,7 +31,7 @@ class RegimenStoreRequest extends FormRequest
                 'max:255',
                 Rule::unique('regimens')
             ],
-            'descripcion' => 'required|string|max:500',
+            'descripcion' => 'nullable|string|max:500',
             'dias_trabajo' => 'required|integer|min:1',
             'dias_descanso' => 'required|integer|min:1',
         ];

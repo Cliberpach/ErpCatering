@@ -198,10 +198,10 @@
                 }
             },
             columns: [
-                { data: 'nombre', name: 'nombre' },
                 { data: 'dni', name: 'dni' },
-                { data: 'horario', name: 'horario', defaultContent: '<span class="text-muted">No asignado</span>' },
+                { data: 'nombre', name: 'nombre' },
                 { data: 'regimen', name: 'regimen', defaultContent: '<span class="text-muted">No asignado</span>' },
+                { data: 'horario', name: 'horario', defaultContent: '<span class="text-muted">No asignado</span>' },
                 { 
                     data: null, 
                     render: function(data, type, row) {

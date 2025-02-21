@@ -3,21 +3,21 @@
     <div class="row">
         <!-- Nombre del Proyecto -->
         <div class="col-lg-6 col-md-6 col-sm-12 pb-2">
-            <label for="nombre_proyecto" class="required_field mb-2" style="font-weight: bold;">Nombre del Proyecto</label>
+            <label for="nombre_proyecto" class="required_field mb-2" style="font-weight: bold;">Nombre del Horario</label>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fa-solid fa-file-signature"></i></span>
-                <input required id="nombre_proyecto" maxlength="255" name="nombre_proyecto" type="text" class="form-control" placeholder="Nombre del Proyecto">
+                <input required id="nombre_proyecto" maxlength="255" name="nombre_proyecto" type="text" class="form-control" placeholder="Nombre del Horario">
             </div>                  
             <span class="nombre_proyecto_error msgError text-danger"></span>
         </div>
 
         <!-- Descripción -->
         <div class="col-lg-6 col-md-6 col-sm-12 pb-2">
-            <label for="descripcion" class="required_field mb-2" style="font-weight: bold;">Descripción</label>
+            <label for="descripcion" class="required_field mb-2" style="font-weight: bold;">Observacion</label>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fa-solid fa-keyboard"></i></span>
-                <textarea required id="descripcion" maxlength="500" name="descripcion" class="form-control" placeholder="Descripción"></textarea>
-            </div>                  
+                <textarea id="descripcion" maxlength="500" name="descripcion" class="form-control" placeholder="Observacion"></textarea>
+                </div>                  
             <span class="descripcion_error msgError text-danger"></span>
         </div>
 
@@ -51,11 +51,7 @@
             <span class="minutos_tolerancia_error msgError text-danger"></span>
         </div>
 
-        <!-- Botón de Envío -->
-        <div class="col-12 text-center">
-            <button type="submit" class="btn btn-primary">
-                <i class="fa-solid fa-save"></i> Guardar Horario
-            </button>
+
         </div>
     </div>
 </form>
