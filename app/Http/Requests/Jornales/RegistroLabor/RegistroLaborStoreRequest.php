@@ -39,7 +39,7 @@ class RegistroLaborStoreRequest extends FormRequest
 
         //======= VERIFICAR SI EL USUARIO ESTÁ SUPERVISANDO ALGÚN PROYECTO =========
         $supervisandoProyecto = DB::table('proyectos')
-                                ->where('supervisor_id', Auth::user()->id)
+                                ->where('supervisor_id', Auth::user()->colaborador_id)
                                 ->exists();
 
         if (!$supervisandoProyecto) {
@@ -49,7 +49,7 @@ class RegistroLaborStoreRequest extends FormRequest
 
         //========= VERIFICAR QUE EL USUARIO NO TENGA OTRO MAESTRO DE ASISTENCIA ACTIVO =====
         $maestro_asistencia =   DB::table('registros_labor')
-                                ->where('supervisor_id', Auth::user()->id)
+                                ->where('supervisor_id', Auth::user()->colaborador_id)
                                 ->where('estado', "ACTIVO")
                                 ->exists();
 
@@ -60,7 +60,7 @@ class RegistroLaborStoreRequest extends FormRequest
 
         //=========== VERIFICAR QUE EL USUARIO NO INICIE 2 PROCESOS DE ASISTENCIA EN EL MISMO DÍA =========
         $maestro_asistencia =   DB::table('registros_labor')
-                                ->where('supervisor_id', Auth::user()->id)
+                                ->where('supervisor_id', Auth::user()->colaborador_id)
                                 ->where('estado', "FINALIZADO")
                                 ->whereDate('fecha_asistencia', Carbon::today())                                
                                 ->exists();

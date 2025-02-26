@@ -60,7 +60,7 @@ class RegistroLaborController extends Controller
        
             //========== BUSCANDO EL PROYECTO QUE SUPERVISA EL USUARIO AUTENTICADO ========
             $proyecto   =   DB::select('select pr.id from proyectos as pr
-                            where pr.supervisor_id = ?',[Auth::user()->id]);
+                            where pr.supervisor_id = ?',[Auth::user()->colaborador_id]);
 
             if(count($proyecto) === 0){
                 throw new Exception("Error, Necesitas supervisar algún proyecto para poder iniciar la asistencia");
