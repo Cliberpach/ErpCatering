@@ -118,22 +118,9 @@
                                             <i class="fa-solid fa-pen-to-square"></i> Editar
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProyecto(${data.id})">
-                                            <i class="fa-solid fa-trash"></i> Eliminar
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="javascript:void(0);" onclick="finalizarProyecto(${data.id})">
-                                            <i class="fa-solid fa-flag-checkered"></i> Finalizar
-                                        </a>
-                                    </li>
+                        
                                     <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsignarSupervisor(${data.id})">
-                                            <i class="fa-solid fa-book-open-reader"></i> Asignar supervisor
-                                        </a>
-                                    </li>
+              
                                     <li>
                                         <a class="dropdown-item" href="${urlAsignarPersonal}">
                                             <i class="fa-solid fa-people-group"></i> Asignar personal
@@ -239,83 +226,6 @@
                 allowClear: true,
             } );
         }
-
-        function eliminarProyecto(id){
-            toastr.clear();
-            let row             =   getRowById(dtProyectosDireccion,id);
-            let message         =   '';
-
-            message =   `Desea eliminar el proyecto: ${row.nombre}`;
-
-            const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-                confirmButton: "btn btn-success",
-                cancelButton: "btn btn-danger"
-            },
-            buttonsStyling: false
-            });
-            swalWithBootstrapButtons.fire({
-            title: message,
-            text: "Operación no reversible!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Sí, eliminar!",
-            cancelButtonText: "No, cancelar!",
-            reverseButtons: true
-            }).then(async (result) => {
-            if (result.isConfirmed) {
-                
-                Swal.fire({
-                    title: 'Cargando...',
-                    html: 'Eliminando proyecto...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading(); 
-                    }
-                });
-
-                try {
-                    let urlDeleteProyecto    =   `{{ route('registros.proyecto.destroy', ['id' => ':id']) }}`;
-                    urlDeleteProyecto        =   urlDeleteProyecto.replace(':id', id);
-                    const token              =   document.querySelector('input[name="_token"]').value;
-
-                    const response  =   await fetch(urlDeleteProyecto, {
-                                            method: 'DELETE',
-                                            headers: {
-                                                'X-CSRF-TOKEN': token 
-                                            }
-                                        });
-
-                    const   res =   await response.json();
-
-                    if(res.success){
-                        dtProyectosDireccion.draw();
-                        toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                    }else{
-                        toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PROYECTO');
-                    }
-
-                } catch (error) {
-                    toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR PROYECTO');
-                }finally{
-                    Swal.close();
-                }
-
-            } else if (
-                /* Read more about handling dismissals below */
-                result.dismiss === Swal.DismissReason.cancel
-            ) {
-                swalWithBootstrapButtons.fire({
-                title: "Operación cancelada",
-                text: "No se realizaron acciones",
-                icon: "error"
-                });
-            }
-            });
-        }
-
-
-
 
         function finalizarProyecto(id){
             toastr.clear();
