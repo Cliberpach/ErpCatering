@@ -102,42 +102,56 @@ class RegistroLaborController extends Controller
         }
     }
 
-    public function asistenciasCreate($id){
 
+    public function asistenciasCreate($id)
+    {
         //======= OBTENIENDO EL REGISTRO LABOR ======
-        $registro_labor_maestro =   RegistroLabor::find($id);
+        $registro_labor_maestro = RegistroLabor::find($id);
           
         //======== OBTENIENDO LOS COLABORADORES ENLAZADOS A ESE PROYECTO =====
-        $colaboradores  =   DB::select('select 
-                                rld.colaborador_id as colaborador_id,
-                                co.nombre as colaborador_nombre,
-                                ca.descripcion as cargo_nombre,
-                                co.nro_documento as colaborador_nro_documento,
-                                td.descripcion as colaborador_tipo_documento,
-                                rld.hora_entrada,
-                                rld.hora_salida,
-                                rld.img_ruta,
-                                rld.img_nombre
-                            from registros_labor_detalle as rld
-                            inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.colaborador_id =  rld.colaborador_id)
-                            inner join colaboradores as co on co.id = rld.colaborador_id
-                            inner join cargos as ca on ca.id = co.cargo_id
-                            inner join tipos_documento as td on td.id = co.tipo_documento_id
-                            where pp.proyecto_id = ? 
-                            and pp.estado = "ACTIVO" 
-                            and (rld.registro_labor_id = ? or rld.registro_labor_id is null)',
-                            [$registro_labor_maestro->proyecto_id,$id]);
-
+        $colaboradores = DB::select('SELECT 
+                                        rld.colaborador_id AS colaborador_id,
+                                        co.nombre AS colaborador_nombre,
+                                        ca.descripcion AS cargo_nombre,
+                                        co.nro_documento AS colaborador_nro_documento,
+                                        h.descripcion AS horario_descripcion,
+                                        r.nombre AS regimen_nombre,
+                                        rld.hora_entrada,
+                                        rld.hora_salida,
+                                        CASE 
+                                            WHEN rld.hora_entrada > h.hora_inicio 
+                                            THEN TIMESTAMPDIFF(MINUTE, h.hora_inicio, rld.hora_entrada) 
+                                            ELSE 0 
+                                        END AS tardanza
+                                    FROM registros_labor_detalle AS rld
+                                    INNER JOIN proyecto_personal AS pp 
+                                        ON pp.proyecto_id = rld.proyecto_id 
+                                        AND pp.colaborador_id = rld.colaborador_id
+                                    INNER JOIN colaboradores AS co 
+                                        ON co.id = rld.colaborador_id
+                                    INNER JOIN cargos AS ca 
+                                        ON ca.id = co.cargo_id
+                                    INNER JOIN colaborador_proyecto AS cp 
+                                        ON cp.colaborador_id = co.id
+                                    INNER JOIN horarios AS h 
+                                        ON h.id = cp.horario_id
+                                    INNER JOIN regimens AS r 
+                                        ON r.id = cp.regimen_id
+                                    WHERE 
+                                        pp.proyecto_id = ? 
+                                        AND pp.estado = "ACTIVO" 
+                                        AND (rld.registro_labor_id = ? OR rld.registro_labor_id IS NULL)', 
+                                    [$registro_labor_maestro->proyecto_id, $id]);
+    
         //======== OBTENIENDO COLABORADOR ACTUAL =======
-        $colaborador_actual_id  =   DB::select('select co.id
-                                    from users as u
-                                    inner join colaboradores as co on co.id = u.colaborador_id
-                                    where u.id = ?',[Auth::user()->id])[0]->id;
-
+        $colaborador_actual_id = DB::select('SELECT co.id
+                                             FROM users AS u
+                                             INNER JOIN colaboradores AS co ON co.id = u.colaborador_id
+                                             WHERE u.id = ?', [Auth::user()->id])[0]->id;
+    
         return view('jornales.registro_labor.asistencias',
-        compact('colaboradores','registro_labor_maestro','colaborador_actual_id'));
+            compact('colaboradores', 'registro_labor_maestro', 'colaborador_actual_id'));
     }
-
     public function marcarEntrada(MarcarEntradaRequest $request){
         DB::beginTransaction();
         try {
@@ -248,31 +262,45 @@ class RegistroLaborController extends Controller
 
     } 
 
-    public function getColaboradoresAsistencia($proyecto_id,$registro_labor_id){
 
-        $colaboradores  =   DB::select('select 
-                                rld.colaborador_id as colaborador_id,
-                                co.nombre as colaborador_nombre,
-                                ca.descripcion as cargo_nombre,
-                                co.nro_documento as colaborador_nro_documento,
-                                td.descripcion as colaborador_tipo_documento,
-                                rld.hora_entrada,
-                                rld.hora_salida,
-                                rld.img_ruta,
-                                rld.img_nombre
-                            from registros_labor_detalle as rld
-                            inner join proyecto_personal as pp on (pp.proyecto_id =  rld.proyecto_id and pp.colaborador_id =  rld.colaborador_id)
-                            inner join colaboradores as co on co.id = rld.colaborador_id
-                            inner join cargos as ca on ca.id = co.cargo_id
-                            inner join tipos_documento as td on td.id = co.tipo_documento_id
-                            where 
-                            pp.proyecto_id = ? 
-                            and pp.estado = "ACTIVO" 
-                            and (rld.registro_labor_id = ? or rld.registro_labor_id is null)',
-                            [$proyecto_id,$registro_labor_id]);
+    public function getColaboradoresAsistencia($proyecto_id, $registro_labor_id)
+    {
+        $colaboradores = DB::select('SELECT 
+        rld.colaborador_id AS colaborador_id,
+        co.nombre AS colaborador_nombre,
+        ca.descripcion AS cargo_nombre,
+        co.nro_documento AS colaborador_nro_documento,
+        CONCAT(h.descripcion, " - ", r.descripcion) AS colaborador_horario_regimen,
+        rld.hora_entrada,
+        rld.hora_salida,
+        CASE 
+            WHEN rld.hora_entrada > h.hora_inicio 
+            THEN TIMESTAMPDIFF(MINUTE, h.hora_inicio, rld.hora_entrada) 
+            ELSE 0 
+        END AS tardanza
+    FROM registros_labor_detalle AS rld
+    INNER JOIN proyecto_personal AS pp 
+        ON pp.proyecto_id = rld.proyecto_id 
+        AND pp.colaborador_id = rld.colaborador_id
+    INNER JOIN colaboradores AS co 
+        ON co.id = rld.colaborador_id
+    INNER JOIN cargos AS ca 
+        ON ca.id = co.cargo_id
+    INNER JOIN colaborador_proyecto AS cp 
+        ON cp.colaborador_id = co.id
+    INNER JOIN horarios AS h 
+        ON h.id = cp.horario_id
+    INNER JOIN regimens AS r 
+        ON r.id = cp.regimen_id
+    WHERE 
+        pp.proyecto_id = ? 
+        AND pp.estado = "ACTIVO" 
+        AND (rld.registro_labor_id = ? OR rld.registro_labor_id IS NULL)', 
+    [$proyecto_id, $registro_labor_id]);
 
-        return $colaboradores;
-    }
+return $colaboradores;
+}
+    
 
     public static function validacionMarcarSalida($registro_labor,$hora_salida,$colaborador_id){
         //========= VALIDANDO HORA DE SALIDA ======

@@ -69,86 +69,87 @@
         
     }
 
-    function pintarTablaDetalleAsistencia(lstColaboradores){
-        let filas                   =   ``;
-        const tbody                 =   document.querySelector('#table_detalle_asistencia tbody');
-        let acciones                =   ``;
-        const supervisor_id         =   @json($registro_labor_maestro->supervisor_id);
-        const asistencia_estado     =   @json($registro_labor_maestro->estado);
-        const colaborador_actual_id =   @json($colaborador_actual_id);
+    function pintarTablaDetalleAsistencia(lstColaboradores) {
+    console.log(lstColaboradores); // Agrega esta línea para depurar
+    let filas = ``;
+    const tbody = document.querySelector('#table_detalle_asistencia tbody');
+    let acciones = ``;
+    const supervisor_id = @json($registro_labor_maestro->supervisor_id);
+    const asistencia_estado = @json($registro_labor_maestro->estado);
+    const colaborador_actual_id = @json($colaborador_actual_id);
 
-      
-        lstColaboradores.forEach((c, index) => {
+    lstColaboradores.forEach((c, index) => {
+        if ((c.hora_entrada && c.hora_salida) || 
+            (supervisor_id != colaborador_actual_id) || 
+            (asistencia_estado === 'FINALIZADO') || 
+            (asistencia_estado === 'ANULADO')) {
+            acciones = ``;
+        } else {
+            acciones = `<div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-sliders"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                ${!c.hora_entrada ? `
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsistenciaEntrada(${index}, ${c.colaborador_id})">
+                                            <i class="fa-solid fa-ticket"></i> Marcar entrada
+                                        </a>
+                                    </li>
+                                ` : ''}
+                                ${c.hora_entrada && !c.hora_salida ? `
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsistenciaSalida(${index}, ${c.colaborador_id})">
+                                            <i class="fa-solid fa-person-walking-dashed-line-arrow-right"></i> Marcar salida
+                                        </a>
+                                    </li>
+                                ` : ''}
+                            </ul>
+                        </div>`;
+        }
 
-            if((c.hora_entrada && c.hora_salida) || (supervisor_id != colaborador_actual_id) || (asistencia_estado === 'FINALIZADO') || (asistencia_estado === 'ANULADO') ){
-                acciones    =   ``;
-            }else{
+        filas += `
+            <tr>
+                <th></th>
+                <td>${acciones}</td>
+                <td>${c.colaborador_nombre}</td>
+                <td>
+                    <div style="display:flex;justify-content:center;"> 
+                        <p style="margin:0;">${c.colaborador_nro_documento}</p>
+                    </div>
+                </td>
+                <td>
+                    <div style="width:120px;">
+                        ${c.horario_descripcion || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
+                    </div>
+                </td>
+                <td>
+                    <div style="width:120px;">
+                        ${c.regimen_nombre || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
+                    </div>
+                </td>
+                <td>${c.cargo_nombre}</td>
+                <td>
+                    <div style="width:120px;">
+                        ${c.hora_entrada || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
+                    </div>
+                </td>
+                <td>
+                    <div style="width:120px;">
+                        ${c.hora_salida || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
+                    </div>
+                </td>
+                <td>
+                    <div style="width:120px;">
+                        ${c.tardanza || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
 
-                acciones    =   `<div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa-solid fa-sliders"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        ${!c.hora_entrada ? `
-                                            <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsistenciaEntrada(${index}, ${c.colaborador_id})">
-                                                    <i class="fa-solid fa-ticket"></i> Marcar entrada
-                                                </a>
-                                            </li>
-                                        ` : ''}
-                                        ${c.hora_entrada && !c.hora_salida ? `
-                                            <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlAsistenciaSalida(${index}, ${c.colaborador_id})">
-                                                    <i class="fa-solid fa-person-walking-dashed-line-arrow-right"></i> Marcar salida
-                                                </a>
-                                            </li>
-                                        ` : ''}
-                                    </ul>
-                                </div>`;
-            }
-
-            //======= MANEJANDO IMAGEN =====
-            let elementImg  =   ``;
-            if(c.img_ruta){
-                const ruta  =   @json(asset('')) + c.img_ruta;
-                elementImg  =   `<img class="imgShowLightBox" style="height:50px;object-fit:contain;cursor:pointer;" src="${ruta}">`;
-            }
-        
-            filas += `
-                <tr>
-                    <th>
-                    </th>
-                    <td>
-                       ${acciones}  
-                    </td>
-                    <td>${c.colaborador_nombre}</td>
-                    <td>
-                        <div style="display:flex;justify-content:center;"> 
-                            <p style="margin:0;">${c.colaborador_nro_documento}</p>
-                        </div>
-                    </td>
-                    <td>${c.colaborador_tipo_documento}</td>
-                    <td>${c.cargo_nombre}</td>
-                    <td>
-                        <div style="width:120px;">
-                            ${c.hora_entrada || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
-                        </div>
-                    </td>
-                    <td>
-                        <div style="width:120px;">
-                            ${c.hora_salida || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
-                        </div>
-                    </td>
-                    <td>
-                        ${elementImg}    
-                    </td>
-                </tr>
-            `;
-        });
-
-        tbody.innerHTML =   filas;
-
-    }
+    tbody.innerHTML = filas;
+}
 
     function iniciarDataTableDetalleAsistencia(){
         dtDetalleAsistencia  =   new DataTable('#table_detalle_asistencia',{
