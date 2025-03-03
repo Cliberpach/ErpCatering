@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class RegistroLaborController extends Controller
 {
@@ -155,80 +156,68 @@ class RegistroLaborController extends Controller
     public function marcarEntrada(MarcarEntradaRequest $request){
         DB::beginTransaction();
         try {
-            $tipo_asistencia    =   $request->get('tipo_asistencia',null);
-            $hora_entrada       =   $request->get('hora_entrada',null);
-            $registro_labor_id  =   $request->get('registro_labor_id',null);
-            $colaborador_id     =   $request->get('colaborador_id',null);
-
-            $registro_labor     =   RegistroLabor::find($registro_labor_id);
-
-            //======= VALIDACIÓN COMPLEJA =======
-            RegistroLaborController::validacionMarcarAsistencia($registro_labor,$colaborador_id);
+            $tipo_asistencia    = $request->get('tipo_asistencia', null);
+            $hora_entrada       = $request->get('hora_entrada', null);
+            $registro_labor_id  = $request->get('registro_labor_id', null);
+            $colaborador_id     = $request->get('colaborador_id', null);
+    
+            $registro_labor     = RegistroLabor::find($registro_labor_id);
             
-            if ($tipo_asistencia === 'AUTOMATICO') {
-                $hora_entrada = Carbon::now()->format('H:i');
+            // Obtener datos del colaborador en colaborador_proyecto
+            $colaborador_proyecto = DB::table('colaborador_proyecto')
+                ->where('colaborador_id', $colaborador_id)
+                ->first();
+    
+            if (!$colaborador_proyecto || !$colaborador_proyecto->horario_id || !$colaborador_proyecto->regimen_id) {
+                return response()->json(['success' => false, 'message' => 'Debe asignarse un horario y régimen antes de registrar asistencia.']);
             }
-
-            //========= MARCAR ASISTENCIA HORA ENTRADA =======
-            DB::update('
-                update registros_labor_detalle
-                set hora_entrada = ?
-                where proyecto_id = ? and colaborador_id = ? and registro_labor_id = ?',
-                [$hora_entrada, 
-                $registro_labor->proyecto_id,
-                $colaborador_id, 
-                $registro_labor->id]
-            );
-
-            //====== INCREMENTANDO CANT_TRABAJADORES EN EL MAESTRO =======
-            DB::update('
-                update registros_labor
-                set cant_trabajadores = cant_trabajadores + 1
-                where  id = ?',
-                [$registro_labor->id]
-            );
-
-            //======== GUARDANDO IMAGEN DE ASISTENCIA ENTRADA ======
-            if ($request->hasFile('img_asistencia_entrada')) {
-
-                $destinationPath = public_path('img/asistencia_entrada');
+    
+            // Obtener horario del colaborador
+            $horario = DB::table('horarios')->where('id', $colaborador_proyecto->horario_id)->first();
             
-                if (!File::exists($destinationPath)) {
-                    File::makeDirectory($destinationPath, 0755, true);
-                }
-            
-                $file           =   $request->file('img_asistencia_entrada');
-
-                $extension      =   $file->getClientOriginalExtension();
-            
-                $fileName       =   $registro_labor->id.'_'.$registro_labor->proyecto_id.'_'.$request->get('colaborador_id'). '.' . $extension;
-            
-                $file->move($destinationPath, $fileName);
-
-                //========= GUARDANDO LA RUTA DE LA IMAGEN Y EL NOMBRE ======
-                DB::update('
-                    update registros_labor_detalle
-                    set img_ruta = ? , img_nombre = ?
-                    where proyecto_id = ? and colaborador_id = ? and registro_labor_id = ?',
-                    ['img/asistencia_entrada/'.$fileName, 
-                    $fileName,
-                    $registro_labor->proyecto_id,
-                    $request->get('colaborador_id'), 
-                    $registro_labor->id]
-                );
-            
+            if (!$horario) {
+                return response()->json(['success' => false, 'message' => 'No se encontró el horario asignado.']);
             }
-           
-            $colaboradores    =   $this->getColaboradoresAsistencia($registro_labor->proyecto_id,$registro_labor->id);
-
+    
+            $minutos_tolerancia = $horario->minutos_tolerancia;
+            $hora_inicio = Carbon::parse($horario->hora_inicio);
+            $hora_entrada = Carbon::parse($hora_entrada);
+    
+            // Validación de hora de entrada
+            if ($hora_entrada->greaterThan($hora_inicio->copy()->addMinutes($minutos_tolerancia))) {
+                $tardanza = $hora_entrada->diffInMinutes($hora_inicio);
+                $mensaje_tardanza = "Advertencia: La asistencia está fuera del horario. Tardanza: {$tardanza} minutos.";
+                Log::warning("Intento de asistencia tardía para colaborador {$colaborador_id} en el proyecto {$registro_labor->proyecto_id}.");
+            } else {
+                $mensaje_tardanza = "Asistencia registrada correctamente.";
+            }
+    
+            // Registrar la asistencia
+            DB::update('UPDATE registros_labor_detalle SET hora_entrada = ? WHERE proyecto_id = ? AND colaborador_id = ? AND registro_labor_id = ?',
+                [$hora_entrada, $registro_labor->proyecto_id, $colaborador_id, $registro_labor->id]
+            );
+    
+            // Incrementar cantidad de trabajadores en el maestro
+            DB::update('UPDATE registros_labor SET cant_trabajadores = cant_trabajadores + 1 WHERE id = ?', [$registro_labor->id]);
+            $colaboradores = DB::table('registros_labor_detalle as rld')
+            ->join('colaboradores as c', 'rld.colaborador_id', '=', 'c.id')
+            ->where('rld.proyecto_id', $registro_labor->proyecto_id)
+            ->where('rld.registro_labor_id', $registro_labor->id)
+            ->select('c.id', 'c.nombre', 'rld.hora_entrada')
+            ->get();
             DB::commit();
-            return response()->json(['success'=>true,'message'=>'ASISTENCIA REGISTRADA','colaboradores'=>$colaboradores]);
-
+            return response()->json([
+                'success' => true,
+                'message' => $mensaje_tardanza,
+                'colaboradores' => $colaboradores // Enviar colaboradores actualizados
+            ]);
+    
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
     }
+    
 
     public static function validacionMarcarAsistencia($registro_labor,$colaborador_id){
         
