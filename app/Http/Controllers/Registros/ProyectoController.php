@@ -438,7 +438,7 @@ public function asignarHorarioRegimenCreate($proyectoId, $colaboradorId)
     }
 
     // Obtener listas de horarios y regímenes
-    $horarios = DB::table('horarios')->select('id', 'descripcion')->get();
+    $horarios = DB::table('horarios')->select('id', 'nombre_proyecto')->get();
     $regimenes = DB::table('regimens')->select('id', 'nombre')->get();
 
     return view('registros.proyectos.asignar_horario_regimen', compact('colaborador', 'horarios', 'regimenes', 'proyecto'));
