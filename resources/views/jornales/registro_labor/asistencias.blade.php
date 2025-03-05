@@ -70,7 +70,7 @@
     }
 
     function pintarTablaDetalleAsistencia(lstColaboradores) {
-    console.log(lstColaboradores); // Agrega esta línea para depurar
+    console.log(lstColaboradores); // 
     let filas = ``;
     const tbody = document.querySelector('#table_detalle_asistencia tbody');
     let acciones = ``;
@@ -141,15 +141,16 @@
                 </td>
                 <td>
                     <div style="width:120px;">
-                        ${c.tardanza || '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
+                        ${c.tardanza !== null ? c.tardanza : '<span class="badge text-bg-danger">NO REGISTRADO</span>'}
                     </div>
                 </td>
             </tr>
         `;
     });
-
-    tbody.innerHTML = filas;
+    console.log(filas);
+    tbody.innerHTML = filas; 
 }
+
 
     function iniciarDataTableDetalleAsistencia(){
         dtDetalleAsistencia  =   new DataTable('#table_detalle_asistencia',{

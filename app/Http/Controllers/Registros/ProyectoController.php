@@ -361,10 +361,13 @@ class ProyectoController extends Controller
             ->get(); // Solo un resultado
     return DataTables::of($proyecto)->make(true);
     }
+
+
+    
     public function vista(){
-        $proyectos = Proyecto::all();
-        $horarios = Horario::all();
-        $regimenes = Regimen::all();
+        $proyectos = Proyecto::where('estado','<>','ANULADO')->get();
+        $horarios = Horario::where('estado','<>','ANULADO')->get();
+        $regimenes = Regimen::where('estado','<>','ANULADO')->get();
         $primerProyecto = $proyectos->first();
 
         return view('registros.proyectos.vista',compact('proyectos','primerProyecto','horarios','regimenes'));
