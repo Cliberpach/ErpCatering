@@ -19,6 +19,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class RegistroLaborController extends Controller
 {
@@ -123,39 +124,58 @@ class RegistroLaborController extends Controller
         }
     }
 
-    public function asistenciasCreate($id){
 
+    public function asistenciasCreate($id)
+    {
         //======= OBTENIENDO EL REGISTRO LABOR ======
-        $registro_labor_maestro =   RegistroLabor::find($id);
+        $registro_labor_maestro = RegistroLabor::find($id);
+
+        $colaboradores    =   $this->getColaboradoresAsistencia($registro_labor_maestro->proyecto_id,$registro_labor_maestro->id);
+
           
         //======== OBTENIENDO LOS COLABORADORES ENLAZADOS A ESE PROYECTO =====
-        $colaboradores  =   DB::select('select 
-                                rld.colaborador_id as colaborador_id,
-                                co.nombre as colaborador_nombre,
-                                ca.descripcion as cargo_nombre,
-                                co.nro_documento as colaborador_nro_documento,
-                                td.descripcion as colaborador_tipo_documento,
-                                rld.hora_entrada,
-                                rld.hora_salida,
-                                rld.img_ruta,
-                                rld.img_nombre,
-                                rld.estado
-                            from registros_labor_detalle as rld
-                            inner join proyectos as pr on pr.id = rld.proyecto_id
-                            inner join colaboradores as co on co.id = rld.colaborador_id
-                            inner join cargos as ca on ca.id = co.cargo_id
-                            inner join tipos_documento as td on td.id = co.tipo_documento_id
-                            where 
-                            rld.proyecto_id = ? 
-                            and rld.registro_labor_id = ?
-                            and pr.estado <> "ANULADO"',
-                            [$registro_labor_maestro->proyecto_id,$id]);
-
+        /*$colaboradores = DB::select('SELECT 
+                                        rld.colaborador_id AS colaborador_id,
+                                        co.nombre AS colaborador_nombre,
+                                        ca.descripcion AS cargo_nombre,
+                                        co.nro_documento AS colaborador_nro_documento,
+                                        h.nombre_proyecto AS horario_descripcion,
+                                        r.nombre AS regimen_nombre,
+                                        rld.hora_entrada,
+                                        rld.hora_salida,
+                                        CASE 
+                                            WHEN rld.hora_entrada > h.hora_inicio 
+                                            THEN TIMESTAMPDIFF(MINUTE, h.hora_inicio, rld.hora_entrada) 
+                                            ELSE 0 
+                                        END AS tardanza
+                                    FROM registros_labor_detalle AS rld
+                                    INNER JOIN proyecto_personal AS pp 
+                                        ON pp.proyecto_id = rld.proyecto_id 
+                                        AND pp.colaborador_id = rld.colaborador_id
+                                    INNER JOIN colaboradores AS co 
+                                        ON co.id = rld.colaborador_id
+                                    INNER JOIN cargos AS ca 
+                                        ON ca.id = co.cargo_id
+                                    INNER JOIN colaborador_proyecto AS cp 
+                                        ON cp.colaborador_id = co.id
+                                    INNER JOIN horarios AS h 
+                                        ON h.id = cp.horario_id
+                                    INNER JOIN regimens AS r 
+                                        ON r.id = cp.regimen_id
+                                    WHERE 
+                                        pp.proyecto_id = ? 
+                                        AND pp.estado = "ACTIVO" 
+                                        AND (rld.registro_labor_id = ? OR rld.registro_labor_id IS NULL)', 
+                                    [$registro_labor_maestro->proyecto_id, $id]);*/
+    
         //======== OBTENIENDO COLABORADOR ACTUAL =======
-        $colaborador_actual_id  =   Auth::user()->colaborador_id;
-
+        $colaborador_actual_id = DB::select('SELECT co.id
+                                             FROM users AS u
+                                             INNER JOIN colaboradores AS co ON co.id = u.colaborador_id
+                                             WHERE u.id = ?', [Auth::user()->id])[0]->id;
+    
         return view('jornales.registro_labor.asistencias',
-        compact('colaboradores','registro_labor_maestro','colaborador_actual_id'));
+            compact('colaboradores', 'registro_labor_maestro', 'colaborador_actual_id'));
     }
 
 
@@ -182,88 +202,77 @@ array:5 [ // app\Http\Controllers\Jornales\RegistroLaborController.php:157
      
         DB::beginTransaction();
         try {
-            $tipo_asistencia    =   $request->get('tipo_asistencia',null);
-            $hora_entrada       =   $request->get('hora_entrada',null);
-            $registro_labor_id  =   $request->get('registro_labor_id',null);
-            $colaborador_id     =   $request->get('colaborador_id',null);
-
-            $registro_labor     =   RegistroLabor::find($registro_labor_id);
-
-            //======= VALIDACIÓN COMPLEJA =======
-            RegistroLaborController::validacionMarcarAsistencia($registro_labor,$colaborador_id);
+            $tipo_asistencia    = $request->get('tipo_asistencia', null);
+            $hora_entrada       = $request->get('hora_entrada', null);
+            $registro_labor_id  = $request->get('registro_labor_id', null);
+            $colaborador_id     = $request->get('colaborador_id', null);
+    
+            $registro_labor     = RegistroLabor::find($registro_labor_id);
             
-            if ($tipo_asistencia === 'AUTOMATICO') {
-                $hora_entrada = Carbon::now()->format('H:i');
+            // Obtener datos del colaborador en colaborador_proyecto
+            $colaborador_proyecto = DB::table('colaborador_proyecto')
+                ->where('colaborador_id', $colaborador_id)
+                ->first();
+    
+            if (!$colaborador_proyecto || !$colaborador_proyecto->horario_id || !$colaborador_proyecto->regimen_id) {
+                return response()->json(['success' => false, 'message' => 'Debe asignarse un horario y régimen antes de registrar asistencia.']);
             }
-
-            //========= MARCAR ASISTENCIA HORA ENTRADA =======
-            DB::update('
-                update registros_labor_detalle
-                set 
-                hora_entrada = ?,
-                updated_at = ?,
-                estado = "ENTRADA"
-                where 
-                proyecto_id = ? 
-                and colaborador_id = ? 
-                and registro_labor_id = ?',
-                [$hora_entrada, 
-                Carbon::now(),
-                $registro_labor->proyecto_id,
-                $colaborador_id, 
-                $registro_labor->id,
-                ]
-            );
-
-            //====== INCREMENTANDO CANT_TRABAJADORES EN EL MAESTRO =======
-            DB::update('
-                update registros_labor
-                set cant_trabajadores = cant_trabajadores + 1
-                where  id = ?',
-                [$registro_labor->id]
-            );
-
-            //======== GUARDANDO IMAGEN DE ASISTENCIA ENTRADA ======
-            if ($request->hasFile('img_asistencia_entrada')) {
-
-                $destinationPath = public_path('img/asistencia_entrada');
+    
+            // Obtener horario del colaborador
+            $horario = DB::table('horarios')->where('id', $colaborador_proyecto->horario_id)->first();
             
-                if (!File::exists($destinationPath)) {
-                    File::makeDirectory($destinationPath, 0755, true);
-                }
-            
-                $file           =   $request->file('img_asistencia_entrada');
-
-                $extension      =   $file->getClientOriginalExtension();
-            
-                $fileName       =   $registro_labor->id.'_'.$registro_labor->proyecto_id.'_'.$request->get('colaborador_id'). '.' . $extension;
-            
-                $file->move($destinationPath, $fileName);
-
-                //========= GUARDANDO LA RUTA DE LA IMAGEN Y EL NOMBRE ======
-                DB::update('
-                    update registros_labor_detalle
-                    set img_ruta = ? , img_nombre = ?
-                    where proyecto_id = ? and colaborador_id = ? and registro_labor_id = ?',
-                    ['img/asistencia_entrada/'.$fileName, 
-                    $fileName,
-                    $registro_labor->proyecto_id,
-                    $request->get('colaborador_id'), 
-                    $registro_labor->id]
-                );
-            
+            if (!$horario) {
+                return response()->json(['success' => false, 'message' => 'No se encontró el horario asignado.']);
             }
-           
+    
+            $minutos_tolerancia = $horario->minutos_tolerancia;
+
+            
+            $hora_inicio = Carbon::parse($horario->hora_inicio);
+            $hora_entrada = Carbon::parse($hora_entrada);
+    
+            // Validación de hora de entrada
+            if ($hora_entrada->greaterThan($hora_inicio->copy()->addMinutes($minutos_tolerancia))) {
+                $tardanza = $hora_entrada->diffInMinutes($hora_inicio);
+               
+                $mensaje_tardanza = "Advertencia: La asistencia está fuera del horario. Tardanza: {$tardanza} minutos.";
+                Log::warning("Intento de asistencia tardía para colaborador {$colaborador_id} en el proyecto {$registro_labor->proyecto_id}.");
+            } else {
+                $mensaje_tardanza = "Asistencia registrada correctamente.";
+            }
+    
+            // Registrar la asistencia
+            DB::update('UPDATE registros_labor_detalle SET hora_entrada = ? WHERE proyecto_id = ? AND colaborador_id = ? AND registro_labor_id = ?',
+                [$hora_entrada, $registro_labor->proyecto_id, $colaborador_id, $registro_labor->id]
+            );
+    
+            // Incrementar cantidad de trabajadores en el maestro
+            DB::update('UPDATE registros_labor SET cant_trabajadores = cant_trabajadores + 1 WHERE id = ?', [$registro_labor->id]);
+            
+            /*$colaboradores = DB::table('registros_labor_detalle as rld')
+            ->join('colaboradores as c', 'rld.colaborador_id', '=', 'c.id')
+            ->where('rld.proyecto_id', $registro_labor->proyecto_id)
+            ->where('rld.registro_labor_id', $registro_labor->id)
+            ->select('c.id', 'c.nombre', 'rld.hora_entrada')
+            ->get();*/
+
+
             $colaboradores    =   $this->getColaboradoresAsistencia($registro_labor->proyecto_id,$registro_labor->id);
 
-            DB::commit();
-            return response()->json(['success'=>true,'message'=>'ASISTENCIA REGISTRADA','colaboradores'=>$colaboradores]);
 
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => $mensaje_tardanza,
+                'colaboradores' => $colaboradores // Enviar colaboradores actualizados
+            ]);
+    
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(['success'=>false,'message'=>$th->getMessage()]);
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
     }
+    
 
     public static function validacionMarcarAsistencia($registro_labor,$colaborador_id){
         
@@ -297,33 +306,50 @@ array:5 [ // app\Http\Controllers\Jornales\RegistroLaborController.php:157
 
     } 
 
-    public function getColaboradoresAsistencia($proyecto_id,$registro_labor_id){
 
-        $colaboradores  =   DB::select('select 
-                                rld.colaborador_id as colaborador_id,
-                                co.nombre as colaborador_nombre,
-                                ca.descripcion as cargo_nombre,
-                                co.nro_documento as colaborador_nro_documento,
-                                td.descripcion as colaborador_tipo_documento,
-                                rld.hora_entrada,
-                                rld.hora_salida,
-                                rld.img_ruta,
-                                rld.img_nombre,
-                                rld.estado
-                            from registros_labor_detalle as rld
-                            inner join proyectos as pr on pr.id = rld.proyecto_id
-                            inner join colaboradores as co on co.id = rld.colaborador_id
-                            inner join cargos as ca on ca.id = co.cargo_id
-                            inner join tipos_documento as td on td.id = co.tipo_documento_id
-                            where 
-                            rld.proyecto_id = ? 
-                            and rld.registro_labor_id = ?
-                            and pr.estado <> "ANULADO"',
-                            [$proyecto_id,$registro_labor_id]);
-
+    public function getColaboradoresAsistencia($proyecto_id, $registro_labor_id) 
+    {
+        $colaboradores = DB::select('
+            SELECT 
+                rld.colaborador_id AS colaborador_id,
+                co.nombre AS colaborador_nombre,
+                co.nro_documento AS colaborador_nro_documento,
+                h.descripcion AS horario_descripcion, 
+                r.descripcion AS regimen_nombre, 
+                ca.descripcion AS cargo_nombre,
+                rld.hora_entrada,
+                rld.hora_salida,
+                COALESCE( 
+                    CASE 
+                        WHEN rld.hora_entrada IS NOT NULL 
+                            AND h.hora_inicio IS NOT NULL 
+                            AND h.minutos_tolerancia IS NOT NULL
+                            AND rld.hora_entrada > DATE_ADD(h.hora_inicio, INTERVAL h.minutos_tolerancia MINUTE)
+                        THEN TIMESTAMPDIFF(MINUTE, DATE_ADD(h.hora_inicio, INTERVAL h.minutos_tolerancia MINUTE), rld.hora_entrada)
+                        ELSE 0
+                    END, 0) AS tardanza
+            FROM registros_labor_detalle AS rld
+            INNER JOIN proyecto_personal AS pp 
+                ON pp.proyecto_id = rld.proyecto_id 
+                AND pp.colaborador_id = rld.colaborador_id
+            INNER JOIN colaboradores AS co ON co.id = rld.colaborador_id
+            INNER JOIN cargos AS ca ON ca.id = co.cargo_id
+            LEFT JOIN colaborador_proyecto AS cp 
+                ON  cp.colaborador_id = co.id 
+            LEFT JOIN horarios AS h ON h.id = cp.horario_id
+            LEFT JOIN regimens AS r ON r.id = cp.regimen_id
+            WHERE pp.proyecto_id = ? 
+                AND pp.estado = "ACTIVO" 
+                AND (rld.registro_labor_id = ? OR rld.registro_labor_id IS NULL)',
+            [$proyecto_id, $registro_labor_id]
+        );
         return $colaboradores;
+        
     }
+    
+    
 
+    
     public static function validacionMarcarSalida($registro_labor,$hora_salida,$colaborador_id){
         //========= VALIDANDO HORA DE SALIDA ======
         if(!$hora_salida){

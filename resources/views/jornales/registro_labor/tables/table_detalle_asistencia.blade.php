@@ -5,12 +5,12 @@
         <th scope="col">ACCION</th>
         <th scope="col">Colaborador</th>
         <th scope="col" style="text-align: center;">N° DOC</th>
-        <th scope="col">TIPO DOC</th>
+        <th scope="col">HORARIO </th>
+        <th scope="col">REGIMEN </th>
         <th scope="col">CARGO</th>
-        <th scope="col">ENTRADA</th>
-        <th scope="col">SALIDA</th>
-        <th scope="col">ESTADO</th>
-        <th scope="col">IMG</th>
+        <th scope="col">HORA ENTRADA</th>
+        <th scope="col">HORA SALIDA</th>
+        <th scope="col">TARDANZA</th>
       </tr>
     </thead>
     <tbody>

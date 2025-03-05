@@ -84,12 +84,6 @@
               @can('registros.maquinaria')
                 <a class="@yield('maquinarias-active')" href="{{route('registros.maquinaria.index')}}"> Maquinaria </a>
               @endcan
-            </li>
-            <li>
-              @can('registros.proyecto')
-                <a class="@yield('proyectos-active')" href="{{route('registros.proyecto.index')}}">Proyecto</a>
-              @endcan
-            </li>
             <li>
               @can('registros.almacen')
                 <a class="@yield('almacenes-active')" href="{{route('registros.almacen.index')}}">Almacén</a>
@@ -125,9 +119,45 @@
                 <a class="@yield('vehiculo-active')" href="{{route('registros.vehiculo.index')}}">Vehículos</a>
               @endcan
             </li>
+            <li>
+                <a class="@yield('regimen-active')" href="{{route('registros.regimen.index')}}">Regimen</a>
+            </li>
+            <li>
+                <a class="@yield('regimen-active')" href="{{route('registros.horario.index')}}">Horarios</a>
+            </li>
+            <li>
+                <a class="@yield('regimen-active')" href="{{route('registros.motivo_descanso.index')}}">Motivo de Descanso</a>
+            </li>
           </ul>
         </li>
         @endcanany
+
+
+        
+        <li class="nav-item nav-item-has-children">
+            <a
+              href="#0"
+              class="@yield('sedes-collapsed', 'collapsed')"
+              data-bs-toggle="collapse"
+              data-bs-target="#ddmenu_sedes"
+              aria-controls="ddmenu_sedes"
+              aria-expanded="@yield('sedes-expanded')"
+              aria-label="Toggle navigation"
+            >
+              <span class="icon">
+                <i class="fa-solid fa-building"></i>
+              </span>
+              <span class="text">Sedes</span>
+            </a>
+            <ul id="ddmenu_sedes" class="collapse dropdown-nav @yield('sedes-show')">
+              <li>
+                  <a class="@yield('sedes-active')" href="{{route('registros.proyecto.index')}}">Sedes</a>
+              </li>
+              <li>
+                <a class="@yield('sedes-active')" href="{{route('registros.proyecto.vista')}}">Sede Personal</a>
+              </li>
+            </ul>
+</li>
 
 
         @canany(['jornal.registro_labor'])

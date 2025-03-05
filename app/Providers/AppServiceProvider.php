@@ -23,9 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $empresa        =   DB::table('empresas')->where('id', 1)->first();
+          $empresa        =   DB::table('empresas')->where('id', 1)->first();
         
-        View::share('empresa', $empresa);
+           View::share('empresa', $empresa);
 
         // $notificaciones =   DB::select('select 
         //                     r.id,

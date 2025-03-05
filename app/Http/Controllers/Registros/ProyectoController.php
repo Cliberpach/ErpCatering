@@ -10,9 +10,12 @@ use App\Models\General\Departamento;
 use App\Models\General\Distrito;
 use App\Models\General\Provincia;
 use App\Models\Registros\Almacen;
+use App\Models\Registros\Colaborador;
+use App\Models\Registros\Horario;
 use App\Models\Registros\Proyecto;
 use App\Models\Registros\ProyectoMaquinaria;
 use App\Models\Registros\ProyectoPersonal;
+use App\Models\Registros\Regimen;
 use Illuminate\Http\Request;
 use Exception;
 use Throwable;
@@ -339,5 +342,139 @@ class ProyectoController extends Controller
             return response()->json(['success'=>false,'message'=>$th->getMessage()]);
         }
     }
+    public function getProyectosDireccion(Request $request) {
+        $proyectoId = $request->input('proyecto_id');
+    
+        if (!$proyectoId) {
+            return response()->json(['data' => []]); // Si no hay proyecto, retorna vacío
+        }
+    
+        $proyecto = Proyecto::where('proyectos.id', $proyectoId)
+            ->whereNotIn('proyectos.estado', ['ANULADO', 'INACTIVO'])
+            ->leftJoin('colaboradores', 'proyectos.supervisor_id', '=', 'colaboradores.id')
+            ->select(
+                'proyectos.id', 
+                'proyectos.nombre', 
+                'colaboradores.nombre as supervisor_nombre',
+                'proyectos.direccion'
+            )
+            ->get(); // Solo un resultado
+    return DataTables::of($proyecto)->make(true);
+    }
+
+
+    
+    public function vista(){
+        $proyectos = Proyecto::where('estado','<>','ANULADO')->get();
+        $horarios = Horario::where('estado','<>','ANULADO')->get();
+        $regimenes = Regimen::where('estado','<>','ANULADO')->get();
+        $primerProyecto = $proyectos->first();
+
+        return view('registros.proyectos.vista',compact('proyectos','primerProyecto','horarios','regimenes'));
+    }
+    public function getColaboradoresRegimen(Request $request)
+{
+    $proyectoId = $request->input('proyecto_id');
+
+    if (!$proyectoId) {
+        return response()->json(['data' => []]); 
+    }
+
+    $colaboradores = DB::table('proyecto_personal as pp')
+        ->join('colaboradores as c', 'pp.colaborador_id', '=', 'c.id') 
+        ->leftJoin('colaborador_proyecto as cp', 'pp.colaborador_id', '=', 'cp.colaborador_id')
+        ->leftJoin('horarios as h', 'cp.horario_id', '=', 'h.id') 
+        ->leftJoin('regimens as r', 'cp.regimen_id', '=', 'r.id') 
+        ->where('pp.proyecto_id', $proyectoId)
+        ->select(
+            'c.id as colaborador_id',
+            'c.nombre as nombre',
+            'c.nro_documento as dni',
+            DB::raw('COALESCE(h.descripcion, "Sin asignar") as horario'),
+            DB::raw('COALESCE(r.nombre, "Sin asignar") as regimen')
+        )
+        ->get();
+
+    return DataTables::of($colaboradores)->make(true);
+}
+public function asignarHorarioRegimen(Request $request)
+{
+    $request->validate([
+        'colaborador_id' => 'required|exists:colaboradores,id',
+        'horario_id' => 'nullable|exists:horarios,id',
+        'regimen_id' => 'nullable|exists:regimenes,id',
+    ]);
+
+    $colaborador = Colaborador::findOrFail($request->colaborador_id);
+    $colaborador->horario_id = $request->horario_id;
+    $colaborador->regimen_id = $request->regimen_id;
+    $colaborador->save();
+
+    return response()->json(['success' => true, 'message' => 'Horario y régimen asignados correctamente.']);
+}
+
+
+public function asignarHorarioRegimenCreate($proyectoId, $colaboradorId)
+{
+    // Verificar el ID del proyecto
+    if (!is_numeric($proyectoId)) {
+        return response()->json(['success' => false, 'message' => 'ID de proyecto inválido.']);
+    }
+
+    // Obtener datos del proyecto
+    $proyecto = Proyecto::find($proyectoId);
+
+    // Verificar si el proyecto fue encontrado
+    if (!$proyecto) {
+        return response()->json(['success' => false, 'message' => 'Proyecto no encontrado.']);
+    }
+
+    // Obtener datos del colaborador
+    $colaborador = Colaborador::find($colaboradorId);
+
+    // Verificar si el colaborador fue encontrado
+    if (!$colaborador) {
+        return response()->json(['success' => false, 'message' => 'Colaborador no encontrado.']);
+    }
+
+    // Obtener listas de horarios y regímenes
+    $horarios = DB::table('horarios')->select('id', 'descripcion')->get();
+    $regimenes = DB::table('regimens')->select('id', 'nombre')->get();
+
+    return view('registros.proyectos.asignar_horario_regimen', compact('colaborador', 'horarios', 'regimenes', 'proyecto'));
+}
+public function asignarHorarioRegimenStore(Request $request)
+{
+    DB::beginTransaction();
+    try {
+        $colaborador_id = $request->get('colaborador_id');
+        $horario_id = $request->get('horario_id') ?? null;
+        $regimen_id = $request->get('regimen_id') ?? null;
+
+        // Eliminar cualquier asignación previa del colaborador
+        DB::table('colaborador_proyecto')
+            ->where('colaborador_id', $colaborador_id)
+            ->delete();
+
+        // Insertar la nueva asignación
+        DB::table('colaborador_proyecto')->insert([
+            'colaborador_id' => $colaborador_id,
+            'horario_id' => $horario_id,
+            'regimen_id' => $regimen_id,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        DB::commit();
+        return response()->json(['success' => true, 'message' => 'Horario y régimen asignados correctamente.']);
+    } catch (\Throwable $th) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al asignar horario y régimen.',
+            'error' => $th->getMessage(),
+        ]);
+    }
+}
 
 }

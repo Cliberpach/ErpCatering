@@ -95,6 +95,10 @@
     function marcarEntrada(rowId,colaborador_id){
 
         const fila  =   dtDetalleAsistencia.row(rowId).data();
+        if (!fila) {
+        toastr.error('NO SE ENCONTRÓ LA FILA EN EL DATATABLE');
+        return;
+    }
         if(fila.length === 0){
             toastr.error('NO SE ENCONTRÓ LA FILA EN EL DATATABLE');
             return;
