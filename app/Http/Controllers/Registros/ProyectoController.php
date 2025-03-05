@@ -390,7 +390,7 @@ class ProyectoController extends Controller
             'c.id as colaborador_id',
             'c.nombre as nombre',
             'c.nro_documento as dni',
-            DB::raw('COALESCE(h.descripcion, "Sin asignar") as horario'),
+            DB::raw('COALESCE(h.nombre_proyecto, "Sin asignar") as horario'),
             DB::raw('COALESCE(r.nombre, "Sin asignar") as regimen')
         )
         ->get();
