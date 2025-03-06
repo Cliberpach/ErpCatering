@@ -390,7 +390,7 @@ class ProyectoController extends Controller
             'c.id as colaborador_id',
             'c.nombre as nombre',
             'c.nro_documento as dni',
-            DB::raw('COALESCE(h.descripcion, "Sin asignar") as horario'),
+            DB::raw('COALESCE(h.nombre_proyecto, "Sin asignar") as horario'),
             DB::raw('COALESCE(r.nombre, "Sin asignar") as regimen')
         )
         ->get();
@@ -438,7 +438,7 @@ public function asignarHorarioRegimenCreate($proyectoId, $colaboradorId)
     }
 
     // Obtener listas de horarios y regímenes
-    $horarios = DB::table('horarios')->select('id', 'descripcion')->get();
+    $horarios = DB::table('horarios')->select('id', 'nombre_proyecto')->get();
     $regimenes = DB::table('regimens')->select('id', 'nombre')->get();
 
     return view('registros.proyectos.asignar_horario_regimen', compact('colaborador', 'horarios', 'regimenes', 'proyecto'));
