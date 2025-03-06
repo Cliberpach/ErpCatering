@@ -1,5 +1,6 @@
 onduct<?php
 use App\Http\Controllers\Registros\RegimenController;
+use App\Http\Controllers\Registros\AsistenciasController;
 use App\Http\Controllers\Registros\ProyectoRegimenController;
 use App\Http\Controllers\Registros\HorarioController;
 use App\Http\Controllers\Registros\Motivo_DescansoController;
@@ -267,6 +268,12 @@ Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','
 
     Route::post('/store', [TablaGeneralDetalleController::class, 'store'])->name('herramientas.tabla_general_detalle.store');
     Route::get('/getListTablaGeneralDetalles/{id}', [TablaGeneralDetalleController::class, 'getListTablaGeneralDetalles'])->name('registros.tabla_general_detalle.getListTablaGeneralDetalles');
+    
+});
+
+
+Route::group(['prefix' => 'asistencias', 'middleware' => ['auth', 'notificacionMiddleware']], function () {
+    Route::get('/index', [AsistenciasController::class, 'index'])->name('registros.asistencias.index');
     
 });
 
