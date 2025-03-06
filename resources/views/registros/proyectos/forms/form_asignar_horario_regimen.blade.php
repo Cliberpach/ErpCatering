@@ -21,7 +21,7 @@
         <select name="horario_id" id="horario_id" class="form-control select2_form">
             <option value="">Seleccione un horario</option>
             @foreach($horarios as $horario)
-            <option value="{{ $horario->id }}">{{ $horario->descripcion }}</option>
+            <option value="{{ $horario->id }}">{{ $horario->nombre_proyecto }}</option>
             @endforeach
         </select>
     </div>
