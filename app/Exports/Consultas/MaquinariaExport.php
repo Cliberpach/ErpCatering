@@ -28,8 +28,7 @@ class MaquinariaExport implements FromCollection, ShouldAutoSize, WithStyles
 
     public function collection()
     {
-
-        $proyecto   = Proyecto::find($this->proyecto_id);
+        $proyecto   = Proyecto::find($this->proyecto_id); 
         if(!$proyecto){
             return ['EL PROYECTO NO EXISTE EN LA BD'];
         }
@@ -66,7 +65,6 @@ class MaquinariaExport implements FromCollection, ShouldAutoSize, WithStyles
         $data->prepend(['FECHA INICIO REPORTE:',$this->fecha_inicio,'','FECHA FIN REPORTE:',$this->fecha_fin]);
         $data->prepend(['PROYECTO:',$proyecto->nombre]);
         $data->prepend(['EMPRESA:','TU EMPRESA']);
-        
 
         return $data;
     }

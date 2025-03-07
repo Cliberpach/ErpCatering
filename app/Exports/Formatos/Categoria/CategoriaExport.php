@@ -17,6 +17,7 @@ class CategoriaExport implements FromCollection, WithStyles,ShouldAutoSize,WithT
     }
 
     /**
+     * 
     * @return \Illuminate\Support\Collection
     */
     public function collection()
@@ -34,6 +35,7 @@ class CategoriaExport implements FromCollection, WithStyles,ShouldAutoSize,WithT
               ->getStartColor()->setARGB('bcd9e7'); 
 
         return [];
+        
     }
 
     public function title(): string

@@ -30,6 +30,7 @@
 
 
 <script>
+    
     document.addEventListener('DOMContentLoaded',()=>{
         iniciarSelect2();
         events();

@@ -30,3 +30,4 @@ class UpdateUserPassword implements UpdatesUserPasswords
         ])->save();
     }
 }
+

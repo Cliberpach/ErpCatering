@@ -27,6 +27,10 @@ class PermisoSeeder extends Seeder
             'registros.modalidad_pago',
             'registros.conductor',
             'registros.vehiculo',
+            'registros.regimen',
+            'registros.horario',
+            'registros.asistencias',
+
             'jornal.registro_labor',
             //'jornal.consulta_labor',
             'trabajo_equipo.registro_tarea',
@@ -49,7 +53,8 @@ class PermisoSeeder extends Seeder
             'herramientas.configuracion',
             'consultas.personal',
             'consultas.maquinaria',
-            'consultas.producto'
+            'consultas.producto',
+
         ];
         
         foreach ($items as $item) {

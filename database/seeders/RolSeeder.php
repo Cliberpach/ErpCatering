@@ -65,6 +65,18 @@ class RolSeeder extends Seeder
         $logisticaRole = Role::create(['name' => 'FINANZAS']);
         $logisticaRole->givePermissionTo($permissions);
 
+        $prefixes       = ['asistencias'];
+        $permissions    = Permission::all()->filter(function ($permission) use ($prefixes) {
+            foreach ($prefixes as $prefix) {
+                if (str_starts_with($permission->name, $prefix)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        $asistenciaRole = Role::create(['name' => 'ASISTENCIA']);
+        $asistenciaRole->givePermissionTo($permissions);
+
 
     }
 }

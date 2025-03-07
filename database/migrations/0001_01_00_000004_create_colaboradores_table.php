@@ -19,9 +19,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('cargo_id');
             $table->foreign('cargo_id')->references('id')->on('cargos');
-        
             $table->string('nro_documento',20)->unique();
-
             $table->string('nombre',260);
             $table->string('direccion',200);
             $table->string('telefono',20);
