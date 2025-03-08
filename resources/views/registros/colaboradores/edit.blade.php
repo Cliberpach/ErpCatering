@@ -9,7 +9,7 @@
       <h6>Datos del Colaborador<i class="fa-solid fa-user"></i></h6>
     </div>
     <div class="card-body">
-        @include('registros.conductores.forms.form_edit_colaborador')
+        @include('registros.colaboradores.forms.form_edit_colaborador')
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center">
         <span  style="color:rgb(219, 155, 35);font-size:14px;font-weight:bold;">Los campos con * son obligatorios</span>
