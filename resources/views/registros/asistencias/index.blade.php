@@ -1,7 +1,5 @@
 @extends('layouts.layout')
-@section('title-page')
- MARCAR ASISTENCIA
-@endsection
+@section('title-page', 'MARCAR ASISTENCIA')
 
 @section('asistencias-collapsed', '')
 @section('asistencias-expanded', 'true')
@@ -17,6 +15,8 @@
         
         <div class="card shadow p-4 mt-4" style="max-width: 400px; margin: auto;">
             <h5 class="text-center mb-3">Ingrese su ID de Empleado</h5>
+
+            <form action="{{ route('registros.asistencias.store') }}" method="POST">
                 @csrf
                 <div class="mb-3">
                     <select class="form-select" name="tipo_registro" required>
@@ -25,7 +25,7 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <input type="text" class="form-control" name="empleado_id" placeholder="Ingrese su ID" required>
+                    <input type="text" class="form-control" name="nro_documento" placeholder="Ingrese su DNI" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Registrar</button>
             </form>
@@ -33,7 +33,13 @@
         
         @if(session('success'))
         <div class="alert alert-success mt-3">
-            ✅ Llegada: <strong>{{ session('success') }}</strong>
+            ✅ {{ session('success') }}
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger mt-3">
+            ❌ {{ session('error') }}
         </div>
         @endif
     </div>

@@ -276,10 +276,9 @@ Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','
 
 Route::group(['prefix' => 'asistencias', 'middleware' => ['auth', 'notificacionMiddleware']], function () {
     Route::get('/index', [AsistenciasController::class, 'index'])->name('registros.asistencias.index');
-    
+    Route::post('/store', [AsistenciasController::class, 'store'])->name('registros.asistencias.store');
+    Route::get('/listar', [AsistenciasController::class, 'listar'])->name('registros.asistencias.listar');
 });
-
-
 
 //============= FIN REGISTROS ==========================
 
