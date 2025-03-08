@@ -61,6 +61,7 @@ return array(
     'App\\Http\\Controllers\\Registros\\ProyectoController' => $baseDir . '/app/Http/Controllers/Registros/ProyectoController.php',
     'App\\Http\\Controllers\\Registros\\RegimenController' => $baseDir . '/app/Http/Controllers/Registros/RegimenController.php',
     'App\\Http\\Controllers\\Registros\\VehiculoController' => $baseDir . '/app/Http/Controllers/Registros/VehiculoController.php',
+    'App\\Http\\Controllers\\Requerimientos\\PersonalController' => $baseDir . '/app/Http/Controllers/Requerimientos/PersonalController.php',
     'App\\Http\\Controllers\\Requerimientos\\RequerimientoController' => $baseDir . '/app/Http/Controllers/Requerimientos/RequerimientoController.php',
     'App\\Http\\Controllers\\TrabajoEquipo\\RegistroTareaController' => $baseDir . '/app/Http/Controllers/TrabajoEquipo/RegistroTareaController.php',
     'App\\Http\\Controllers\\Utils\\UtilController' => $baseDir . '/app/Http/Controllers/Utils/UtilController.php',
