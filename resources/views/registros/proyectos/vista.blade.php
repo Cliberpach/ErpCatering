@@ -28,13 +28,6 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6" style="display: flex;justify-content:end;">
-                <button class="btn btn-primary" onclick="goToCrearProyecto()">
-                    <i class="fa-solid fa-plus"></i> Crear Proyecto
-                </button>
-            </div>
-
-        
         </div>
 
         <div class="table-responsive">
