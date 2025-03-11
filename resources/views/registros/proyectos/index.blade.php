@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 @section('title-page')
-    LISTADO DE PROYECTOS
+    SEDES
 @endsection
 
 @section('registros-collapsed', '')

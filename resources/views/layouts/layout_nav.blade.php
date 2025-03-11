@@ -159,6 +159,27 @@
             </ul>
 </li>
 
+    <li class="nav-item nav-item-has-children">
+            <a
+              href="#0"
+              class="@yield('asistencias-collapsed', 'collapsed')"
+              data-bs-toggle="collapse"
+              data-bs-target="#ddmenu_asistencias"
+              aria-controls="ddmenu_asistencias"
+              aria-expanded="@yield('asistencias-expanded')"
+              aria-label="Toggle navigation"
+            >
+              <span class="icon">
+                <i class="fa-solid fa-street-view"></i>
+              </span>
+              <span class="text">Asistencias</span>
+            </a>
+            <ul id="ddmenu_asistencias" class="collapse dropdown-nav @yield('asistencias-show')">
+              <li>
+                  <a class="@yield('asistencias-active')" href="{{route('registros.asistencias.index')}}">Asistencias</a>
+              </li>
+            </ul>
+</li>
 
         @canany(['jornal.registro_labor'])
         <li class="nav-item nav-item-has-children">

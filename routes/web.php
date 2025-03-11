@@ -1,5 +1,6 @@
 onduct<?php
 use App\Http\Controllers\Registros\RegimenController;
+use App\Http\Controllers\Registros\AsistenciasController;
 use App\Http\Controllers\Registros\ProyectoRegimenController;
 use App\Http\Controllers\Registros\HorarioController;
 use App\Http\Controllers\Registros\Motivo_DescansoController;
@@ -272,6 +273,11 @@ Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','
 });
 
 
+Route::group(['prefix' => 'asistencias', 'middleware' => ['auth', 'notificacionMiddleware']], function () {
+    Route::get('/index', [AsistenciasController::class, 'index'])->name('registros.asistencias.index');
+    Route::post('/store', [AsistenciasController::class, 'store'])->name('registros.asistencias.store');
+    Route::get('/listar', [AsistenciasController::class, 'listar'])->name('registros.asistencias.listar');
+});
 
 //============= FIN REGISTROS ==========================
 
