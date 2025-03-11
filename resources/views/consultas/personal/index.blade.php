@@ -100,7 +100,16 @@
                 { data: 'feriados_trabajados', name: 'feriados_trabajados' },
                 { data: 'total_dias_trabajados', name: 'total_dias_trabajados' },
                 { data: 'pago_dia', name: 'pago_dia' },
-                { data: 'pago_mensual', name: 'pago_mensual' }
+                { data: 'pago_mensual', name: 'pago_mensual' },
+                {
+                data: 'colaborador_id', // Aquí obtenemos el ID del colaborador
+                name: 'acciones',
+                render: function (data, type, row) {
+                    return '<a href="/personal/detalles/' + data + '" class="btn btn-primary btn-sm">Reporte de Asistencia</a>';
+                },
+                orderable: false, 
+                searchable: false 
+                }
             ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
@@ -123,86 +132,6 @@
                     "sortDescending": ": activar para ordenar la columna de manera descendente"
                 }
             }
-        });
-    }
-
-    function goToCrearProducto(){
-        window.location.href = @json(route('registros.producto.create'));
-    }
-
-
-    function eliminarProducto(id){
-        toastr.clear();
-        let row             =   getRowById(dtConsultaPersonal,id);
-        let message         =   '';
-        let tipo_documento  =   '';
-
-        message =   `Desea eliminar el producto: ${row.nombre}`;
-
-        const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-            confirmButton: "btn btn-success",
-            cancelButton: "btn btn-danger"
-        },
-        buttonsStyling: false
-        });
-        swalWithBootstrapButtons.fire({
-        title: message,
-        text: "Operación no reversible!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar!",
-        cancelButtonText: "No, cancelar!",
-        reverseButtons: true
-        }).then(async (result) => {
-        if (result.isConfirmed) {
-            
-            Swal.fire({
-                title: 'Cargando...',
-                html: 'Eliminando producto...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading(); 
-                }
-            });
-
-            try {
-                let urlDeleteProducto    =   `{{ route('registros.producto.destroy', ['id' => ':id']) }}`;
-                urlDeleteProducto        =   urlDeleteProducto.replace(':id', id);
-                const token              =   document.querySelector('input[name="_token"]').value;
-
-                const response  =   await fetch(urlDeleteProducto, {
-                                        method: 'DELETE',
-                                        headers: {
-                                            'X-CSRF-TOKEN': token 
-                                        }
-                                    });
-
-                const   res =   await response.json();
-
-                if(res.success){
-                    dtConsultaPersonal.draw();
-                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PRODUCTO');
-                }
-
-            } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR PRODUCTO');
-            }finally{
-                Swal.close();
-            }
-
-        } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-        ) {
-            swalWithBootstrapButtons.fire({
-            title: "Operación cancelada",
-            text: "No se realizaron acciones",
-            icon: "error"
-            });
-        }
         });
     }
 
@@ -253,5 +182,9 @@
     
         window.location.href = url;    
     }
+
+    
+
+
 
 </script>

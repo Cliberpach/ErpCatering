@@ -239,10 +239,10 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         array (
             0 => __DIR__ . '/..' . '/yajra/laravel-datatables-buttons/src',
             1 => __DIR__ . '/..' . '/yajra/laravel-datatables-editor/src',
-            2 => __DIR__ . '/..' . '/yajra/laravel-datatables-fractal/src',
-            3 => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src',
+            2 => __DIR__ . '/..' . '/yajra/laravel-datatables-export/src',
+            3 => __DIR__ . '/..' . '/yajra/laravel-datatables-fractal/src',
             4 => __DIR__ . '/..' . '/yajra/laravel-datatables-html/src',
-            5 => __DIR__ . '/..' . '/yajra/laravel-datatables-export/src',
+            5 => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src',
         ),
         'Whoops\\' => 
         array (
@@ -766,6 +766,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Http\\Controllers\\Registros\\ProyectoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/ProyectoController.php',
         'App\\Http\\Controllers\\Registros\\RegimenController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/RegimenController.php',
         'App\\Http\\Controllers\\Registros\\VehiculoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/VehiculoController.php',
+        'App\\Http\\Controllers\\Requerimientos\\PersonalController' => __DIR__ . '/../..' . '/app/Http/Controllers/Requerimientos/PersonalController.php',
         'App\\Http\\Controllers\\Requerimientos\\RequerimientoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Requerimientos/RequerimientoController.php',
         'App\\Http\\Controllers\\TrabajoEquipo\\RegistroTareaController' => __DIR__ . '/../..' . '/app/Http/Controllers/TrabajoEquipo/RegistroTareaController.php',
         'App\\Http\\Controllers\\Utils\\UtilController' => __DIR__ . '/../..' . '/app/Http/Controllers/Utils/UtilController.php',

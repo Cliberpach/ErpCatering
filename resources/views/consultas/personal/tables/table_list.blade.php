@@ -10,6 +10,7 @@
         <th scope="col">TOTAL DÍAS TRABAJADOS</th>
         <th scope="col">PAGO/DÍA</th>
         <th scope="col">PAGO MENSUAL</th>
+        <th scope="col">ACCIONES</th>
       </tr>
     </thead>
     <tbody>

@@ -12,16 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('asistencias', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('colaborador_id')->constrained('colaboradores');
-            $table->foreignId('proyecto_id')->constrained('proyectos');
-            $table->date('fecha');
-            $table->time('hora_entrada')->nullable();
-            $table->time('hora_salida')->nullable();
-            $table->enum('estado', ['ASISTIO', 'TARDANZA', 'FALTA', 'PERMISO'])->default('ASISTIO');
-            $table->text('observacion')->nullable();
-            $table->timestamps();
+            $table->id(); // ID único
+            $table->foreignId('colaborador_id')->constrained('colaboradores'); // Relación con la tabla colaboradores
+            $table->foreignId('proyecto_id')->constrained('proyectos'); // Relación con la tabla proyectos
+            $table->date('fecha_asistencia'); // Fecha de la asistencia
+            $table->tinyInteger('feriado')->default(0); // 1 o 0 si es feriado
+            $table->foreignId('feriado_id')->nullable()->constrained('feriados'); // Relación con la tabla feriados (si corresponde)
+            $table->enum('estado', ['ASISTIO', 'TARDANZA', 'FALTA', 'PERMISO'])->default('ASISTIO'); // Estado de la asistencia
+            $table->text('observacion')->nullable(); // Observaciones adicionales
+            $table->timestamps(); // Tiempos de creación y actualización
         });
+        
     }
 
     /**
