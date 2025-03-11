@@ -347,6 +347,9 @@ Route::group(['prefix' => 'personal'], function () {
     Route::get('/edit/{id}', [PersonalController::class, 'edit'])->name('requerimientos.personal.edit')->middleware('checkRole:SUPERVISOR');
     Route::delete('/destroy/{id}', [PersonalController::class, 'destroy'])->name('requerimientos.personal.destroy');
     Route::get('/show/{id}', [PersonalController::class, 'show'])->name('requerimientos.personal.show');
+
+    Route::get('/detalles/{colaborador_id}', [CPersonalController::class, 'detalles'])->name('requerimientos.personal.detalles');
+    Route::get('/consulta-personal-detalles/{colaborador_id}', [CPersonalController::class, 'getDetalles'])->name('consultas.personal.getDetalles');
 });
 
 //========= FIN PERSONAL ==========
@@ -575,8 +578,20 @@ Route::group(['prefix' => 'consultas_personal', 'middleware' => ['auth','checkCu
     Route::get('/getConsultaPersonal', [CPersonalController::class, 'getConsultaPersonal'])->name('consultas.personal.getConsultaPersonal');
     Route::get('/excel', [CPersonalController::class, 'excel'])->name('consultas.personal.excel');
     Route::get('/pdf', [CPersonalController::class, 'pdf'])->name('consultas.personal.pdf');
+
+    Route::get('/get-motivos-descanso', [CPersonalController::class, 'getMotivosDescanso']);
+    Route::post('/guardar-motivo-permiso', [CPersonalController::class, 'guardarMotivoPermiso']);
+    Route::post('/verificar-contraseña', [CPersonalController::class, 'verificarContraseña']);
+    Route::get('/get-horas-extra/{id}', [CPersonalController::class, 'getHorasExtra']);
+    Route::post('/guardar-horas-extra', [CPersonalController::class, 'asignarHorasExtra']);
+
+
+
+
  
 });
+
+
 
 Route::group(['prefix' => 'consultas_maquinaria', 'middleware' => ['auth','checkCustomPermission:consultas.maquinaria','notificacionMiddleware']], function () {
 

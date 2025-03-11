@@ -21,6 +21,8 @@
                 <div class="mb-3">
                     <select class="form-select" name="tipo_registro" required>
                         <option value="entrada">Hora de Entrada</option>
+                        <option value="entrada_break">Entrada al Break</option>
+                        <option value="salida_break">Salida del Break</option>
                         <option value="salida">Hora de Salida</option>
                     </select>
                 </div>
