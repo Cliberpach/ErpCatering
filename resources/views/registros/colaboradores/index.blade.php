@@ -46,10 +46,12 @@
         dtColaboradores  =   new DataTable('#table_colaboradores',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
             ajax: {
                 url: urlGetColaboradores,
                 type: 'GET',
             },
+            dom: "<'row'<'col-md-6'l><'col-md-6'f>>rtip", 
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },

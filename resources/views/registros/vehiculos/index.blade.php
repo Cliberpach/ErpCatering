@@ -46,6 +46,8 @@
         dtVehiculos  =   new DataTable('#table_list_vehiculos',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetVehiculos,
                 type: 'GET',

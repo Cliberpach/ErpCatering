@@ -36,7 +36,7 @@
                         @if ($colaborador->tipo_documento_id == 2)
                             maxlength='20'
                         @endif
-                     required id="nro_documento" name="nro_documento" type="text" class="form-control" placeholder="Nro de Documento" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                     required id="nro_documento" name="nro_documento" type="text" class="form-control numero-input" placeholder="Nro de Documento" aria-label="Example text with button addon" aria-describedby="button-addon1">
                 </div>                 
                 <span class="nro_documento_error msgError"  style="color:red;"></span>
             </div>    
@@ -90,7 +90,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-clock"></i>
                     </span>
-                    <input value="{{$colaborador->horas_semana}}" required maxlength="20" id="horas_semana" name="horas_semana" type="text" class="form-control" placeholder="Horas semana" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="{{$colaborador->horas_semana}}" required maxlength="20" id="horas_semana" name="horas_semana" type="text" class="form-control numero-input" placeholder="Horas semana" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                
                 <span class="horas_semana_error msgError" style="color:red;"></span>
             </div>
@@ -100,9 +100,9 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-money-bill-1-wave"></i>
                     </span>
-                    <input value="{{$colaborador->pago_semana}}" required maxlength="10" name="pago_semana" id="pago_semana" type="text" class="form-control" placeholder="Pago semana" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="{{$colaborador->pago_semana}}" required maxlength="10" name="pago_semana" id="pago_semana" type="text" class="form-control numero-input" placeholder="Pago semana" aria-label="Username" aria-describedby="basic-addon1">
                 </div>       
                 <span class="pago_semana_error msgError" style="color:red;"></span>
             </div>
     </div>
-</form> 
+</form>

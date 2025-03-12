@@ -52,6 +52,8 @@
             serverSide: true,
             processing: true,
             responsive:true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetRequerimientos,
                 type: 'GET',

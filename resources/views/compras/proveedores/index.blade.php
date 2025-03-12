@@ -46,6 +46,8 @@
         dtProveedores  =   new DataTable('#table_proveedores',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetProveedores,
                 type: 'GET',

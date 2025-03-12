@@ -81,6 +81,8 @@
         dtProductos  =   new DataTable('#table_productos',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetProductos,
                 type: 'GET',

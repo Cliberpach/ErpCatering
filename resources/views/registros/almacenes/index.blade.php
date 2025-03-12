@@ -68,6 +68,8 @@
         dtAlmacenes  =   new DataTable('#table_almacenes',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetAlmacenes,
                 type: 'GET',

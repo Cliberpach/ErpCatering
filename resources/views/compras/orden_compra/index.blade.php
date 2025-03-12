@@ -63,6 +63,8 @@
         dtOrdenesCompra  =   new DataTable('#table_list_orden_compra',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             //responsive:true,
             ajax: {
                 url: urlGetOrdenCompra,

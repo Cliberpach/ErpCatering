@@ -27,7 +27,7 @@
                 <span class="input-group-text" id="basic-addon1">
                     <i class="fa-solid fa-calendar-day"></i>                  
                 </span>
-                <input value="{{ $regimen->dias_trabajo }}" required id="dias_trabajo" name="dias_trabajo" type="number" min="1" class="form-control" placeholder="Días de Trabajo" aria-label="Días de Trabajo" aria-describedby="basic-addon1">
+                <input value="{{ $regimen->dias_trabajo }}" required id="dias_trabajo" name="dias_trabajo" type="number" min="1" class="form-control numero-input" placeholder="Días de Trabajo" aria-label="Días de Trabajo" aria-describedby="basic-addon1">
             </div>                  
             <span class="dias_trabajo_error msgError" style="color:red;"></span>
         </div>  
@@ -37,9 +37,9 @@
                 <span class="input-group-text" id="basic-addon1">
                     <i class="fa-solid fa-calendar-day"></i>                  
                 </span>
-                <input value="{{ $regimen->dias_descanso }}" required id="dias_descanso" name="dias_descanso" type="number" min="1" class="form-control" placeholder="Días de Descanso" aria-label="Días de Descanso" aria-describedby="basic-addon1">
+                <input value="{{ $regimen->dias_descanso }}" required id="dias_descanso" name="dias_descanso" type="number" min="1" class="form-control numero-input" placeholder="Días de Descanso" aria-label="Días de Descanso" aria-describedby="basic-addon1">
             </div>                  
             <span class="dias_descanso_error msgError" style="color:red;"></span>
         </div>  
     </div>
-</form> 
+</form>
