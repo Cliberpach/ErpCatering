@@ -67,7 +67,7 @@
                     <span class="input-group-text">
                         <i class="fa-solid fa-clock"></i>
                     </span>
-                    <input required maxlength="20" id="dias_trabajo" name="dias_trabajo" type="text" class="form-control" placeholder="Días de trabajo" aria-label="Username" aria-describedby="basic-addon1">
+                    <input required maxlength="20" id="dias_trabajo" name="dias_trabajo" type="text" class="form-control numero-input" placeholder="Días de trabajo" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                
                 <span class="dias_trabajo_error msgError" style="color:red;"></span>
             </div>
@@ -77,7 +77,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-clock"></i>
                     </span>
-                    <input required maxlength="20" id="dias_descanso" name="dias_descanso" type="text" class="form-control" placeholder="Días de descanso" aria-label="Username" aria-describedby="basic-addon1">
+                    <input required maxlength="20" id="dias_descanso" name="dias_descanso" type="text" class="form-control numero-input" placeholder="Días de descanso" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                
                 <span class="dias_descanso_error msgError" style="color:red;"></span>
             </div>
@@ -87,7 +87,7 @@
                     <span class="input-group-text">
                         <i class="fa-solid fa-money-bill-1-wave"></i>
                     </span>
-                    <input required maxlength="10" name="pago_mensual" id="pago_mensual" type="text" class="form-control" placeholder="Pago mensual" aria-label="Username" aria-describedby="basic-addon1">
+                    <input required maxlength="10" name="pago_mensual" id="pago_mensual" type="text" class="form-control numero-input" placeholder="Pago mensual" aria-label="Username" aria-describedby="basic-addon1">
                 </div>       
                 <span class="pago_mensual_error msgError" style="color:red;"></span>
             </div>
