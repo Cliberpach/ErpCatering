@@ -26,7 +26,7 @@
             border-collapse: collapse;
             margin-bottom: 5px;
         }
-        .header td, .footer-table td, .consulta-table td, .solicitud-table td {
+        .header td, .consulta-table td, .solicitud-table td {
             padding: 12px;
             vertical-align: middle;
             font-size: 14px;
@@ -60,12 +60,12 @@
             border: 1px solid #ddd; /* Borde gris claro para la tabla del pie de página */
         }
         .footer-table td {
-            font-size: 14px;
-            font-weight: normal;
+            padding: 6px;
+            vertical-align: middle;
+            color: #333; /* Color de texto gris oscuro */;
+            font-size: 11px;
             border-top: 1px solid #ddd; /* Borde superior en celdas para separación */
         }
-
-
         .consulta-table {
             margin-top: 40px;
             border: 1px solid #ddd; /* Borde gris claro para la tabla de productos */
@@ -74,7 +74,7 @@
             padding: 1px;
             background-color: #007bff; /* Fondo azul oscuro para encabezado */
             color: #ffffff; /* Texto blanco en el encabezado */
-            font-size: 12px;
+            font-size: 11px;
             text-align: left; /* Alinea el texto a la izquierda */
             border-bottom: 2px solid #0056b3; /* Borde inferior para el encabezado */
             text-align: center;
@@ -91,8 +91,8 @@
 
         .solicitud-table td {
             text-align: right; /* Alinea el texto al final de la celda */
-            padding: 20px; /* Espaciado adicional para mejor apariencia */
-            font-size: 16px; /* Tamaño de fuente más grande para el texto */
+            padding: 14px; /* Espaciado adicional para mejor apariencia */
+            font-size: 12px; /* Tamaño de fuente más grande para el texto */
             font-weight: bold; /* Texto en negrita para resaltar */
             color: #007bff; /* Color azul para el texto */
         }
@@ -105,10 +105,14 @@
         <table class="header">
             <tr>
                 <td class="image-column" style="width: 30%;">
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($empresa->img_ruta))) }}" alt="Logo">
+                    @if ($empresa->img_ruta)
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($empresa->img_ruta))) }}" alt="Logo">
+                    @else 
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/img_default.png'))) }}" alt="Logo">
+                    @endif                   
                 </td>
                 <td class="info-column" style="width: 70%; vertical-align: bottom; text-align: center;">
-                    <div class="company">{{$empresa->nombre}}</div>
+                    <div class="company">{{$empresa->razon_social}}</div>
                     <div class="address">RUC: {{$empresa->ruc}}</div>
                     <div class="address">{{$empresa->direccion}}</div>
                     <div class="phone">Teléfono: {{$empresa->telefono}}</div>
@@ -153,10 +157,11 @@
                     <th>N° DOC</th>
                     <th>PERSONAL</th>
                     <th>CARGO</th>
-                    <th>TIEMPO</th>
-                    <th>HORAS</th>
-                    <th>PAG/H</th>
-                    <th>PAGO</th>
+                    <th>DÍAS TRABAJADOS</th>
+                    <th>FERIADOS TRABAJADOS</th>
+                    <th>TOTAL DÍAS TRABAJADOS</th>
+                    <th>PAGO/DÍA</th>
+                    <th>PAGO MENSUAL</th>
                 </tr>
             </thead>
             <tbody>
@@ -166,64 +171,15 @@
                         <td>{{$item->nro_documento}}</td>
                         <td>{{$item->colaborador_nombre}}</td>
                         <td>{{$item->cargo}}</td>
-                        <td>{{$item->tiempo_trabajado}}</td>
-                        <td>{{$item->horas_trabajadas}}</td>
-                        <td>{{$item->pago_hora}}</td>
-                        <td>{{$item->pago}}</td>
+                        <td>{{$item->no_feriados_trabajados}}</td>
+                        <td>{{$item->feriados_trabajados}}</td>
+                        <td>{{$item->total_dias_trabajados}}</td>
+                        <td>{{$item->pago_dia}}</td>
+                        <td>{{$item->pago_mensual}}</td>
                     </tr>         
                 @endforeach
             </tbody>
         </table>
-
-        {{-- <!-- Segunda Tabla -->
-        <table class="solicitud-table">
-            <tr>
-                <td>SOLICITUD DE COTIZACIÓN DE MATERIALES</td>
-            </tr>
-        </table>
-
-        <!-- Tercera Tabla (con información del proveedor) -->
-        <table class="footer-table">
-            <tr>
-                <td>SEÑORES:</td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <td>USUARIO:</td>
-                <td>{{$cotizacion_compra->colaborador_nombre}}</td>
-            </tr>
-            <tr>
-                <td>FECHA:</td>
-                <td>{{$fecha_impresion}}</td>
-            </tr>
-            <!-- Nueva fila añadida al final de la tercera tabla -->
-            <tr>
-                <td colspan="2">
-                    Estimados señores:<br>
-                    Mediante la presente hacemos llegar nuestra solicitud de cotización
-                </td>
-            </tr>
-        </table>
-
-        <!-- Cuarta Tabla -->
-        <table class="consulta-table">
-            <thead>
-                <tr>
-                    <th>CANT</th>
-                    <th>PRODUCTO</th>
-                    <th>UNIDAD</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($cotizacion_compra_detalle as $item)
-                    <tr>
-                        <td>{{$item->cantidad}}</td>
-                        <td>{{$item->producto_nombre}}</td>
-                        <td>{{$item->producto_unidad_medida}}</td>
-                    </tr>         
-                @endforeach
-            </tbody>
-        </table> --}}
     </div>
 </body>
 </html>

@@ -69,7 +69,18 @@
         })
 
         //======== PERMITIR SOLO NROS EN HORAS SEMANA =======
-        document.querySelector('#horas_semana').addEventListener('input',(e)=>{
+        document.querySelector('#dias_trabajo').addEventListener('input',(e)=>{
+            const input = e.target;
+            const validNumberPattern = /^[1-9]\d*$/;
+            input.value = input.value.replace(/(?!^)(^|\D+|(?<=\D)\d*|\D*$)/g, '');
+
+            if (!validNumberPattern.test(input.value) && input.value !== '') {
+                input.value = '';
+            }
+        })
+
+        //======== PERMITIR SOLO NROS EN HORAS SEMANA =======
+        document.querySelector('#dias_descanso').addEventListener('input',(e)=>{
             const input = e.target;
             const validNumberPattern = /^[1-9]\d*$/;
             input.value = input.value.replace(/(?!^)(^|\D+|(?<=\D)\d*|\D*$)/g, '');
@@ -80,7 +91,7 @@
         })
 
         //========= PERMITIR CONTENIDO VALIDO DE DINERO =====
-        document.querySelector('#pago_semana').addEventListener('input',(e)=>{
+        document.querySelector('#pago_mensual').addEventListener('input',(e)=>{
             const input = e.target;
 
             // Reemplaza cualquier carácter que no sea un dígito o un punto decimal

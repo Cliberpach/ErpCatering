@@ -46,6 +46,8 @@
         dtMotivo_Descanso  =   new DataTable('#table_motivo',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetMotivo,
                 type: 'GET',

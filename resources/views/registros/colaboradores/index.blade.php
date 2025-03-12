@@ -46,10 +46,12 @@
         dtColaboradores  =   new DataTable('#table_colaboradores',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
             ajax: {
                 url: urlGetColaboradores,
                 type: 'GET',
             },
+            dom: "<'row'<'col-md-6'l><'col-md-6'f>>rtip", 
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nombre', name: 'nombre' },
@@ -57,8 +59,9 @@
                 { data: 'direccion', name: 'direccion' },
                 { data: 'telefono', name: 'telefono' },
                 { data: 'nro_documento', name: 'nro_documento' },
-                { data: 'horas_semana', name: 'horas_semana' },
-                { data: 'pago_semana', name: 'pago_semana' },
+                { data: 'dias_trabajo', name: 'dias_trabajo' },
+                { data: 'dias_descanso', name: 'dias_descanso' },
+                { data: 'pago_mensual', name: 'pago_mensual' },
                 {
                     data: null, 
                     render: function(data, type, row) {

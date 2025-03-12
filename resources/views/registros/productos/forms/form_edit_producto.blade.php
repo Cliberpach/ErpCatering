@@ -17,7 +17,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-barcode"></i>                   
                     </span>
-                    <input  id="codigo_barras" maxlength="20"  name="codigo_barras" type="text" class="form-control" placeholder="Código de Barras" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="{{$producto->codigo_barras}}"  id="codigo_barras" maxlength="20"  name="codigo_barras" type="text" class="form-control" placeholder="Código de Barras" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="codigo_barras_error msgError"  style="color:red;"></span>
             </div>
@@ -27,7 +27,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-key"></i>                  
                     </span>
-                    <input  id="codigo_interno" maxlength="20"  name="codigo_interno" type="text" class="form-control" placeholder="Código Interno" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="{{$producto->codigo_interno}}"  id="codigo_interno" maxlength="20"  name="codigo_interno" type="text" class="form-control" placeholder="Código Interno" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="codigo_interno_error msgError"  style="color:red;"></span>
             </div>
@@ -91,7 +91,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-money-check-dollar"></i>                  
                     </span>
-                    <input value="{{$producto->precio}}" required id="precio" maxlength="20"  name="precio" type="text" class="form-control inputDecimalPositivo" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="{{$producto->precio}}" required id="precio" maxlength="20"  name="precio" type="text" class="form-control numero-input" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="precio_error msgError"  style="color:red;"></span>
             </div>
@@ -101,10 +101,10 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-layer-group"></i>                 
                     </span>
-                    <input value="{{$producto->stock_minimo}}" required id="stock_minimo" maxlength="20"  name="stock_minimo" type="text" class="form-control inputDecimalPositivo" placeholder="Stock mínimo" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="{{$producto->stock_minimo}}" required id="stock_minimo" maxlength="20"  name="stock_minimo" type="text" class="form-control numero-input" placeholder="Stock mínimo" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="stock_minimo_error msgError"  style="color:red;"></span>
             </div>
            
     </div>
-</form> 
+</form>

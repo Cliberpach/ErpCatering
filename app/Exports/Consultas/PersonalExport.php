@@ -2,9 +2,9 @@
 namespace App\Exports\Consultas;
 
 use App\Models\Registros\Proyecto;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -33,20 +33,22 @@ class PersonalExport implements FromCollection, ShouldAutoSize, WithStyles
             return ['EL PROYECTO NO EXISTE EN LA BD'];
         }
 
-        $consulta = DB::table('registros_labor_detalle as rld')
-            ->join('colaboradores as c', 'c.id', 'rld.colaborador_id')
-            ->join('cargos as ca', 'ca.id', 'c.cargo_id')
-            ->join('tipos_documento as td', 'td.id', 'c.tipo_documento_id')
-            ->select(
-                'td.descripcion as tipo_documento',
-                'c.nro_documento',
-                'c.nombre as colaborador_nombre',
-                'ca.descripcion as cargo',
-                DB::raw("SEC_TO_TIME(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado)), 0)) as tiempo_trabajado"),
-                DB::raw("LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))) as horas_trabajadas"),
-                DB::raw("ROUND(IFNULL(c.pago_hora, 0), 2) as pago_hora"),
-                DB::raw("ROUND(IFNULL(c.pago_hora, 0) * LEAST(48, FLOOR(IFNULL(SUM(TIME_TO_SEC(rld.tiempo_trabajado) / 3600), 0))), 2) as pago")
-            );
+        $consulta   =   DB::table('registros_labor_detalle as rld')
+                        ->join('colaboradores as c', 'c.id', 'rld.colaborador_id')
+                        ->join('cargos as ca', 'ca.id', 'c.cargo_id')
+                        ->join('tipos_documento as td', 'td.id', 'c.tipo_documento_id')
+                        ->select(
+                            'td.descripcion as tipo_documento',
+                            'c.nro_documento',
+                            'c.nombre as colaborador_nombre',
+                            'ca.descripcion as cargo',
+                            DB::raw('IFNULL(COUNT(CASE WHEN rld.feriado = 0 AND rld.estado = "ASISTIO" THEN 1 END), "0") as no_feriados_trabajados'),
+                            DB::raw('IFNULL(COUNT(CASE WHEN rld.feriado = 1 AND rld.estado = "ASISTIO" THEN 1 END), "0") as feriados_trabajados'),
+                            DB::raw('IFNULL(COUNT(CASE WHEN rld.estado = "ASISTIO" THEN 1 END), "0") as total_dias_trabajados'),
+                            DB::raw('FORMAT(c.pago_dia, 2) as pago_dia'),
+                            'c.pago_mensual'    
+                        )
+                        ->where('c.estado','ACTIVO');
 
         if ($this->proyecto_id) {
             $consulta->where('rld.proyecto_id', $this->proyecto_id);
@@ -60,11 +62,11 @@ class PersonalExport implements FromCollection, ShouldAutoSize, WithStyles
             $consulta->where('rld.created_at', '<=', $this->fecha_fin . ' 23:59:59');
         }
 
-        $consulta->groupBy('c.id', 'c.nombre', 'c.pago_hora', 'td.descripcion', 'c.nro_documento', 'ca.descripcion');
+        $consulta->groupBy('c.id', 'c.nombre', 'c.pago_mensual','c.pago_dia', 'td.descripcion', 'c.nro_documento', 'ca.descripcion');
 
         $data = $consulta->get();
 
-        $data->prepend(['TIPO DOC', 'N° DOC', 'PERSONAL', 'CARGO', 'TIEMPO TRABAJADO', 'HORAS TRABAJADAS', 'PAGO/HORA', 'PAGO']);
+        $data->prepend(['TIPO DOC', 'N° DOC', 'PERSONAL', 'CARGO', 'DÍAS TRABAJADOS', 'FERIADOS TRABAJADOS','TOTAL DÍAS TRABAJADOS', 'PAGO/DÍA', 'PAGO MENSUAL']);
         $data->prepend(['']);
         $data->prepend(['FECHA REPORTE:',Carbon::now(),'','USUARIO:',Auth::user()->name]);
         $data->prepend(['FECHA INICIO REPORTE:',$this->fecha_inicio,'','FECHA FIN REPORTE:',$this->fecha_fin]);
@@ -115,8 +117,8 @@ class PersonalExport implements FromCollection, ShouldAutoSize, WithStyles
             ],
         ];
 
-        $sheet->getStyle('A6:H6')->applyFromArray($styleHeaders);
-        $sheet->getStyle( 'A6:H6')->applyFromArray($styleA1);
+        $sheet->getStyle('A6:I6')->applyFromArray($styleHeaders);
+        $sheet->getStyle( 'A6:I6')->applyFromArray($styleA1);
 
     }
 }

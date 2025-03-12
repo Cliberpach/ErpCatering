@@ -22,7 +22,6 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '47e1160838b5e5a10346ac4084b58c23' => __DIR__ . '/..' . '/laravel/prompts/src/helpers.php',
-        '23c18046f52bef3eea034657bafda50f' => __DIR__ . '/..' . '/symfony/polyfill-php81/bootstrap.php',
         '40275907c8566c390185147049ef6e5d' => __DIR__ . '/..' . '/livewire/livewire/src/helpers.php',
         '35a6ad97d21e794e7e22a17d806652e4' => __DIR__ . '/..' . '/nunomaduro/termwind/src/Functions.php',
         '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
@@ -79,7 +78,6 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         array (
             'Symfony\\Polyfill\\Uuid\\' => 22,
             'Symfony\\Polyfill\\Php83\\' => 23,
-            'Symfony\\Polyfill\\Php81\\' => 23,
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
@@ -219,6 +217,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'B' => 
         array (
             'Brick\\Math\\' => 11,
+            'Barryvdh\\DomPDF\\' => 16,
             'BaconQrCode\\' => 12,
         ),
         'A' => 
@@ -238,12 +237,12 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         ),
         'Yajra\\DataTables\\' => 
         array (
-            0 => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src',
-            1 => __DIR__ . '/..' . '/yajra/laravel-datatables-html/src',
-            2 => __DIR__ . '/..' . '/yajra/laravel-datatables-fractal/src',
-            3 => __DIR__ . '/..' . '/yajra/laravel-datatables-buttons/src',
-            4 => __DIR__ . '/..' . '/yajra/laravel-datatables-export/src',
-            5 => __DIR__ . '/..' . '/yajra/laravel-datatables-editor/src',
+            0 => __DIR__ . '/..' . '/yajra/laravel-datatables-buttons/src',
+            1 => __DIR__ . '/..' . '/yajra/laravel-datatables-editor/src',
+            2 => __DIR__ . '/..' . '/yajra/laravel-datatables-export/src',
+            3 => __DIR__ . '/..' . '/yajra/laravel-datatables-fractal/src',
+            4 => __DIR__ . '/..' . '/yajra/laravel-datatables-html/src',
+            5 => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src',
         ),
         'Whoops\\' => 
         array (
@@ -276,10 +275,6 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'Symfony\\Polyfill\\Php83\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php83',
-        ),
-        'Symfony\\Polyfill\\Php81\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-php81',
         ),
         'Symfony\\Polyfill\\Php80\\' => 
         array (
@@ -419,8 +414,8 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -504,8 +499,8 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces',
-            1 => __DIR__ . '/..' . '/league/uri',
+            0 => __DIR__ . '/..' . '/league/uri',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces',
         ),
         'League\\MimeTypeDetection\\' => 
         array (
@@ -596,9 +591,9 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'Greenter\\' => 
         array (
             0 => __DIR__ . '/..' . '/greenter/core/src/Core',
-            1 => __DIR__ . '/..' . '/greenter/xml/src',
+            1 => __DIR__ . '/..' . '/greenter/lite/src/Greenter',
             2 => __DIR__ . '/..' . '/greenter/ws/src',
-            3 => __DIR__ . '/..' . '/greenter/lite/src/Greenter',
+            3 => __DIR__ . '/..' . '/greenter/xml/src',
         ),
         'GrahamCampbell\\ResultType\\' => 
         array (
@@ -690,6 +685,10 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         array (
             0 => __DIR__ . '/..' . '/brick/math/src',
         ),
+        'Barryvdh\\DomPDF\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src',
+        ),
         'BaconQrCode\\' => 
         array (
             0 => __DIR__ . '/..' . '/bacon/bacon-qr-code/src',
@@ -741,6 +740,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Http\\Controllers\\Finanzas\\OrdenPagoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Finanzas/OrdenPagoController.php',
         'App\\Http\\Controllers\\Herramientas\\ConfiguracionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Herramientas/ConfiguracionController.php',
         'App\\Http\\Controllers\\Herramientas\\EmpresaController' => __DIR__ . '/../..' . '/app/Http/Controllers/Herramientas/EmpresaController.php',
+        'App\\Http\\Controllers\\Herramientas\\FeriadoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Herramientas/FeriadoController.php',
         'App\\Http\\Controllers\\Herramientas\\RolController' => __DIR__ . '/../..' . '/app/Http/Controllers/Herramientas/RolController.php',
         'App\\Http\\Controllers\\Herramientas\\TablaGeneralController' => __DIR__ . '/../..' . '/app/Http/Controllers/Herramientas/TablaGeneralController.php',
         'App\\Http\\Controllers\\Herramientas\\TablaGeneralDetalleController' => __DIR__ . '/../..' . '/app/Http/Controllers/Herramientas/TablaGeneralDetalleController.php',
@@ -766,6 +766,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Http\\Controllers\\Registros\\ProyectoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/ProyectoController.php',
         'App\\Http\\Controllers\\Registros\\RegimenController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/RegimenController.php',
         'App\\Http\\Controllers\\Registros\\VehiculoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/VehiculoController.php',
+        'App\\Http\\Controllers\\Requerimientos\\PersonalController' => __DIR__ . '/../..' . '/app/Http/Controllers/Requerimientos/PersonalController.php',
         'App\\Http\\Controllers\\Requerimientos\\RequerimientoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Requerimientos/RequerimientoController.php',
         'App\\Http\\Controllers\\TrabajoEquipo\\RegistroTareaController' => __DIR__ . '/../..' . '/app/Http/Controllers/TrabajoEquipo/RegistroTareaController.php',
         'App\\Http\\Controllers\\Utils\\UtilController' => __DIR__ . '/../..' . '/app/Http/Controllers/Utils/UtilController.php',
@@ -778,6 +779,8 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Http\\Requests\\Compras\\Proveedor\\ProveedorUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Compras/Proveedor/ProveedorUpdateRequest.php',
         'App\\Http\\Requests\\Finanzas\\ListaOrdenCompra\\OrdenCompraToOrdenPagoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Finanzas/ListaOrdenCompra/OrdenCompraToOrdenPagoStoreRequest.php',
         'App\\Http\\Requests\\Herramientas\\Empresa\\EmpresaUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Herramientas/Empresa/EmpresaUpdateRequest.php',
+        'App\\Http\\Requests\\Herramientas\\Feriado\\FeriadoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Herramientas/Feriado/FeriadoStoreRequest.php',
+        'App\\Http\\Requests\\Herramientas\\Feriado\\FeriadoUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Herramientas/Feriado/FeriadoUpdateRequest.php',
         'App\\Http\\Requests\\Herramientas\\Rol\\RolStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Herramientas/Rol/RolStoreRequest.php',
         'App\\Http\\Requests\\Herramientas\\Rol\\RolUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Herramientas/Rol/RolUpdateRequest.php',
         'App\\Http\\Requests\\Herramientas\\TablaGeneral\\TablaGeneralDetalleStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Herramientas/TablaGeneral/TablaGeneralDetalleStoreRequest.php',
@@ -821,6 +824,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Http\\Requests\\Registros\\Proyecto\\ProyectoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto/ProyectoStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Proyecto\\ProyectoUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto/ProyectoUpdateRequest.php',
         'App\\Http\\Requests\\Registros\\Regimen\\RegimenStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Regimen/RegimenStoreRequest.php',
+        'App\\Http\\Requests\\Registros\\Regimen\\RegimenUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Regimen/RegimenUpdateRequest.php',
         'App\\Http\\Requests\\Registros\\Vehiculo\\VehiculoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Vehiculo/VehiculoStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Vehiculo\\VehiculoUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Vehiculo/VehiculoUpdateRequest.php',
         'App\\Http\\Requests\\Requerimientos\\Requerimiento\\RequerimientoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Requerimientos/Requerimiento/RequerimientoStoreRequest.php',
@@ -847,6 +851,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Models\\Herramientas\\Configuracion' => __DIR__ . '/../..' . '/app/Models/Herramientas/Configuracion.php',
         'App\\Models\\Herramientas\\Empresa' => __DIR__ . '/../..' . '/app/Models/Herramientas/Empresa.php',
         'App\\Models\\Herramientas\\EmpresaFacturacion' => __DIR__ . '/../..' . '/app/Models/Herramientas/EmpresaFacturacion.php',
+        'App\\Models\\Herramientas\\Feriado' => __DIR__ . '/../..' . '/app/Models/Herramientas/Feriado.php',
         'App\\Models\\Herramientas\\TablaGeneral' => __DIR__ . '/../..' . '/app/Models/Herramientas/TablaGeneral.php',
         'App\\Models\\Herramientas\\TablaGeneralDetalle' => __DIR__ . '/../..' . '/app/Models/Herramientas/TablaGeneralDetalle.php',
         'App\\Models\\Herramientas\\TipoDocumento' => __DIR__ . '/../..' . '/app/Models/Herramientas/TipoDocumento.php',
@@ -866,6 +871,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Models\\Registros\\Cargo' => __DIR__ . '/../..' . '/app/Models/Registros/Cargo.php',
         'App\\Models\\Registros\\Categoria' => __DIR__ . '/../..' . '/app/Models/Registros/Categoria.php',
         'App\\Models\\Registros\\Colaborador' => __DIR__ . '/../..' . '/app/Models/Registros/Colaborador.php',
+        'App\\Models\\Registros\\ColaboradorProyecto' => __DIR__ . '/../..' . '/app/Models/Registros/ColaboradorProyecto.php',
         'App\\Models\\Registros\\Conductor' => __DIR__ . '/../..' . '/app/Models/Registros/Conductor.php',
         'App\\Models\\Registros\\Horario' => __DIR__ . '/../..' . '/app/Models/Registros/Horario.php',
         'App\\Models\\Registros\\Maquinaria' => __DIR__ . '/../..' . '/app/Models/Registros/Maquinaria.php',
@@ -877,6 +883,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Models\\Registros\\Proyecto' => __DIR__ . '/../..' . '/app/Models/Registros/Proyecto.php',
         'App\\Models\\Registros\\ProyectoMaquinaria' => __DIR__ . '/../..' . '/app/Models/Registros/ProyectoMaquinaria.php',
         'App\\Models\\Registros\\ProyectoPersonal' => __DIR__ . '/../..' . '/app/Models/Registros/ProyectoPersonal.php',
+        'App\\Models\\Registros\\ProyectoRegimen' => __DIR__ . '/../..' . '/app/Models/Registros/ProyectoRegimen.php',
         'App\\Models\\Registros\\Regimen' => __DIR__ . '/../..' . '/app/Models/Registros/Regimen.php',
         'App\\Models\\Registros\\Vehiculo' => __DIR__ . '/../..' . '/app/Models/Registros/Vehiculo.php',
         'App\\Models\\Requerimientos\\Requerimiento' => __DIR__ . '/../..' . '/app/Models/Requerimientos/Requerimiento.php',
@@ -952,6 +959,9 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'BaconQrCode\\Renderer\\RendererStyle\\GradientType' => __DIR__ . '/..' . '/bacon/bacon-qr-code/src/Renderer/RendererStyle/GradientType.php',
         'BaconQrCode\\Renderer\\RendererStyle\\RendererStyle' => __DIR__ . '/..' . '/bacon/bacon-qr-code/src/Renderer/RendererStyle/RendererStyle.php',
         'BaconQrCode\\Writer' => __DIR__ . '/..' . '/bacon/bacon-qr-code/src/Writer.php',
+        'Barryvdh\\DomPDF\\Facade\\Pdf' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/Facade/Pdf.php',
+        'Barryvdh\\DomPDF\\PDF' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/PDF.php',
+        'Barryvdh\\DomPDF\\ServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-dompdf/src/ServiceProvider.php',
         'Brick\\Math\\BigDecimal' => __DIR__ . '/..' . '/brick/math/src/BigDecimal.php',
         'Brick\\Math\\BigInteger' => __DIR__ . '/..' . '/brick/math/src/BigInteger.php',
         'Brick\\Math\\BigNumber' => __DIR__ . '/..' . '/brick/math/src/BigNumber.php',
@@ -967,7 +977,6 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'Brick\\Math\\Internal\\Calculator\\GmpCalculator' => __DIR__ . '/..' . '/brick/math/src/Internal/Calculator/GmpCalculator.php',
         'Brick\\Math\\Internal\\Calculator\\NativeCalculator' => __DIR__ . '/..' . '/brick/math/src/Internal/Calculator/NativeCalculator.php',
         'Brick\\Math\\RoundingMode' => __DIR__ . '/..' . '/brick/math/src/RoundingMode.php',
-        'CURLStringFile' => __DIR__ . '/..' . '/symfony/polyfill-php81/Resources/stubs/CURLStringFile.php',
         'Carbon\\AbstractTranslator' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/AbstractTranslator.php',
         'Carbon\\Callback' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Callback.php',
         'Carbon\\Carbon' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Carbon.php',
@@ -4484,7 +4493,9 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'League\\Fractal\\Pagination\\CursorInterface' => __DIR__ . '/..' . '/league/fractal/src/Pagination/CursorInterface.php',
         'League\\Fractal\\Pagination\\DoctrinePaginatorAdapter' => __DIR__ . '/..' . '/league/fractal/src/Pagination/DoctrinePaginatorAdapter.php',
         'League\\Fractal\\Pagination\\IlluminatePaginatorAdapter' => __DIR__ . '/..' . '/league/fractal/src/Pagination/IlluminatePaginatorAdapter.php',
+        'League\\Fractal\\Pagination\\LaminasPaginatorAdapter' => __DIR__ . '/..' . '/league/fractal/src/Pagination/LaminasPaginatorAdapter.php',
         'League\\Fractal\\Pagination\\PagerfantaPaginatorAdapter' => __DIR__ . '/..' . '/league/fractal/src/Pagination/PagerfantaPaginatorAdapter.php',
+        'League\\Fractal\\Pagination\\PaginatorCountTrait' => __DIR__ . '/..' . '/league/fractal/src/Pagination/PaginatorCountTrait.php',
         'League\\Fractal\\Pagination\\PaginatorInterface' => __DIR__ . '/..' . '/league/fractal/src/Pagination/PaginatorInterface.php',
         'League\\Fractal\\Pagination\\PhalconFrameworkPaginatorAdapter' => __DIR__ . '/..' . '/league/fractal/src/Pagination/PhalconFrameworkPaginatorAdapter.php',
         'League\\Fractal\\Pagination\\ZendFrameworkPaginatorAdapter' => __DIR__ . '/..' . '/league/fractal/src/Pagination/ZendFrameworkPaginatorAdapter.php',
@@ -5725,6 +5736,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'PHPUnit\\Framework\\Attributes\\UsesMethod' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Attributes/UsesMethod.php',
         'PHPUnit\\Framework\\Attributes\\UsesTrait' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Attributes/UsesTrait.php',
         'PHPUnit\\Framework\\Attributes\\WithoutErrorHandler' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Attributes/WithoutErrorHandler.php',
+        'PHPUnit\\Framework\\ChildProcessResultProcessor' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/TestRunner/ChildProcessResultProcessor.php',
         'PHPUnit\\Framework\\CodeCoverageException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/CodeCoverageException.php',
         'PHPUnit\\Framework\\ComparisonMethodDoesNotAcceptParameterTypeException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/ObjectEquals/ComparisonMethodDoesNotAcceptParameterTypeException.php',
         'PHPUnit\\Framework\\ComparisonMethodDoesNotDeclareBoolReturnTypeException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/ObjectEquals/ComparisonMethodDoesNotDeclareBoolReturnTypeException.php',
@@ -7744,7 +7756,6 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'Ramsey\\Uuid\\UuidInterface' => __DIR__ . '/..' . '/ramsey/uuid/src/UuidInterface.php',
         'Ramsey\\Uuid\\Validator\\GenericValidator' => __DIR__ . '/..' . '/ramsey/uuid/src/Validator/GenericValidator.php',
         'Ramsey\\Uuid\\Validator\\ValidatorInterface' => __DIR__ . '/..' . '/ramsey/uuid/src/Validator/ValidatorInterface.php',
-        'ReturnTypeWillChange' => __DIR__ . '/..' . '/symfony/polyfill-php81/Resources/stubs/ReturnTypeWillChange.php',
         'SQLite3Exception' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/SQLite3Exception.php',
         'Sabberworm\\CSS\\CSSList\\AtRuleBlockList' => __DIR__ . '/..' . '/sabberworm/php-css-parser/src/CSSList/AtRuleBlockList.php',
         'Sabberworm\\CSS\\CSSList\\CSSBlockList' => __DIR__ . '/..' . '/sabberworm/php-css-parser/src/CSSList/CSSBlockList.php',
@@ -8001,6 +8012,10 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'Spatie\\Permission\\Contracts\\Role' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Contracts/Role.php',
         'Spatie\\Permission\\Contracts\\Wildcard' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Contracts/Wildcard.php',
         'Spatie\\Permission\\DefaultTeamResolver' => __DIR__ . '/..' . '/spatie/laravel-permission/src/DefaultTeamResolver.php',
+        'Spatie\\Permission\\Events\\PermissionAttached' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Events/PermissionAttached.php',
+        'Spatie\\Permission\\Events\\PermissionDetached' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Events/PermissionDetached.php',
+        'Spatie\\Permission\\Events\\RoleAttached' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Events/RoleAttached.php',
+        'Spatie\\Permission\\Events\\RoleDetached' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Events/RoleDetached.php',
         'Spatie\\Permission\\Exceptions\\GuardDoesNotMatch' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Exceptions/GuardDoesNotMatch.php',
         'Spatie\\Permission\\Exceptions\\PermissionAlreadyExists' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Exceptions/PermissionAlreadyExists.php',
         'Spatie\\Permission\\Exceptions\\PermissionDoesNotExist' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Exceptions/PermissionDoesNotExist.php',
@@ -9022,7 +9037,6 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'Symfony\\Polyfill\\Mbstring\\Mbstring' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/Mbstring.php',
         'Symfony\\Polyfill\\Php80\\Php80' => __DIR__ . '/..' . '/symfony/polyfill-php80/Php80.php',
         'Symfony\\Polyfill\\Php80\\PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/PhpToken.php',
-        'Symfony\\Polyfill\\Php81\\Php81' => __DIR__ . '/..' . '/symfony/polyfill-php81/Php81.php',
         'Symfony\\Polyfill\\Php83\\Php83' => __DIR__ . '/..' . '/symfony/polyfill-php83/Php83.php',
         'Symfony\\Polyfill\\Uuid\\Uuid' => __DIR__ . '/..' . '/symfony/polyfill-uuid/Uuid.php',
         'Termwind\\Actions\\StyleToMethod' => __DIR__ . '/..' . '/nunomaduro/termwind/src/Actions/StyleToMethod.php',
@@ -9156,6 +9170,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'Twig\\Node\\Expression\\Binary\\AbstractBinary' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Binary/AbstractBinary.php',
         'Twig\\Node\\Expression\\Binary\\AddBinary' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Binary/AddBinary.php',
         'Twig\\Node\\Expression\\Binary\\AndBinary' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Binary/AndBinary.php',
+        'Twig\\Node\\Expression\\Binary\\BinaryInterface' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Binary/BinaryInterface.php',
         'Twig\\Node\\Expression\\Binary\\BitwiseAndBinary' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Binary/BitwiseAndBinary.php',
         'Twig\\Node\\Expression\\Binary\\BitwiseOrBinary' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Binary/BitwiseOrBinary.php',
         'Twig\\Node\\Expression\\Binary\\BitwiseXorBinary' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Binary/BitwiseXorBinary.php',
@@ -9219,6 +9234,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'Twig\\Node\\Expression\\Unary\\PosUnary' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Unary/PosUnary.php',
         'Twig\\Node\\Expression\\Unary\\SpreadUnary' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Unary/SpreadUnary.php',
         'Twig\\Node\\Expression\\Unary\\StringCastUnary' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Unary/StringCastUnary.php',
+        'Twig\\Node\\Expression\\Unary\\UnaryInterface' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Unary/UnaryInterface.php',
         'Twig\\Node\\Expression\\Variable\\AssignContextVariable' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Variable/AssignContextVariable.php',
         'Twig\\Node\\Expression\\Variable\\AssignTemplateVariable' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Variable/AssignTemplateVariable.php',
         'Twig\\Node\\Expression\\Variable\\ContextVariable' => __DIR__ . '/..' . '/twig/twig/src/Node/Expression/Variable/ContextVariable.php',

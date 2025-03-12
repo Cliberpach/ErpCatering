@@ -5,10 +5,12 @@
         <th scope="col">N° DOC</th>
         <th scope="col">PERSONAL</th>
         <th scope="col">CARGO</th>
-        <th scope="col">TIEMPO TRABAJADO</th>
-        <th scope="col">HORAS TRABAJADAS</th>
-        <th scope="col">PAGO/HORA</th>
-        <th scope="col">PAGO</th>
+        <th scope="col">DÍAS TRABAJADOS</th>
+        <th scope="col">FERIADOS TRABAJADOS</th>
+        <th scope="col">TOTAL DÍAS TRABAJADOS</th>
+        <th scope="col">PAGO/DÍA</th>
+        <th scope="col">PAGO MENSUAL</th>
+        <th scope="col">ACCIONES</th>
       </tr>
     </thead>
     <tbody>

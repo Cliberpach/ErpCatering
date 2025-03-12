@@ -62,6 +62,8 @@
         dtTareas  =   new DataTable('#table_tareas',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetTareas,
                 type: 'GET',

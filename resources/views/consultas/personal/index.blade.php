@@ -14,7 +14,7 @@
 <div class="card-style settings-card-1 mb-30">
     @csrf
     <div class="title mb-30 d-flex justify-content-between align-items-center">
-      <h6>Horarios <i class="fa-solid fa-clock"></i></h6>
+      <h6>Días Trabajo <i class="fa-solid fa-clock"></i></h6>
     </div>
     <div class="row mb-3">
         <div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
@@ -82,6 +82,8 @@
         dtConsultaPersonal  =   new DataTable('#table_consulta_personal',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetConsultaPersonal,
                 type: 'GET',
@@ -96,10 +98,20 @@
                 { data: 'nro_documento', name: 'nro_documento' },
                 { data: 'colaborador_nombre', name: 'colaborador_nombre' },
                 { data: 'cargo', name: 'cargo' },
-                { data: 'tiempo_trabajado', name: 'tiempo_trabajado' },
-                { data: 'horas_trabajadas', name: 'horas_trabajadas' },
-                { data: 'pago_hora', name: 'pago_hora' },
-                { data: 'pago', name: 'pago' },
+                { data: 'no_feriados_trabajados', name: 'no_feriados_trabajados' },
+                { data: 'feriados_trabajados', name: 'feriados_trabajados' },
+                { data: 'total_dias_trabajados', name: 'total_dias_trabajados' },
+                { data: 'pago_dia', name: 'pago_dia' },
+                { data: 'pago_mensual', name: 'pago_mensual' },
+                {
+                data: 'colaborador_id', // Aquí obtenemos el ID del colaborador
+                name: 'acciones',
+                render: function (data, type, row) {
+                    return '<a href="/personal/detalles/' + data + '" class="btn btn-primary btn-sm">Reporte de Asistencia</a>';
+                },
+                orderable: false, 
+                searchable: false 
+                }
             ],
             language: {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
@@ -125,91 +137,11 @@
         });
     }
 
-    function goToCrearProducto(){
-        window.location.href = @json(route('registros.producto.create'));
-    }
-
-
-    function eliminarProducto(id){
-        toastr.clear();
-        let row             =   getRowById(dtConsultaPersonal,id);
-        let message         =   '';
-        let tipo_documento  =   '';
-
-        message =   `Desea eliminar el producto: ${row.nombre}`;
-
-        const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-            confirmButton: "btn btn-success",
-            cancelButton: "btn btn-danger"
-        },
-        buttonsStyling: false
-        });
-        swalWithBootstrapButtons.fire({
-        title: message,
-        text: "Operación no reversible!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, eliminar!",
-        cancelButtonText: "No, cancelar!",
-        reverseButtons: true
-        }).then(async (result) => {
-        if (result.isConfirmed) {
-            
-            Swal.fire({
-                title: 'Cargando...',
-                html: 'Eliminando producto...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading(); 
-                }
-            });
-
-            try {
-                let urlDeleteProducto    =   `{{ route('registros.producto.destroy', ['id' => ':id']) }}`;
-                urlDeleteProducto        =   urlDeleteProducto.replace(':id', id);
-                const token              =   document.querySelector('input[name="_token"]').value;
-
-                const response  =   await fetch(urlDeleteProducto, {
-                                        method: 'DELETE',
-                                        headers: {
-                                            'X-CSRF-TOKEN': token 
-                                        }
-                                    });
-
-                const   res =   await response.json();
-
-                if(res.success){
-                    dtConsultaPersonal.draw();
-                    toastr.success(res.message,'OPERACIÓN COMPLETADA');
-                }else{
-                    toastr.error(res.message,'ERROR EN EL SERVIDOR AL ELIMINAR PRODUCTO');
-                }
-
-            } catch (error) {
-                toastr.error(error,'ERROR EN LA PETICIÓN ELIMINAR PRODUCTO');
-            }finally{
-                Swal.close();
-            }
-
-        } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-        ) {
-            swalWithBootstrapButtons.fire({
-            title: "Operación cancelada",
-            text: "No se realizaron acciones",
-            icon: "error"
-            });
-        }
-        });
-    }
-
     function cambioFechaFin(){
         const fecha_inicio  =   document.querySelector('#fecha_inicio');
         const fecha_fin     =   document.querySelector('#fecha_fin');
         
-        if(fecha_fin.value < fecha_inicio.value){
+        if(fecha_fin.value < fecha_inicio.value && fecha_inicio.value && fecha_fin.value){
             toastr.error('LA FECHA DE FIN DEBE SER MAYOR A LA FECHA DE INICIO!!');
             fecha_fin.value =   '';
             fecha_fin.focus();
@@ -222,7 +154,7 @@
         const fecha_inicio  =   document.querySelector('#fecha_inicio');
         const fecha_fin     =   document.querySelector('#fecha_fin');
         
-        if(fecha_inicio.value > fecha_fin.value){
+        if(fecha_inicio.value > fecha_fin.value && fecha_inicio.value && fecha_fin.value){
             toastr.error('LA FECHA DE INICIO DEBE SER MENOR A LA FECHA DE FIN!!');
             fecha_inicio.value =   '';
             fecha_inicio.focus();
@@ -252,5 +184,9 @@
     
         window.location.href = url;    
     }
+
+    
+
+
 
 </script>

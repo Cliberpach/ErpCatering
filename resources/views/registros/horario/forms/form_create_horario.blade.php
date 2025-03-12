@@ -46,12 +46,9 @@
             <label for="minutos_tolerancia" class="required_field mb-2" style="font-weight: bold;">Minutos de Tolerancia</label>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fa-solid fa-stopwatch"></i></span>
-                <input required id="minutos_tolerancia" name="minutos_tolerancia" type="number" min="0" class="form-control">
+                <input required id="minutos_tolerancia" name="minutos_tolerancia" type="number" min="0" class="form-control numero-input">
             </div>                  
             <span class="minutos_tolerancia_error msgError text-danger"></span>
-        </div>
-
-
         </div>
     </div>
 </form>

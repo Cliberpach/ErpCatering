@@ -51,6 +51,7 @@ class PermisoSeeder extends Seeder
             'herramientas.tabla_general',
             'herramientas.empresa',
             'herramientas.configuracion',
+            'herramientas.feriados',
             'consultas.personal',
             'consultas.maquinaria',
             'consultas.producto',

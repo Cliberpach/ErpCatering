@@ -66,6 +66,8 @@
         dtMarcas  =   new DataTable('#table_marcas',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetMarcas,
                 type: 'GET',

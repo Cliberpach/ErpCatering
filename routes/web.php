@@ -18,6 +18,7 @@ use App\Http\Controllers\Compras\RegistroCompraController;
 use App\Http\Controllers\Finanzas\ListaOrdenCompraController;
 use App\Http\Controllers\Finanzas\OrdenPagoController;
 use App\Http\Controllers\Herramientas\ConfiguracionController;
+use App\Http\Controllers\Herramientas\FeriadoController;
 use App\Http\Controllers\Logistica\RegistroSalidaController;
 use App\Http\Controllers\PlanProyecto\TareaController;
 use App\Http\Controllers\Registros\AlmacenController;
@@ -36,6 +37,7 @@ use App\Http\Controllers\Registros\ModalidadPagoController;
 use App\Http\Controllers\Registros\ProductoController;
 use App\Http\Controllers\Registros\ProyectoController;
 use App\Http\Controllers\Registros\VehiculoController;
+use App\Http\Controllers\Requerimientos\PersonalController;
 use App\Http\Controllers\TrabajoEquipo\RegistroTareaController;
 use App\Http\Controllers\Utils\UtilController;
 use App\Http\Middleware\CheckCustomPermission;
@@ -274,10 +276,9 @@ Route::group(['prefix' => 'tablas_generales_detalles', 'middleware' => ['auth','
 
 Route::group(['prefix' => 'asistencias', 'middleware' => ['auth', 'notificacionMiddleware']], function () {
     Route::get('/index', [AsistenciasController::class, 'index'])->name('registros.asistencias.index');
-    
+    Route::post('/store', [AsistenciasController::class, 'store'])->name('registros.asistencias.store');
+    Route::get('/listar', [AsistenciasController::class, 'listar'])->name('registros.asistencias.listar');
 });
-
-
 
 //============= FIN REGISTROS ==========================
 
@@ -332,6 +333,26 @@ Route::group(['prefix' => 'requerimientos', 'middleware' => ['auth','checkCustom
 });
 
 //========= FIN REQUERIMIENTOS ==========
+
+
+//========== INICIO PERSONAL ==========
+
+Route::group(['prefix' => 'personal'], function () {
+
+    Route::get('/index', [PersonalController::class, 'index'])->name('requerimientos.personal.index');
+    Route::get('/create', [PersonalController::class, 'create'])->name('requerimientos.personal.create')->middleware('checkRole:SUPERVISOR');
+    Route::get('/getPersonal', [PersonalController::class, 'getPersonal'])->name('requerimientos.personal.getPersonal');
+    Route::put('/update/{id}', [PersonalController::class, 'update'])->name('requerimientos.personal.update');
+    Route::post('/store', [PersonalController::class, 'store'])->name('requerimientos.personal.store')->middleware('checkRole:SUPERVISOR');
+    Route::get('/edit/{id}', [PersonalController::class, 'edit'])->name('requerimientos.personal.edit')->middleware('checkRole:SUPERVISOR');
+    Route::delete('/destroy/{id}', [PersonalController::class, 'destroy'])->name('requerimientos.personal.destroy');
+    Route::get('/show/{id}', [PersonalController::class, 'show'])->name('requerimientos.personal.show');
+
+    Route::get('/detalles/{colaborador_id}', [CPersonalController::class, 'detalles'])->name('requerimientos.personal.detalles');
+    Route::get('/consulta-personal-detalles/{colaborador_id}', [CPersonalController::class, 'getDetalles'])->name('consultas.personal.getDetalles');
+});
+
+//========= FIN PERSONAL ==========
 
 
 //============ INICIO LOGÍSTICA =======
@@ -534,6 +555,18 @@ Route::group(['prefix' => 'configuracion', 'middleware' => ['auth','notificacion
     Route::put('/ambiente_greenter/{id}', [ConfiguracionController::class, 'ambiente_greenter'])->name('herramientas.configuracion.ambiente_greenter');
   
 });
+
+Route::group(['prefix' => 'feriados', 'middleware' => ['auth','notificacionMiddleware']], function () {
+
+    Route::get('/index', [FeriadoController::class, 'index'])->name('herramientas.feriados.index');
+    Route::get('/getFeriados', [FeriadoController::class, 'getFeriados'])->name('herramientas.feriados.getFeriados');
+    Route::get('/create', [FeriadoController::class, 'create'])->name('herramientas.feriados.create');
+    Route::post('/store', [FeriadoController::class, 'store'])->name('herramientas.feriados.store');
+    Route::get('/edit/{id}', [FeriadoController::class, 'edit'])->name('herramientas.feriados.edit');
+    Route::put('/update/{id}', [FeriadoController::class, 'update'])->name('herramientas.feriados.update');
+    Route::delete('/destroy/{id}', [FeriadoController::class, 'destroy'])->name('herramientas.feriados.destroy');
+
+});
 //======= FIN HERRAMIENTAS ==========
 
 
@@ -545,8 +578,20 @@ Route::group(['prefix' => 'consultas_personal', 'middleware' => ['auth','checkCu
     Route::get('/getConsultaPersonal', [CPersonalController::class, 'getConsultaPersonal'])->name('consultas.personal.getConsultaPersonal');
     Route::get('/excel', [CPersonalController::class, 'excel'])->name('consultas.personal.excel');
     Route::get('/pdf', [CPersonalController::class, 'pdf'])->name('consultas.personal.pdf');
+
+    Route::get('/get-motivos-descanso', [CPersonalController::class, 'getMotivosDescanso']);
+    Route::post('/guardar-motivo-permiso', [CPersonalController::class, 'guardarMotivoPermiso']);
+    Route::post('/verificar-contraseña', [CPersonalController::class, 'verificarContraseña']);
+    Route::get('/get-horas-extra/{id}', [CPersonalController::class, 'getHorasExtra']);
+    Route::post('/guardar-horas-extra', [CPersonalController::class, 'asignarHorasExtra']);
+
+
+
+
  
 });
+
+
 
 Route::group(['prefix' => 'consultas_maquinaria', 'middleware' => ['auth','checkCustomPermission:consultas.maquinaria','notificacionMiddleware']], function () {
 

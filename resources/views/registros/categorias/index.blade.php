@@ -65,6 +65,8 @@
         dtCategorias  =   new DataTable('#table_categorias',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetCategorias,
                 type: 'GET',

@@ -60,6 +60,8 @@
         dtCargos  =   new DataTable('#table_cargos',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetCargos,
                 type: 'GET',

@@ -46,6 +46,8 @@
         dtHorario  =   new DataTable('#table_horario',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetHorario,
                 type: 'GET',

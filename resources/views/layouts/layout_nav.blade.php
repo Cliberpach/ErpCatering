@@ -456,6 +456,11 @@
                 <a class="@yield('configuracion-active')" href="{{route('herramientas.configuracion.index')}}">Configuracion</a>
               @endcan
             </li>
+            <li>
+              @can('herramientas.feriados')
+                <a class="@yield('feriados-active')" href="{{route('herramientas.feriados.index')}}">Feriados</a>
+              @endcan
+            </li>
           </ul>
         </li>
         @endcanany
