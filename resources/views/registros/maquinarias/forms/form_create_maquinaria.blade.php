@@ -29,7 +29,7 @@
                 <span class="input-group-text" id="basic-addon1">
                     <i class="fa-solid fa-money-check-dollar"></i>                  
                 </span>
-                <input value="1.00" required id="costo_gasto" maxlength="20"  name="costo_gasto" type="text" class="form-control inputDecimalPositivo" placeholder="Costo gasto" aria-label="Username" aria-describedby="basic-addon1">
+                <input value="1.00" required id="costo_gasto" maxlength="20"  name="costo_gasto" type="text" class="form-control numero-input" placeholder="Costo gasto" aria-label="Username" aria-describedby="basic-addon1">
             </div>                  
             <span class="costo_gasto_error msgError"  style="color:red;"></span>
         </div>  
@@ -48,4 +48,4 @@
         </div>  
        
     </div>
-</form> 
+</form>

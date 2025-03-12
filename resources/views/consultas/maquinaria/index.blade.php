@@ -82,6 +82,8 @@
         dtConsultaPersonal  =   new DataTable('#table_consulta_maquinaria',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetConsultaMaquinaria,
                 type: 'GET',

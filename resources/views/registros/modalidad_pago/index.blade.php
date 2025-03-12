@@ -46,6 +46,8 @@
         dtModalidadesPago  =   new DataTable('#table_list_modalidades_pago',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetModalidadesPago,
                 type: 'GET',

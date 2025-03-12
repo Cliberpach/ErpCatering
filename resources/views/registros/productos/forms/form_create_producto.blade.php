@@ -83,7 +83,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-money-check-dollar"></i>                  
                     </span>
-                    <input value="1.00" required id="precio" maxlength="20"  name="precio" type="text" class="form-control inputDecimalPositivo" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="1.00" required id="precio" maxlength="20"  name="precio" type="text" class="form-control numero-input" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="precio_error msgError"  style="color:red;"></span>
             </div>
@@ -93,7 +93,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-layer-group"></i>                 
                     </span>
-                    <input value="0.00" required id="stock" maxlength="20"  name="stock" type="text" class="form-control inputDecimalPositivo" placeholder="Stock" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="0.00" required id="stock" maxlength="20"  name="stock" type="text" class="form-control numero-input" placeholder="Stock" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="stock_error msgError"  style="color:red;"></span>
             </div> --}}
@@ -103,9 +103,9 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-layer-group"></i>                 
                     </span>
-                    <input value="1.00" required id="stock_minimo" maxlength="20"  name="stock_minimo" type="text" class="form-control inputDecimalPositivo" placeholder="Stock mínimo" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="1.00" required id="stock_minimo" maxlength="20"  name="stock_minimo" type="text" class="form-control numero-input" placeholder="Stock mínimo" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="stock_minimo_error msgError"  style="color:red;"></span>
             </div>
     </div>
-</form> 
+</form>

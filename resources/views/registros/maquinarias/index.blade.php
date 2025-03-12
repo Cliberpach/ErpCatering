@@ -46,6 +46,8 @@
         dtMaquinarias  =   new DataTable('#table_maquinarias',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetMaquinarias,
                 type: 'GET',

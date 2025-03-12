@@ -91,6 +91,8 @@
         dtConsultaProducto  =   new DataTable('#table_consulta_producto',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetConsultaProducto,
                 type: 'GET',

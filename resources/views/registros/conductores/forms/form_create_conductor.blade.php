@@ -17,7 +17,7 @@
                     <button id="btn_consultar_documento" disabled class="btn btn-primary" type="button" id="button-addon1">
                         <i class="fa-solid fa-magnifying-glass" style="color:white;"></i>
                     </button>
-                    <input required readonly id="nro_documento" name="nro_documento" type="text" class="form-control" placeholder="Nro de Documento" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                    <input required readonly id="nro_documento" name="nro_documento" type="text" class="form-control numero-input" placeholder="Nro de Documento" aria-label="Example text with button addon" aria-describedby="button-addon1">
                 </div>                 
                 <span class="nro_documento_error msgError"  style="color:red;"></span>
             </div>    
@@ -49,7 +49,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <img width="30" height="30" src="{{asset('img/icons/licencia/licencia1.png')}}" alt="coins"/>                                        
                     </span>
-                    <input minlength="9" maxlength="10" required id="licencia" name="licencia" type="text" class="form-control" placeholder="Licencia" aria-label="Username" aria-describedby="basic-addon1">
+                    <input minlength="9" maxlength="10" required id="licencia" name="licencia" type="text" class="form-control numero-input" placeholder="Licencia" aria-label="Username" aria-describedby="basic-addon1">
                 </div>            
                 <span style="color:rgb(0, 89, 255); font-style: italic;display:block;">(9 - 10 CARACTERES ALFANUMÉRICOS)</span>      
                 <span class="licencia_error msgError"  style="color:red;"></span>
@@ -60,10 +60,10 @@
                     <span class="input-group-text" id="basic-addon1">
                         <img width="30" height="30" src="{{asset('img/icons/telefono/telefono2.png')}}" alt="coins"/>                                        
                     </span>
-                    <input maxlength="20"  id="telefono" name="telefono" type="text" class="form-control" placeholder="Teléfono" aria-label="Username" aria-describedby="basic-addon1">
+                    <input maxlength="20"  id="telefono" name="telefono" type="text" class="form-control numero-input" placeholder="Teléfono" aria-label="Username" aria-describedby="basic-addon1">
                 </div> 
                 <span style="color:rgb(0, 89, 255); font-style: italic;display:block;">(20 LONGITUD MÁXIMA)</span>                                 
                 <span class="telefono_error msgError"  style="color:red;"></span>
             </div>
     </div>
-</form> 
+</form>

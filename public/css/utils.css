@@ -35,3 +35,8 @@
     overflow: hidden;
     transition: opacity 0.5s ease, max-height 0.5s ease;
 }
+
+    .numero-input {
+        background-color: #fffdf2 !important; /* Amarillo tenue */
+    }
+

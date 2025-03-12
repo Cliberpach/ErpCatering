@@ -46,6 +46,8 @@
         dtConductores  =   new DataTable('#table_list_conductores',{
             serverSide: true,
             processing: true,
+            pageLength: 50, 
+
             ajax: {
                 url: urlGetConductores,
                 type: 'GET',

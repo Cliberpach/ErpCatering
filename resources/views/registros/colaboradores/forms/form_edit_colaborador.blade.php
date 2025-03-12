@@ -36,7 +36,7 @@
                         @if ($colaborador->tipo_documento_id == 2)
                             maxlength='20'
                         @endif
-                     required id="nro_documento" name="nro_documento" type="text" class="form-control" placeholder="Nro de Documento" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                     required id="nro_documento" name="nro_documento" type="text" class="form-control numero-input" placeholder="Nro de Documento" aria-label="Example text with button addon" aria-describedby="button-addon1">
                 </div>                 
                 <span class="nro_documento_error msgError"  style="color:red;"></span>
             </div>    
@@ -115,4 +115,4 @@
                 <span class="pago_mensual_error msgError" style="color:red;"></span>
             </div>
     </div>
-</form> 
+</form>

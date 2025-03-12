@@ -17,7 +17,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-money-check-dollar"></i>                  
                     </span>
-                    <input value="1.00" required id="costo" maxlength="20"  name="costo" type="text" class="form-control inputDecimalPositivo costo" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="1.00" required id="costo" maxlength="20"  name="costo" type="text" class="form-control numero-input costo" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="costo_error msgError"  style="color:red;"></span>
             </div>
@@ -27,7 +27,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-money-check-dollar"></i>                  
                     </span>
-                    <input value="0.00" required id="avance_costo" maxlength="20"  name="avance_costo" type="text" class="form-control inputDecimalPositivo avance_costo" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
+                    <input value="0.00" required id="avance_costo" maxlength="20"  name="avance_costo" type="text" class="form-control numero-input avance_costo" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="avance_costo_error msgError"  style="color:red;"></span>
             </div>
@@ -37,7 +37,7 @@
                     <span class="input-group-text" id="basic-addon1">
                         <i class="fa-solid fa-money-check-dollar"></i>                  
                     </span>
-                    <input readonly value="1.00" required id="diferencia" maxlength="20"  name="diferencia" type="text" class="form-control inputDecimal" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
+                    <input readonly value="1.00" required id="diferencia" maxlength="20"  name="diferencia" type="text" class="form-control numero-input" placeholder="Precio" aria-label="Username" aria-describedby="basic-addon1">
                 </div>                  
                 <span class="diferencia_error msgError"  style="color:red;"></span>
             </div> 
@@ -108,4 +108,4 @@
         </div>
     </div>  
 
-</form> 
+</form>

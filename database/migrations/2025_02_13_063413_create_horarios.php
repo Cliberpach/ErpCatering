@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nombre_proyecto');
             $table->time('hora_inicio');
             $table->time('hora_final');
-            $table->string('descripcion');
+            $table->string('descripcion')->nullable();
             $table->integer('minutos_tolerancia')->default(0);
             $table->enum('estado', ['ACTIVO', 'ANULADO'])->default('ACTIVO');
             $table->timestamps();
