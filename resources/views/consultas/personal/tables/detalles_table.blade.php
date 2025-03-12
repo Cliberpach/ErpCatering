@@ -13,6 +13,7 @@
         <th scope="col">Horas Extra</th>
         <th scope="col">Horas No Trabajadas</th>
         <th scope="col">Horas Trabajadas</th>
+        <th scope="col">Estado</th>
         <th scope="col">Acciones</th>
       </tr>
     </thead>

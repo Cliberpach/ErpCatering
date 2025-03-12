@@ -81,6 +81,7 @@ function iniciarDataTableConsultaPersonalDetalle() {
         { data: 'horas_extra', name: 'horas_extra' }, // Horas Extra
         { data: 'horas_no_trabajadas', name: 'horas_no_trabajadas' }, // Horas No Trabajadas
         { data: 'tiempo_trabajado', name: 'tiempo_trabajado' }, // Horas Trabajadas
+        { data: 'estado', name: 'estado' }, // Estado
         {
             data: null, 
             render: function(data, type, row) {
