@@ -24,8 +24,10 @@ return new class extends Migration
             $table->time('adelanto')->nullable(); // Tiempo de retraso, si aplica
             $table->integer('horas_extra')->nullable();  // Tiempo de retraso, si aplica
             $table->string('horas_no_trabajadas')->nullable(); // Almacenar horas no trabajadas como string
-            $table->string('tiempo_trabajado')->nullable(); // Almacenar tiempo trabajado como string            
-            $table->enum('estado', ['ACTIVO', 'INACTIVO'])->default('ACTIVO'); // Estado del detalle de la asistencia
+            $table->string('tiempo_trabajado')->nullable(); // Almacenar tiempo trabajado como string
+            $table->tinyInteger('feriado')->default(0); // 1 o 0 si es feriado
+            $table->foreignId('feriado_id')->nullable()->constrained('feriados'); // Relación con la tabla feriados (si corresponde)
+            $table->enum('estado', ['ASISTIO', 'TARDANZA', 'FALTA', 'PERMISO'])->default('ASISTIO'); // Estado de la asistencia
             $table->timestamps(); // Tiempos de creación y actualización
         });
         
