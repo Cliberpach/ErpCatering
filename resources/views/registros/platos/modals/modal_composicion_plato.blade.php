@@ -160,7 +160,7 @@ $('#producto').on('change', function() {
                             </button>
                             <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
                                 <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="">
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="eliminarProductoComposicion(${data.id}, ${platoId})">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </a>
                                 </li>
@@ -193,6 +193,57 @@ $('#producto').on('change', function() {
                 "sortAscending": ": activar para ordenar la columna de manera ascendente",
                 "sortDescending": ": activar para ordenar la columna de manera descendente"
             }
+        }
+    });
+}
+
+function eliminarProductoComposicion(detalleId, platoId) {
+    // Mostrar la alerta de confirmación con Swal
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¡No podrás revertir esta acción!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Si el usuario confirma, proceder con la eliminación
+            $.ajax({
+                url: '/platos/composicion/eliminar',  // URL de eliminación
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{csrf_token()}}',
+                    'Accept': 'application/json',
+                },
+                data: {
+                    detalle_id: detalleId,  // ID del detalle de la composición a eliminar
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+
+                        // Recargar la tabla
+                        $('#table_detalle_platos').DataTable().ajax.reload();
+
+                        // Volver a cargar los productos disponibles en el select
+                        cargarProductos(platoId);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.error("Ocurrió un error al eliminar el producto.");
+                }
+            });
+        } else {
+            // Si el usuario cancela, mostrar un mensaje de cancelación
+            Swal.fire(
+                'Cancelado',
+                'El producto no fue eliminado.',
+                'info'
+            );
         }
     });
 }

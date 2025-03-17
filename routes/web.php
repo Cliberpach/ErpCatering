@@ -189,6 +189,8 @@ Route::group(['prefix' => 'platos', 'middleware' => ['auth', 'notificacionMiddle
     Route::get('/composicion/productos', [PlatoController::class, 'getProductos'])->name('registros.platos.getProductos');
     Route::post('/composicion/guardar', [PlatoController::class, 'guardarComposicion'])->name('platos.composicion.guardar');
     Route::delete('/destroy/{id}', [PlatoController::class, 'destroy'])->name('registros.platos.destroy');
+    Route::post('/composicion/eliminar', [PlatoController::class, 'eliminarComposicion']);
+
 });
 
 

@@ -43,7 +43,7 @@ class PlatoController extends Controller
         $composicion = DB::table('plato_detalles as pd')
             ->join('productos as p', 'pd.producto_id', '=', 'p.id')
             ->where('pd.plato_id', $id)
-            ->select('p.nombre as producto', 'pd.cantidad', 'pd.unidad_medida')
+            ->select('pd.id','p.nombre as producto', 'pd.cantidad', 'pd.unidad_medida')
             ->get();
 
         return DataTables::of($composicion)
@@ -221,4 +221,31 @@ class PlatoController extends Controller
             ], 500);
         }
     }
+
+    public function eliminarComposicion(Request $request)
+    {
+        try {
+            // Validación de los datos recibidos
+            $validated = $request->validate([
+                'detalle_id' => 'required|exists:plato_detalles,id',  // Asegúrate de validar el detalle
+            ]);
+
+            // Encontrar el detalle de la composición que se quiere eliminar
+            $detalle = PlatoDetalle::find($validated['detalle_id']);
+
+            // Eliminar el detalle
+            $detalle->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Producto eliminado correctamente de la composición.',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al eliminar el producto: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
