@@ -66,9 +66,9 @@
         success: function(response) {
             const select = $('#producto');
             select.empty(); 
-            select.append('<option value="">Seleccionar Producto</option>');  // Opción inicial
+            select.append('<option value="">Seleccionar Producto</option>');
 
-            // Llenar el select con los productos obtenidos
+    
             response.products.forEach(function(product) {
                 select.append(`<option value="${product.id}" data-unidad="${product.unidad_medida}">${product.nombre}</option>`);
             });
@@ -81,13 +81,13 @@
 
 // Función para actualizar el campo de "Unidad de Medida" cuando se selecciona un producto
 $('#producto').on('change', function() {
-    const selectedOption = $(this).find('option:selected');  // Obtener la opción seleccionada
-    const unidadMedida = selectedOption.data('unidad');  // Obtener la unidad de medida de la opción seleccionada
+    const selectedOption = $(this).find('option:selected'); 
+    const unidadMedida = selectedOption.data('unidad'); 
 
     if (unidadMedida) {
-        $('#unidad_medida').val(unidadMedida);  // Actualizar el campo de "Unidad de Medida"
+        $('#unidad_medida').val(unidadMedida); 
     } else {
-        $('#unidad_medida').val('');  // Limpiar el campo si no hay unidad
+        $('#unidad_medida').val('');
     }
 });
 
