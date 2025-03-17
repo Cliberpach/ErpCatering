@@ -15,7 +15,9 @@ use Greenter\Ws\Services\SunatEndpoints;
 use App\Greenter\Example\Util;
 
 require __DIR__ . '/../../../vendor/autoload.php';
+/*
 
+*/
 
 $util = Util::getInstance();
 
