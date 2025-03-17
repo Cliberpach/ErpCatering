@@ -25,6 +25,10 @@
                                     <strong class="text-primary">Marca:</strong>
                                     <span class="text-muted" id="spanMarca"></span>
                                 </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">
+                                    <strong class="text-primary">Tipo de Producto:</strong>
+                                    <span class="text-muted" id="spanTipo"></span>
+                                </div>
                                 <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mb-3">                                    
                                     <strong class="text-primary">Producto:</strong>
                                     <span class="text-muted" id="spanProducto"></span>
@@ -150,6 +154,7 @@
         document.querySelector('#spanCategoria').textContent        =   producto.categoria_nombre;
         document.querySelector('#spanMarca').textContent            =   producto.marca_nombre;
         document.querySelector('#spanProducto').textContent         =   producto.producto_nombre;
+        document.querySelector('#spanTipo').textContent             =   producto.tipo_producto;
         document.querySelector('#spanPrecio').textContent           =   producto.producto_precio;
         document.querySelector('#spanUnidad').textContent           =   producto.unidad_medida_nombre;
         document.querySelector('#spanCodigoInterno').textContent    =   producto.codigo_interno;

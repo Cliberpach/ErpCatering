@@ -41,6 +41,15 @@
                 @endforeach
             </select>
         </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+            <label for="tipo_producto" style="font-weight: bold;">TIPO</label>
+            <select data-placeholder="Seleccionar" name="tipo_producto" id="tipo_producto" class="select2_form" onchange="dtProductos.ajax.reload();">
+                    <option value=""></option>
+                    <option value="INSUMO">INSUMO</option>
+                    <option value="UTENSILIO">UTENSILIO</option>
+            </select>
+        </div>
     </div>
     <div class="row">
         <div class="col-12 d-flex justify-content-end">
@@ -89,6 +98,7 @@
                 data: function (d) {
                     d.categoria_id  =   $('#categoria').val();
                     d.marca_id      =   $('#marca').val();
+                    d.tipo_producto =   $('#tipo_producto').val();
                 }
             },
             columns: [

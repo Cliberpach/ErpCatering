@@ -106,5 +106,15 @@
                 <span class="stock_minimo_error msgError"  style="color:red;"></span>
             </div>
            
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 pb-2">
+                <label class="required_field mb-2" for="tipo_producto" style="font-weight: bold;">TIPO DE PRODUCTO</label>
+                <select name="tipo_producto" class="form-select select2_form" id="tipo_producto" data-placeholder="Seleccionar" required>
+                    <option></option>
+                    <option value="INSUMO" {{ old('tipo_producto', $producto->tipo_producto) == 'INSUMO' ? 'selected' : '' }}>INSUMO</option>
+                    <option value="UTENSILIO" {{ old('tipo_producto', $producto->tipo_producto) == 'UTENSILIO' ? 'selected' : '' }}>UTENSILIO</option>
+                </select>
+                <span class="tipo_producto_error msgError" style="color:red;"></span>
+            </div>
+            
     </div>
 </form>

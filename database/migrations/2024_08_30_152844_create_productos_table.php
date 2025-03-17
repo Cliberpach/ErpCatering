@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('categoria_id');
             $table->foreign('categoria_id')->references('id')->on('categorias');
 
+            $table->enum('tipo_producto', ['INSUMO', 'UTENSILIO']);
+
             $table->unsignedBigInteger('unidad_medida_id');
             $table->foreign('unidad_medida_id')->references('id')->on('tablas_generales_detalles');
 

@@ -48,6 +48,7 @@ class ProductoController extends Controller
 
         $categoria_id   =   $request->get('categoria_id');
         $marca_id       =   $request->get('marca_id');
+        $tipo_producto  =   $request->get('tipo_producto');
 
         $productos = DB::table('productos as p')
                     ->leftJoin('almacen_productos as ap', function($join) {
@@ -82,6 +83,10 @@ class ProductoController extends Controller
             $productos  =   $productos->where('p.marca_id',$marca_id);
         }
 
+        if($tipo_producto){
+            $productos = $productos->where('tipo_producto',$tipo_producto);
+        }
+
         $productos  =   $productos->get();
 
 
@@ -98,6 +103,7 @@ class ProductoController extends Controller
             $producto->nombre           =   Str::upper($request->get('nombre'));
             $producto->marca_id         =   $request->get('marca');
             $producto->categoria_id     =   $request->get('categoria');
+            $producto->tipo_producto     =   $request->get('tipo_producto');
             $producto->unidad_medida_id =   $request->get('unidad_medida');
             $producto->precio           =   $request->get('precio');
             $producto->codigo_barras    =   $request->get('codigo_barras');
@@ -142,6 +148,7 @@ class ProductoController extends Controller
             $producto->nombre           =   Str::upper($request->get('nombre'));
             $producto->marca_id         =   $request->get('marca');
             $producto->categoria_id     =   $request->get('categoria');
+            $producto->tipo_producto     =   $request->get('tipo_producto');
             $producto->unidad_medida_id =   $request->get('unidad_medida');
             $producto->precio           =   $request->get('precio');
             $producto->codigo_barras    =   $request->get('codigo_barras');
@@ -189,6 +196,7 @@ class ProductoController extends Controller
                             ca.descripcion as categoria_nombre,
                             tgd.descripcion as unidad_medida_nombre,
                             p.precio as producto_precio,
+                            p.tipo_producto as tipo_producto,
                             p.ruta_codigo_barras,
                             p.codigo_interno
                             from productos as p

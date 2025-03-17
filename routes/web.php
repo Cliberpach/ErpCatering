@@ -34,6 +34,7 @@ use App\Http\Controllers\Requerimientos\RequerimientoController;
 use App\Http\Controllers\Registros\MaquinariaController;
 use App\Http\Controllers\Registros\MarcaController;
 use App\Http\Controllers\Registros\ModalidadPagoController;
+use App\Http\Controllers\Registros\PlatoController;
 use App\Http\Controllers\Registros\ProductoController;
 use App\Http\Controllers\Registros\ProyectoController;
 use App\Http\Controllers\Registros\VehiculoController;
@@ -176,6 +177,18 @@ Route::group(['prefix' => 'motivo_descanso', 'middleware' => ['auth', 'notificac
     Route::post('/store', [Motivo_DescansoController::class, 'store'])->name('registros.motivo_descanso.store');
     Route::get('/getMotivoDescanso', [Motivo_DescansoController::class, 'getMotivoDescanso'])->name('registros.motivo_descanso.getMotivoDescanso');
     Route::delete('/destroy/{id}', [Motivo_DescansoController::class, 'destroy'])->name('registros.motivo_descanso.destroy');
+});
+
+Route::group(['prefix' => 'platos', 'middleware' => ['auth', 'notificacionMiddleware']], function () {
+    Route::get('/index', [PlatoController::class, 'index'])->name('registros.platos.index');
+    Route::put('/update/{id}', [PlatoController::class, 'update'])->name('registros.platos.update');
+    Route::get('/edit/{id}', [PlatoController::class, 'edit'])->name('registros.platos.edit');
+    Route::post('/store', [PlatoController::class, 'store'])->name('registros.platos.store');
+    Route::get('/getPlatos', [PlatoController::class, 'getPlatos'])->name('registros.platos.getPlatos');
+    Route::get('/getDetallePlatos/{id}', [PlatoController::class, 'getDetallePlatos'])->name('registros.platos.getDetallePlatos');
+    Route::get('/composicion/productos', [PlatoController::class, 'getProductos'])->name('registros.platos.getProductos');
+    Route::post('/composicion/guardar', [PlatoController::class, 'guardarComposicion'])->name('platos.composicion.guardar');
+    Route::delete('/destroy/{id}', [PlatoController::class, 'destroy'])->name('registros.platos.destroy');
 });
 
 

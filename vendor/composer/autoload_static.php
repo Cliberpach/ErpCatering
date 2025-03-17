@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
+class ComposerStaticInit4f1e458171020aee431ff9249e61ec90
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -727,6 +727,8 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Exports\\Formatos\\Producto\\Hojas\\ProductosSheet' => __DIR__ . '/../..' . '/app/Exports/Formatos/Producto/Hojas/ProductosSheet.php',
         'App\\Exports\\Formatos\\Producto\\ProductoExport' => __DIR__ . '/../..' . '/app/Exports/Formatos/Producto/ProductoExport.php',
         'App\\Exports\\Registros\\Producto\\ProductoExport' => __DIR__ . '/../..' . '/app/Exports/Registros/Producto/ProductoExport.php',
+        'App\\Greenter\\Data\\SharedStore' => __DIR__ . '/../..' . '/app/Greenter/Data/SharedStore.php',
+        'App\\Greenter\\Example\\Util' => __DIR__ . '/../..' . '/app/Greenter/Example/Util.php',
         'App\\Greenter\\Utils\\Util' => __DIR__ . '/../..' . '/app/Greenter/Utils/Util.php',
         'App\\Http\\Controllers\\Compras\\CotizacionCompraController' => __DIR__ . '/../..' . '/app/Http/Controllers/Compras/CotizacionCompraController.php',
         'App\\Http\\Controllers\\Compras\\OrdenCompraController' => __DIR__ . '/../..' . '/app/Http/Controllers/Compras/OrdenCompraController.php',
@@ -753,6 +755,7 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Http\\Controllers\\Notificaciones\\NotificacionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Notificaciones/NotificacionController.php',
         'App\\Http\\Controllers\\PlanProyecto\\TareaController' => __DIR__ . '/../..' . '/app/Http/Controllers/PlanProyecto/TareaController.php',
         'App\\Http\\Controllers\\Registros\\AlmacenController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/AlmacenController.php',
+        'App\\Http\\Controllers\\Registros\\AsistenciasController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/AsistenciasController.php',
         'App\\Http\\Controllers\\Registros\\CargoController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/CargoController.php',
         'App\\Http\\Controllers\\Registros\\CategoriaController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/CategoriaController.php',
         'App\\Http\\Controllers\\Registros\\ColaboradorController' => __DIR__ . '/../..' . '/app/Http/Controllers/Registros/ColaboradorController.php',
@@ -823,6 +826,8 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Http\\Requests\\Registros\\Proyecto\\ProyectoAsignarSupervisorRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto/ProyectoAsignarSupervisorRequest.php',
         'App\\Http\\Requests\\Registros\\Proyecto\\ProyectoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto/ProyectoStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Proyecto\\ProyectoUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto/ProyectoUpdateRequest.php',
+        'App\\Http\\Requests\\Registros\\Proyecto_Regimen\\StoreProyectoRegimenRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto_Regimen/StoreProyectoRegimenRequest.php',
+        'App\\Http\\Requests\\Registros\\Proyecto_Regimen\\UpdateProyectoRegimenRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Proyecto_Regimen/UpdateProyectoRegimenRequest.php',
         'App\\Http\\Requests\\Registros\\Regimen\\RegimenStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Regimen/RegimenStoreRequest.php',
         'App\\Http\\Requests\\Registros\\Regimen\\RegimenUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Regimen/RegimenUpdateRequest.php',
         'App\\Http\\Requests\\Registros\\Vehiculo\\VehiculoStoreRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Registros/Vehiculo/VehiculoStoreRequest.php',
@@ -867,6 +872,8 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
         'App\\Models\\PlanProyecto\\TareaDetalle' => __DIR__ . '/../..' . '/app/Models/PlanProyecto/TareaDetalle.php',
         'App\\Models\\Registros\\Almacen' => __DIR__ . '/../..' . '/app/Models/Registros/Almacen.php',
         'App\\Models\\Registros\\AlmacenProducto' => __DIR__ . '/../..' . '/app/Models/Registros/AlmacenProducto.php',
+        'App\\Models\\Registros\\AsistenciaDetalle' => __DIR__ . '/../..' . '/app/Models/Registros/AsistenciaDetalle.php',
+        'App\\Models\\Registros\\Asistencias' => __DIR__ . '/../..' . '/app/Models/Registros/Asistencias.php',
         'App\\Models\\Registros\\Banco' => __DIR__ . '/../..' . '/app/Models/Registros/Banco.php',
         'App\\Models\\Registros\\Cargo' => __DIR__ . '/../..' . '/app/Models/Registros/Cargo.php',
         'App\\Models\\Registros\\Categoria' => __DIR__ . '/../..' . '/app/Models/Registros/Categoria.php',
@@ -9491,10 +9498,10 @@ class ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit88baa624a4d8973ea4cf44c416992ec4::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit4f1e458171020aee431ff9249e61ec90::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit4f1e458171020aee431ff9249e61ec90::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit4f1e458171020aee431ff9249e61ec90::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit4f1e458171020aee431ff9249e61ec90::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -128,6 +128,9 @@
             <li>
                 <a class="@yield('regimen-active')" href="{{route('registros.motivo_descanso.index')}}">Motivo de Descanso</a>
             </li>
+            <li>
+              <a class="@yield('platos-active')" href="{{route('registros.platos.index')}}">Platos</a>
+          </li>
           </ul>
         </li>
         @endcanany
