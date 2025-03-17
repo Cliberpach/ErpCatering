@@ -59,25 +59,36 @@
 
     }
 
-    function cargarProductos() {
-    $.ajax({
-        url: '/platos/composicion/productos', 
-        method: 'GET',
-        success: function(response) {
-            const select = $('#producto');
-            select.empty(); 
-            select.append('<option value="">Seleccionar Producto</option>');
+    function cargarProductos(platoId) {
+    // Limpiar el select cuando se cambia de modal
+    const select = $('#producto');
+    select.empty();  // Limpiar las opciones anteriores
+    select.append('<option value="">Seleccionar Producto</option>');  // Opción inicial
 
-    
+    $.ajax({
+        url: '/platos/composicion/productos',  // URL para obtener los productos
+        method: 'GET',
+        data: { plato_id: platoId },  // Enviar el plato_id al backend para filtrar productos
+        success: function(response) {
+            // Si no hay productos disponibles
+            if (response.products.length === 0) {
+                select.append('<option value="" disabled>No hay productos disponibles para este plato</option>');
+                return;
+            }
+
+            // Llenar el select con los productos obtenidos
             response.products.forEach(function(product) {
                 select.append(`<option value="${product.id}" data-unidad="${product.unidad_medida}">${product.nombre}</option>`);
             });
         },
         error: function() {
-            alert('Error al cargar los productos');
+            // Manejo de error (aquí podrías agregar otro mensaje de error si es necesario)
+            console.log('Error al cargar los productos');
         }
     });
 }
+
+
 
 // Función para actualizar el campo de "Unidad de Medida" cuando se selecciona un producto
 $('#producto').on('change', function() {
@@ -99,7 +110,7 @@ $('#producto').on('change', function() {
 
         iniciarDataTableDetallePlatos(platoId);
 
-        cargarProductos();
+        cargarProductos(platoId);
 
         $('#mdlComposicionPlato').modal('show');
     }

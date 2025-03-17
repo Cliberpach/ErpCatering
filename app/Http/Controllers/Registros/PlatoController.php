@@ -140,33 +140,49 @@ class PlatoController extends Controller
     }
 
     public function getProductos(Request $request)
-    {
-        try {
-            // Obtén los productos que son activos y del tipo INSUMO
-            $productos = Producto::where('productos.estado', 'ACTIVO')
-                ->where('productos.tipo_producto', 'INSUMO')
-                ->join('tablas_generales_detalles as tgd', 'tgd.id', '=', 'productos.unidad_medida_id') // Relaciona con la tabla de unidades
-                ->get(['productos.id', 'productos.nombre', 'productos.unidad_medida_id', 'tgd.simbolo as unidad_medida']);
+{
+    try {
+        // Obtener el plato_id desde la solicitud
+        $platoId = $request->get('plato_id');
 
-            if ($productos->isEmpty()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No se encontraron productos.',
-                ], 404); // Si no hay productos, devuelve un error
-            }
-
-            return response()->json([
-                'success' => true,
-                'products' => $productos,
-            ], 200);
-        } catch (\Exception $e) {
-            // Si ocurre un error en la consulta, captura la excepción
+        // Verificar si se proporcionó un plato_id
+        if (!$platoId) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al obtener los productos: ' . $e->getMessage(),
-            ], 500); // Devuelve el error con el código 500
+                'message' => 'El id del plato es necesario.',
+            ], 400);
         }
+
+        // Obtener los productos que son activos, del tipo INSUMO, y que no están relacionados con este plato
+        $productos = Producto::where('productos.estado', 'ACTIVO')
+            ->where('productos.tipo_producto', 'INSUMO')
+            ->whereNotIn('productos.id', function ($query) use ($platoId) {
+                $query->select('producto_id')
+                      ->from('plato_detalles')
+                      ->where('plato_id', $platoId);
+            })
+            ->join('tablas_generales_detalles as tgd', 'tgd.id', '=', 'productos.unidad_medida_id') // Relaciona con la tabla de unidades
+            ->get(['productos.id', 'productos.nombre', 'productos.unidad_medida_id', 'tgd.simbolo as unidad_medida']);
+
+        if ($productos->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontraron productos disponibles.',
+            ], 404); // Si no hay productos disponibles
+        }
+
+        return response()->json([
+            'success' => true,
+            'products' => $productos,
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al obtener los productos: ' . $e->getMessage(),
+        ], 500);
     }
+}
+
 
     public function guardarComposicion(Request $request)
     {
