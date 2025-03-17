@@ -61,11 +61,11 @@
 
     function cargarProductos() {
     $.ajax({
-        url: '/platos/composicion/productos',  // Asegúrate de que la URL sea la correcta
+        url: '/platos/composicion/productos', 
         method: 'GET',
         success: function(response) {
             const select = $('#producto');
-            select.empty();  // Limpiar las opciones anteriores
+            select.empty(); 
             select.append('<option value="">Seleccionar Producto</option>');  // Opción inicial
 
             // Llenar el select con los productos obtenidos
@@ -104,9 +104,6 @@ $('#producto').on('change', function() {
         $('#mdlComposicionPlato').modal('show');
     }
 
-    function registrarComposicion(){
-        
-    }
 
 
     function pintarErroresValidacion(objErroresValidacion){
@@ -151,12 +148,6 @@ $('#producto').on('change', function() {
                                 <i class="fa-solid fa-grip"></i>
                             </button>
                             <ul class="dropdown-menu" style="max-height: 150px; overflow-y: auto;">
-                                <li>
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openMdlEditDetallePlato(${data.id})">
-                                        <i class="fa-solid fa-pen-to-square"></i> Editar
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="javascript:void(0);" onclick="">
                                         <i class="fa-solid fa-trash"></i> Eliminar
