@@ -35,39 +35,34 @@ function agregarProductoComposicion(platoId) {
     }
 
     $.ajax({
-        url: '/platos/composicion/guardar',  // Asegúrate de tener la ruta correcta
+        url: '/platos/composicion/guardar',
         method: 'POST',
         headers: {
-            'X-CSRF-TOKEN': '{{csrf_token()}}',  // Incluir el token CSRF
-            'Accept': 'application/json'  // Asegurarnos de que la respuesta sea en JSON
+            'X-CSRF-TOKEN': '{{csrf_token()}}', 
+            'Accept': 'application/json' 
         },
         data: {
             producto_id: productoId,
             cantidad: cantidad,
             unidad_medida: unidadMedida,
-            plato_id: platoId  // Aquí pasamos el plato_id
+            plato_id: platoId 
         },
         success: function(response) {
             if (response.success) {
-                // Mostrar un mensaje de éxito usando toastr
+               
                 toastr.success("Producto agregado correctamente.");
 
-                // Recargar la tabla de detalles para mostrar la nueva composición
                 $('#table_detalle_platos').DataTable().ajax.reload();
 
-                // Eliminar el producto seleccionado del select
                 $('#producto option:selected').remove();
 
-                // Limpiar los campos del formulario
                 $('#cantidad').val('');
                 $('#unidad_medida').val('');
             } else {
-                // Mostrar un mensaje de error usando toastr
                 toastr.error("Error al agregar el producto.");
             }
         },
         error: function() {
-            // Mostrar un mensaje de error usando toastr
             toastr.error("Ocurrió un error al agregar el producto.");
         }
     });
